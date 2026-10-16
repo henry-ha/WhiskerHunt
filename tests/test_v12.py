@@ -47,7 +47,7 @@ async def main():
   js=(ROOT/'BrowserPreview/app.js').read_text();native=(ROOT/'WhiskerHunt/Resources/Raw/app.js').read_text()
   style=(ROOT/'BrowserPreview/style.css').read_text();native_style=(ROOT/'WhiskerHunt/Resources/Raw/style.css').read_text()
   assert js==native and style==native_style
-  assert "const CACHE='whisker-hunt-shell-v19'" in (ROOT/'BrowserPreview/sw.js').read_text()
+  assert "const CACHE='whisker-hunt-shell-v22'" in (ROOT/'BrowserPreview/sw.js').read_text()
   assert not errors,errors
   print('PASSED v1.2: lure + whisker-ball encounter, capture summary, unchanged schema, synced assets, current cache')
   await browser.close()

@@ -1,5 +1,5 @@
 /* v1.9: versioned assets and cleanup, preventing stale encounter UI */
-const CACHE='whisker-hunt-shell-v19';
+const CACHE='whisker-hunt-shell-v25';
 const ASSETS=['./','./index.html','./app.js','./style.css','./icon.svg','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('whisker-hunt-shell-')&&key!==CACHE).map(key=>caches.delete(key)))),self.clients.claim()])));

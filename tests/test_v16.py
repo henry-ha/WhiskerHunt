@@ -81,7 +81,7 @@ async def main():
         assert await page.evaluate('s.profile.xp')>=100
         assert (ROOT/'BrowserPreview/app.js').read_text()==(ROOT/'WhiskerHunt/Resources/Raw/app.js').read_text()
         assert (ROOT/'BrowserPreview/style.css').read_text()==(ROOT/'WhiskerHunt/Resources/Raw/style.css').read_text()
-        assert "const CACHE='whisker-hunt-shell-v19'" in (ROOT/'BrowserPreview/sw.js').read_text()
+        assert "const CACHE='whisker-hunt-shell-v22'" in (ROOT/'BrowserPreview/sw.js').read_text()
         assert not errors,errors
         print('PASS v1.6: live aim guide, green release, minimum drag, miss, lure, ball, saved cat/XP, synced native assets')
         await browser.close()

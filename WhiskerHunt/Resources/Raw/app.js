@@ -1,5 +1,6 @@
-/* Whisker Hunt 1.9 — offline-first, no accounts, no tracking, no server. */
+/* Whisker Hunt 2.3 — offline-first, no accounts, no tracking, no server. */
 'use strict';
+const WHISKER_BUILD='2.5.0', WHISKER_BUILD_NUMBER=25;
 const DATABASE='whiskerhunt_local_v1', DB_VERSION=1;
 const COATS=['Tabby','Ginger','Black','White','Tuxedo','Calico','Grey','Other'];
 const PERSONALITIES=['Unknown','Curious','Sleepy','Playful','Shy','Friendly','Adventurous'];
@@ -13,7 +14,7 @@ let photoSelectionEpoch=0;
 let encounterResizeObserver=null;
 let liveCamera=null;
 let liveRequestEpoch=0;
-const s={cats:[],profile:{name:'Cat Explorer',xp:0,claimed:[]},screen:'home',filter:'All',search:'',dexSort:'recent',image:'',cardBase64:'',catchMode:'new',selectedId:'',revisitId:'',journalFilter:'All',journalSearch:'',busy:false,db:null,native:false,storageBlocked:false,recoveryApproved:false};
+const s={cats:[],profile:{name:'Cat Explorer',xp:0,claimed:[]},screen:'home',filter:'All',search:'',dexSort:'recent',image:'',cardBase64:'',catchMode:'new',selectedId:'',revisitId:'',journalFilter:'All',journalSearch:'',busy:false,db:null,native:false,storageBlocked:false,recoveryApproved:false,encounterLive:false};
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const id=()=>globalThis.crypto?.randomUUID?.()??String(Date.now())+Math.random().toString(36).slice(2);
@@ -27,6 +28,19 @@ const friendLabel=c=>catches(c)>=6?'Best buddies':catches(c)>=3?'Getting acquain
 const allSightings=()=>s.cats.flatMap(c=>c.sightings||[]);
 const level=()=>Math.floor(s.profile.xp/200)+1;
 const levelTitle=()=>['Curious Kitten','Street Spotter','Cat Whisperer','Whisker Scout','Paw Legend','Alley Explorer','Cat Chronicler','Purr Master','Legendary Spotter','Whisker Guardian'][Math.min(level()-1,9)];
+// Android ships a private native JSON CatDex; only obsolete service worker caches
+// are cleared. Never clear IndexedDB, application files, or user photos.
+async function retireAndroidShellWorker(){
+ if(!window.whiskerAndroidShell)return;
+ try{if(navigator.serviceWorker?.getRegistrations){
+  const registrations=await navigator.serviceWorker.getRegistrations();
+  await Promise.all(registrations.filter(r=>new URL(r.scope).origin===location.origin).map(r=>r.unregister()));
+ }}catch(error){console.debug('SW cleanup deferred',error)}
+ try{if(globalThis.caches?.keys){
+  const names=await caches.keys();
+  await Promise.all(names.filter(n=>n.startsWith('whisker-hunt-shell-')).map(n=>caches.delete(n)));
+ }}catch(error){console.debug('Shell cache cleanup deferred',error)}
+}
 function toast(msg){const el=$('toast');el.textContent=msg;el.classList.remove('hidden');clearTimeout(toast.timeout);toast.timeout=setTimeout(()=>el.classList.add('hidden'),3600)}
 function openDb(){return new Promise((resolve,reject)=>{const r=indexedDB.open(DATABASE,DB_VERSION);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains('cats'))d.createObjectStore('cats',{keyPath:'id'});if(!d.objectStoreNames.contains('meta'))d.createObjectStore('meta',{keyPath:'key'})};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
 function transact(store,mode,method,value){return new Promise((resolve,reject)=>{
@@ -77,7 +91,7 @@ async function boot(){if(window.whiskerAndroidShell){
   // Native shell must never open IndexedDB: it can contain unrelated browser data.
   s.db=null;s.native=true;
   $('view').innerHTML='<div class="feature-empty"><div class="big">🐾</div><h3>Loading your CatDex…</h3><p>Checking your private collection on this device.</p></div>';
- }else{try{s.db=await openDb();s.cats=await transact('cats','readonly','getAll');const p=await transact('meta','readonly','get','profile');if(p?.value){s.profile={...s.profile,...p.value}}}catch(e){console.error(e);toast('Local storage unavailable. Check browser privacy settings.')}render();}$('nav-catch').addEventListener('click',startCatch);document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.nav)));$('head-profile').addEventListener('click',()=>navigate('profile'));$('image-input').addEventListener('change',inputPhoto);$('library-input').addEventListener('change',inputPhoto);$('backup-input').addEventListener('change',importBackup);if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});window.whiskerBootComplete=true;
+ }else{try{s.db=await openDb();s.cats=await transact('cats','readonly','getAll');const p=await transact('meta','readonly','get','profile');if(p?.value){s.profile={...s.profile,...p.value}}}catch(e){console.error(e);toast('Local storage unavailable. Check browser privacy settings.')}render();}$('nav-catch').addEventListener('click',startCatch);document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.nav)));$('head-profile').addEventListener('click',()=>navigate('profile'));$('image-input').addEventListener('change',inputPhoto);$('library-input').addEventListener('change',inputPhoto);$('backup-input').addEventListener('change',importBackup);if(window.whiskerAndroidShell)retireAndroidShellWorker();else if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});window.whiskerBootComplete=true;
  if(window.whiskerAndroidShell){
   const requestReady=()=>{if(window.whiskerRequestNativeReady)window.whiskerRequestNativeReady();else location.href='whiskerhunt://ready'};
   requestReady();
@@ -133,10 +147,10 @@ async function claimQuest(key){
  catch(e){s.profile.xp=previousXp;s.profile.claimed=previousClaimed;toast('Unable to save quest reward. Please retry.');render()}
  finally{s.busy=false}
 }
-function openModal(content,keepLive=false){if(!keepLive)stopLiveCamera();encounterResizeObserver?.disconnect();encounterResizeObserver=null;const layer=$('modal-layer');layer.classList.remove('hidden');layer.setAttribute('aria-hidden','false');layer.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="sheet-handle"></div>${content}</div>`;layer.onclick=modalBackdrop;const b=layer.querySelector('[data-close]');if(b)b.addEventListener('click',closeModal)}
+function openModal(content,keepLive=false){if(!keepLive)stopLiveCamera();encounterResizeObserver?.disconnect();encounterResizeObserver=null;const layer=$('modal-layer');layer.classList.remove('hidden');layer.setAttribute('aria-hidden','false');layer.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="sheet-handle"></div><div class="whisker-build-stamp">Whisker Hunt v${WHISKER_BUILD} · build ${WHISKER_BUILD_NUMBER}</div>${content}</div>`;layer.onclick=modalBackdrop;const b=layer.querySelector('[data-close]');if(b)b.addEventListener('click',closeModal)}
 function modalBackdrop(e){if(e.target.id==='modal-layer')closeModal()}
 function closeModal(){liveRequestEpoch++;stopLiveCamera();encounterEpoch++;encounterCropEpoch++;photoSelectionEpoch++;encounterResizeObserver?.disconnect();encounterResizeObserver=null;const l=$('modal-layer');l.classList.add('hidden');l.setAttribute('aria-hidden','true');l.innerHTML=''}
-function startCatch(catId=null){photoSelectionEpoch++;if(s.busy)return toast('Please wait for the current save to finish.');if(s.storageBlocked)return toast('Restore your CatDex backup before adding cats.');s.image='';s.revisitId=typeof catId==='string'&&s.cats.some(c=>c.id===catId)?catId:'';s.catchMode=s.revisitId?'repeat':'new';s.selectedId='';s.captureSummary=null;openModal(`<div class="sheet-head"><h2>Catch a cat! 📸</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim" style="font-size:13px">Start with a respectful photo, then play the capture encounter with a Whisker Pod or the Dangle Lure.</p><div class="capture-choice"><button id="live-photo" class="choice"><span>🎥</span><strong>Live encounter</strong><small>Drag tools over the live camera · beta</small></button><button id="take-photo" class="choice"><span>📸</span><strong>Take a photo</strong><small>Reliable camera fallback</small></button><button id="pick-photo" class="choice"><span>🖼️</span><strong>Choose a photo</strong><small>From your gallery</small></button></div><p class="footnote center">Live mode keeps only recent still frames in memory; it does not record video. Real cats only, please.</p>`);$('live-photo').onclick=startLiveEncounter;$('take-photo').onclick=()=>requestEncounterPhoto(true);$('pick-photo').onclick=()=>requestEncounterPhoto(false)}
+function startCatch(catId=null){photoSelectionEpoch++;if(s.busy)return toast('Please wait for the current save to finish.');if(s.storageBlocked)return toast('Restore your CatDex backup before adding cats.');s.image='';s.encounterLive=false;s.revisitId=typeof catId==='string'&&s.cats.some(c=>c.id===catId)?catId:'';s.catchMode=s.revisitId?'repeat':'new';s.selectedId='';s.captureSummary=null;openModal(`<div class="sheet-head"><h2>Catch a cat! 📸</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim" style="font-size:13px">Start with a respectful photo, then play the capture encounter with a Whisker Pod or the Dangle Lure.</p><div class="capture-choice"><button id="live-photo" class="choice"><span>🎥</span><strong>Live encounter</strong><small>Drag tools over the live camera · beta</small></button><button id="take-photo" class="choice"><span>📸</span><strong>Take a photo</strong><small>Reliable camera fallback</small></button><button id="pick-photo" class="choice"><span>🖼️</span><strong>Choose a photo</strong><small>From your gallery</small></button></div><p class="footnote center">Live mode keeps only recent still frames in memory; it does not record video. Real cats only, please.</p>`);$('live-photo').onclick=startLiveEncounter;$('take-photo').onclick=()=>requestEncounterPhoto(true);$('pick-photo').onclick=()=>requestEncounterPhoto(false)}
 async function requestEncounterPhoto(capture){
  const request=++liveRequestEpoch;
  // Freeze a safe still before invoking an external picker. If the user cancels,
@@ -272,47 +286,59 @@ async function assessPhotoQuality(dataUri){
 }
 const captureClamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 function encounterToolLabel(kind){return kind==='lure'?'Dangle Lure':'Whisker Pod'}
+const LIVE_FRAME_MAX=4,LIVE_SAMPLE_INTERVAL=900,LIVE_SAMPLE_SIZE=520,LIVE_CAPTURE_SIZE=720;
 // Live camera uses the standard MediaStream API when available. No video is
-// recorded or stored: up to eight recent JPEG stills stay in memory only.
+// recorded or stored: up to four recent JPEG stills stay in memory only.
 // The Android WebView may deny camera access; the native photo picker remains
 // available as an explicit fallback without changing any saved CatDex data.
 function stopLiveCamera(){
  const session=liveCamera;liveCamera=null;
  if(!session)return;
  session.active=false;
- clearInterval(session.timer);
+ clearTimeout(session.timer);
+ session.dragging=false;
  for(const track of session.stream?.getTracks?.()||[])track.stop();
  if(session.video){try{session.video.pause();session.video.srcObject=null}catch{}}
  session.frames.length=0;
 }
-function frameFromVideo(video,maxSize=950){
+function frameFromVideo(video,maxSize=950,quality=.82){
  if(!video||!video.videoWidth||!video.videoHeight)return null;
  const scale=Math.min(1,maxSize/Math.max(video.videoWidth,video.videoHeight));
  const canvas=document.createElement('canvas');
  canvas.width=Math.max(1,Math.round(video.videoWidth*scale));
  canvas.height=Math.max(1,Math.round(video.videoHeight*scale));
  canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
- return canvas.toDataURL('image/jpeg',.82);
+ return canvas.toDataURL('image/jpeg',quality);
 }
-async function sampleLiveFrame(session){
+async function sampleLiveFrame(session,options={}){
+ const force=Boolean(options.force),maxSize=options.maxSize||LIVE_SAMPLE_SIZE,quality=options.quality??.68;
  if(!session?.active||session.sampling||session.video.readyState<2)return;
+ if(!force&&(session.dragging||document.visibilityState==='hidden'))return;
  session.sampling=true;
  try{
-  const image=frameFromVideo(session.video);
-  if(!image)return;
-  const quality=await assessPhotoQuality(image);
-  if(!session.active||session!==liveCamera)return;
-  const now=Date.now();session.frames.push({image,quality,at:now});
-  session.frames=session.frames.filter(frame=>now-frame.at<=3000).slice(-8);
+  const image=frameFromVideo(session.video,maxSize,quality);
+  if(!image||!session.active||session!==liveCamera)return;
+  const now=Date.now();session.frames.push({image,quality:null,at:now});
+  session.frames=session.frames.filter(frame=>now-frame.at<=3000).slice(-LIVE_FRAME_MAX);
   const label=$('live-frame-count');if(label)label.textContent=`${session.frames.length} recent frames`;
  }catch(error){console.debug('Frame sample skipped',error)}
  finally{session.sampling=false}
 }
+function scheduleLiveSampling(session){
+ clearTimeout(session?.timer);
+ if(!session?.active)return;
+ session.timer=setTimeout(async()=>{
+  // Lightweight previews only. Never force a sample during a drag or while hidden.
+  // Subject/whole-frame analysis runs once, after the user finishes the catch.
+  await sampleLiveFrame(session);
+  scheduleLiveSampling(session);
+ },LIVE_SAMPLE_INTERVAL);
+}
 function chooseBestLiveFrame(frames){
  // The clarity score is a simple whole-frame heuristic, not cat recognition.
  // Prefer reasonable exposure and sharp detail over an over/underexposed shot.
- const scored=frames.map((frame,i)=>({frame,i,rank:frame.quality.score-
-  (frame.quality.brightness<55||frame.quality.brightness>211?35:0)}));
+ const scored=frames.map((frame,i)=>({frame,i,rank:frame.quality?.score==null?
+  -1:frame.quality.score-(frame.quality.brightness<55||frame.quality.brightness>211?35:0)}));
  scored.sort((a,b)=>b.rank-a.rank||b.i-a.i);
  return scored[0]?.frame||null;
 }
@@ -345,12 +371,15 @@ async function chooseBestLiveFrameAtFocus(frames,focus){
  const assessed=await Promise.all(candidates.map(async(frame,i)=>{
   try{
    const crop=await liveSubjectCrop(frame.image,focus);
-   const subjectQuality=crop?await assessPhotoQuality(crop):null;
-   const overall=Number(frame.quality?.score)||0;
+   const [subjectQuality,wholeQuality]=await Promise.all([
+    crop?assessPhotoQuality(crop):Promise.resolve(null),
+    frame.quality?Promise.resolve(frame.quality):assessPhotoQuality(frame.image)
+   ]);
+   const overall=Number(wholeQuality?.score)||0;
    const subject=Number(subjectQuality?.score);
    const rank=Number.isFinite(subject)?subject*.75+overall*.25:overall;
    const exposure=subjectQuality?.brightness??frame.quality?.brightness;
-   return {frame:{...frame,subjectQuality},i,rank:rank-(exposure<55||exposure>211?35:0)};
+   return {frame:{...frame,quality:wholeQuality,subjectQuality},i,rank:rank-(exposure<55||exposure>211?35:0)};
   }catch{return {frame,i,rank:Number(frame.quality?.score)||0}}
  }));
  assessed.sort((a,b)=>b.rank-a.rank||b.i-a.i);
@@ -366,17 +395,37 @@ async function requestNativeLivePermission(){
   try{location.href='whiskerhunt://camera-permission'}catch{finish(false)}
  });
 }
+// Escape from live startup before launching an external camera. Keep a stable
+// chooser underneath it so cancelling the Android camera cannot reveal a spinner.
+function showSafeCameraChooser(){
+ s.encounterLive=false;
+ openModal(`<div class="sheet-head"><h2>Choose your camera</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">Live capture stopped. Pick how to continue.</p><div class="capture-choice"><button id="retry-live" class="choice"><span>🎥</span><strong>Try live again</strong><small>Stay inside Whisker Hunt</small></button><button id="retry-normal" class="choice"><span>📸</span><strong>Normal camera</strong><small>Opens your phone camera</small></button><button id="retry-gallery" class="choice"><span>🖼️</span><strong>Gallery</strong><small>Use an existing photograph</small></button></div><p id="picker-feedback" class="footnote">If you cancel the phone camera, you can choose again here.</p>`);
+ $('retry-live').onclick=startLiveEncounter;
+ $('retry-normal').onclick=()=>requestEncounterPhoto(true);
+ $('retry-gallery').onclick=()=>requestEncounterPhoto(false);
+}
+function useNormalCameraFromLiveStartup(){
+ liveRequestEpoch++; // invalidate all pending permission / getUserMedia callbacks
+ stopLiveCamera();
+ showSafeCameraChooser();
+ void requestEncounterPhoto(true);
+}
+window.whiskerNativePickerCancelled=function(){
+ const status=$('picker-feedback');
+ if(status)status.textContent='Camera cancelled. You can try live capture again, use the camera, or choose a photo.';
+};
 async function startLiveEncounter(){
  if(s.busy||s.storageBlocked)return toast('Please wait until storage is ready.');
+ s.encounterLive=true;
  const request=++liveRequestEpoch;stopLiveCamera();
  openModal(`<div class="sheet-head"><h2>Starting live camera…</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">Requesting camera access. No video is saved or uploaded.</p><div class="live-loading" aria-live="polite">🎥 Preparing preview…</div><div class="actions"><button id="live-fallback" class="secondary">Use normal camera instead</button></div>`);
- $('live-fallback').onclick=()=>requestEncounterPhoto(true);
+ $('live-fallback').onclick=useNormalCameraFromLiveStartup;
  let stream=null;
  try{
   if(!navigator.mediaDevices?.getUserMedia||!globalThis.isSecureContext)throw Error('Live camera is not available in this WebView or browser context.');
   if(!await requestNativeLivePermission())throw Error('Camera permission was not granted.');
   if(request!==liveRequestEpoch||$('modal-layer')?.classList.contains('hidden'))return;
-  stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
+  stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:800},height:{ideal:450},frameRate:{ideal:20,max:24}}});
   if(request!==liveRequestEpoch||$('modal-layer')?.classList.contains('hidden'))return;
   const video=document.createElement('video');video.autoplay=true;video.muted=true;video.playsInline=true;video.srcObject=stream;
   await Promise.race([video.play(),new Promise((_,reject)=>setTimeout(()=>reject(Error('Camera preview timed out.')),6000))]);
@@ -385,49 +434,49 @@ async function startLiveEncounter(){
    video.addEventListener('loadedmetadata',()=>{clearTimeout(timer);resolve()},{once:true});
   });
   if(request!==liveRequestEpoch||$('modal-layer')?.classList.contains('hidden'))return;
-  const first=frameFromVideo(video);if(!first)throw Error('Camera did not provide a usable frame.');
-  liveCamera={stream,video,frames:[],timer:null,active:true,sampling:false};stream=null;
-  await sampleLiveFrame(liveCamera);
+  const first=frameFromVideo(video,LIVE_SAMPLE_SIZE,.72);if(!first)throw Error('Camera did not provide a usable frame.');
+  liveCamera={stream,video,frames:[],timer:null,active:true,sampling:false,dragging:false};stream=null;
+  // Avoid decoding/analysing the same image twice before the first live frame.
   if(request!==liveRequestEpoch||!liveCamera?.active)return;
   beginEncounter(first,{live:true});
  }catch(error){
   if(request!==liveRequestEpoch)return;
   console.debug('Live camera unavailable',error);
   openModal(`<div class="sheet-head"><h2>Live camera unavailable</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">${esc(error?.message||'Your camera could not be opened.')} Your CatDex is safe. You can still take a normal photo or choose one from your gallery.</p><div class="actions"><button id="live-normal-camera" class="primary">📸 Take a photo</button><button id="live-normal-gallery" class="secondary">🖼️ Gallery</button></div>`);
-  $('live-normal-camera').onclick=()=>requestEncounterPhoto(true);
-  $('live-normal-gallery').onclick=()=>requestEncounterPhoto(false);
+  $('live-normal-camera').onclick=useNormalCameraFromLiveStartup;
+  $('live-normal-gallery').onclick=()=>{s.encounterLive=false;requestEncounterPhoto(false)};
  }finally{
   if(stream)for(const track of stream.getTracks())track.stop();
  }
 }
 async function freezeLiveEncounter(){
  const session=liveCamera;if(!session)return;
- // Include the frame at release in case the cat moved during the throw.
- await sampleLiveFrame(session);
+ if(session.freezePromise)return session.freezePromise;
+ session.freezePromise=finishLiveEncounter(session);
+ return session.freezePromise;
+}
+async function finishLiveEncounter(session){
  if(!session.active||session!==liveCamera)return;
- // If a sampling tick was already running, a final current-frame fallback
- // prevents saving an old preview frame when the buffer is unexpectedly empty.
- if(!session.frames.length){
-  const still=frameFromVideo(session.video);
-  if(still)session.frames.push({image:still,quality:await assessPhotoQuality(still),at:Date.now()});
- }
- if(!session.active||session!==liveCamera)return;
- const frameCount=session.frames.length;
- const focus={x:s.encounterFocus?.x??.5,y:s.encounterFocus?.y??.4};
+ // Always include a sharper release-time still. Earlier preview frames stay
+ // small for responsiveness; the final frame is captured at higher quality.
+ const still=frameFromVideo(session.video,LIVE_CAPTURE_SIZE,.84);
+ if(still)session.frames.push({image:still,quality:null,at:Date.now()});
+ session.frames=session.frames.slice(-LIVE_FRAME_MAX);
+ const frames=session.frames.slice();
+ if(!frames.length)return;
+ const stage=$('encounter-stage'),focus={x:s.encounterFocus?.x??.5,y:s.encounterFocus?.y??.4};
  const qualityLabel=$('encounter-quality');
- if(qualityLabel)qualityLabel.textContent='Selecting the clearest frame around your cat target…';
- const selected=await chooseBestLiveFrameAtFocus(session.frames,focus);
- // The user might have closed the modal, switched cameras or backgrounded
- // the app during decoding. Never resurrect a stopped camera or stale image.
- if(!session.active||session!==liveCamera)return;
+ if(qualityLabel)qualityLabel.textContent='Choosing your clearest cat photo…';
+ const selected=await chooseBestLiveFrameAtFocus(frames,focus);
+ // Retake, modal close or a backgrounded app must never apply a stale result.
+ if(!session.active||session!==liveCamera||!stage?.isConnected||stage!==$('encounter-stage'))return;
  if(selected){
   s.image=selected.image;
   if(s.captureSummary){s.captureSummary.quality=selected.quality;s.captureSummary.subjectQuality=selected.subjectQuality||null}
   const photo=$('encounter-photo');if(photo)photo.src=selected.image;
-  if(qualityLabel)qualityLabel.innerHTML=`Best of ${frameCount} recent frames · Cat target: <strong>${esc(selected.subjectQuality?.label||'Not assessed')}</strong> · Full photo: ${esc(selected.quality?.label||'Not assessed')}. <small>Offline focus-area estimate; no automatic cat recognition.</small>`;
+  if(qualityLabel)qualityLabel.innerHTML=`Best of ${frames.length} recent frames · Cat target: <strong>${esc(selected.subjectQuality?.label||'Not assessed')}</strong> · Full photo: ${esc(selected.quality?.label||'Not assessed')}. <small>Offline focus-area estimate; no automatic cat recognition.</small>`;
  }
- const video=$('encounter-video');if(video)video.remove();
- $('encounter-stage')?.classList.remove('live-encounter');
+ $('encounter-video')?.remove();stage.classList.remove('live-encounter');
  stopLiveCamera();
  if(selected)setEncounterFocus(focus.x,focus.y,false);
 }
@@ -441,15 +490,15 @@ document.addEventListener('visibilitychange',()=>{
  const selected=chooseBestLiveFrame(liveCamera.frames);
  if(selected){s.image=selected.image;if(s.captureSummary)s.captureSummary.quality=selected.quality;
   const photo=$('encounter-photo');if(photo)photo.src=selected.image;
-  const quality=$('encounter-quality');if(quality)quality.innerHTML=`Camera paused · Selected still: <strong>${esc(selected.quality.label)}</strong>. <small>Retake to start the camera again.</small>`;}
+  const quality=$('encounter-quality');if(quality)quality.innerHTML=`Camera paused · Recent photo preserved. <small>Retake live capture to restart the camera.</small>`;}
  $('encounter-video')?.remove();$('encounter-stage')?.classList.remove('live-encounter');
  stopLiveCamera();
- const status=$('encounter-status');if(status)status.textContent='Camera paused for privacy. You can finish with this frame or retake a photo.';
+ const status=$('encounter-status');if(status)status.textContent='Camera paused for privacy. Finish with this photo or retake live capture.';
 });
 function beginEncounter(image,options={}){
  if(!options.live)stopLiveCamera();
  const generation=++encounterEpoch;
- s.image=image;s.encounterTool='ball';s.encounterLured=false;s.encounterCaptured=false;s.captureSummary=null;
+ s.image=image;s.encounterLive=Boolean(options.live);s.encounterTool='ball';s.encounterLured=false;s.encounterCaptured=false;s.captureSummary=null;
  assessPhotoQuality(image).then(quality=>{
   if(generation!==encounterEpoch||s.image!==image)return;
   showEncounter(image,quality,options);
@@ -503,20 +552,22 @@ function setEncounterFocus(x,y,announce=true){
  s.encounterFocus={x:captureClamp(x,0,1),y:captureClamp(y,0,1)};
  positionEncounterFocus();
  if(!liveCamera?.active)encounterCrop(s.image,s.encounterFocus.x,s.encounterFocus.y);
- if(announce&&$('encounter-status'))$('encounter-status').textContent='Target moved. Drag the Whisker Pod onto the cat, or try the Dangle Lure.';
+ if(announce&&$('encounter-status'))$('encounter-status').textContent='Target moved. Drag the Whisker Pod onto the cat, or try the Dangle Lure first.';
 }
 function showEncounter(image,quality,options={}){
+ const liveMode=Boolean(options.live||s.encounterLive);
+ s.encounterLive=liveMode;
  s.encounterFocus={x:.5,y:.40};
  s.captureSummary={quality,throwRating:null};
- openModal(`<div class="sheet-head"><h2>${options.live?'Live encounter 🎥':'Encounter! 🐾'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim" style="font-size:12px;margin-bottom:12px">Tap the cat ${options.live?'in the live camera':'in the photo'} to position your target, then drag the <strong>Whisker Pod</strong> from the right-hand overlay onto it. Try the <strong>Dangle Lure</strong> first to make the target bigger.</p><div id="encounter-aim-guide" class="encounter-aim-guide hidden" aria-hidden="true"></div><div id="encounter-stage" class="encounter-stage"><img id="encounter-photo" class="encounter-backdrop" src="${image}" alt="Your selected cat photo"><div class="encounter-vignette"></div><div id="encounter-cat" class="encounter-cat"><div class="encounter-cat-ring"></div><img id="encounter-cat-crop" src="${image}" alt="Selected cat photo crop"><span>Your cat target</span></div><div class="encounter-capture-tag">Capture preview</div><div class="encounter-tool-dock" aria-label="Capture tools"><button type="button" id="tool-ball" class="dock-tool selected" aria-pressed="true" title="Whisker Pod"><span>🐾</span><small>Pod</small></button><button type="button" id="tool-lure" class="dock-tool" aria-pressed="false" title="Dangle Lure"><span>🪶</span><small>Lure</small></button><div id="throw-item" class="throw-item throw-ball" role="button" aria-label="Drag ${encounterToolLabel('ball')} to the cat" tabindex="0"><span class="throw-pod-core"></span><span class="throw-pod-paw">🐾</span><span class="throw-pod-whisker">〰</span><span class="throw-stick">🎣</span><span class="throw-lure-body">🧶</span></div></div><div id="encounter-orb" class="encounter-orb hidden"><div class="pod-shell"></div><div class="pod-paw">🐾</div><div class="pod-whisker">〰</div></div><div id="encounter-status" class="encounter-status" role="status" aria-live="polite">Tap the cat to move the target. Then drag an item from the tool dock on the right.</div></div><div id="encounter-quality" class="encounter-quality">${options.live?'🎥 Live buffer · <span id="live-frame-count">1 recent frame</span> · Best frame chosen around the cat target on capture.':'Photo clarity estimate: <strong>'+esc(quality.label)+'</strong> · '+esc(quality.note)} <small>${options.live?'No video recording or upload.':'Single-image heuristic; no cat recognition.'}</small></div><div class="encounter-photo-actions"><button type="button" id="encounter-retake" class="secondary">📸 Retake photo</button><button type="button" id="encounter-replace" class="secondary">🖼️ Choose another</button></div><div class="encounter-launch"><div class="encounter-instructions">Use the floating translucent tools inside the preview. Drag the selected item at least a short distance; the guide turns green when your release is lined up.</div></div><div class="actions"><button id="encounter-skip" class="secondary">Save photo without game</button><button id="encounter-continue" class="primary hidden">Continue to CatDex →</button></div><p class="footnote">${options.live?'Live camera is local to your device; only the selected still is saved. No cat recognition.':'Your target is a user-selected crop of your photo, not a live AI-generated cat.'} Stay a safe distance from real cats.</p>`,Boolean(options.live));
- if(options.live&&liveCamera?.active){
+ openModal(`<div class="sheet-head"><h2>${liveMode?'Live encounter 🎥':'Encounter! 🐾'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim" style="font-size:12px;margin-bottom:12px">Tap the cat ${liveMode?'in the live camera':'in the photo'} to position your target, then drag the <strong>Whisker Pod</strong> from the right-hand overlay onto it. Try the <strong>Dangle Lure</strong> first to make the target bigger.</p><div id="encounter-aim-guide" class="encounter-aim-guide hidden" aria-hidden="true"></div><div id="encounter-stage" class="encounter-stage"><img id="encounter-photo" class="encounter-backdrop" src="${image}" alt="Your selected cat photo"><div class="encounter-vignette"></div><div id="encounter-cat" class="encounter-cat"><div class="encounter-cat-ring"></div><img id="encounter-cat-crop" src="${image}" alt="Selected cat photo crop"><span>Your cat target</span></div><div class="encounter-capture-tag">Capture preview</div><div class="encounter-tool-dock" aria-label="Capture tools"><button type="button" id="tool-ball" class="dock-tool selected" aria-pressed="true" title="Whisker Pod"><span>🐾</span><small>Pod</small></button><button type="button" id="tool-lure" class="dock-tool" aria-pressed="false" title="Dangle Lure"><span>🪶</span><small>Lure</small></button><div id="throw-item" class="throw-item throw-ball" role="button" aria-label="Drag ${encounterToolLabel('ball')} to the cat" tabindex="0"><svg class="whisker-paw-svg" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg><span class="throw-stick">🎣</span><span class="throw-lure-body">🧶</span><span class="drag-prompt">DRAG</span></div></div><div id="encounter-orb" class="encounter-orb hidden"><svg class="whisker-paw-svg capture-paw" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine-captured" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg></div><div id="encounter-status" class="encounter-status" role="status" aria-live="polite">Tap the cat to move the target. Then drag an item from the tool dock on the right.</div><div id="encounter-meow" class="encounter-meow hidden" aria-hidden="true">Meow!</div></div><div id="encounter-quality" class="encounter-quality">${liveMode?'🎥 Live preview · <span id="live-frame-count">1 recent frame</span> · Whisker Hunt keeps a few recent stills and picks the clearest one near your target when you capture.':'Photo clarity estimate: <strong>'+esc(quality.label)+'</strong> · '+esc(quality.note)} <small>${liveMode?'No video recording or upload.':'Single-image heuristic; no cat recognition.'}</small></div><div class="encounter-photo-actions"><button type="button" id="encounter-retake" class="secondary">${liveMode?'🎥 Retake live capture':'📸 Retake photo'}</button><button type="button" id="encounter-replace" class="secondary">🖼️ Choose another</button></div><div class="encounter-launch"><div class="encounter-instructions">Use the floating translucent tools inside the preview. Drag the selected item at least a short distance; the guide turns green when your release is lined up.</div></div><div class="actions"><button id="encounter-skip" class="secondary">Save photo without game</button><button id="encounter-continue" class="primary hidden">Continue to CatDex →</button></div><p class="footnote">${liveMode?'Live camera is local to your device; only the selected still is saved. No cat recognition.':'Your target is a user-selected crop of your photo, not a live AI-generated cat.'} Stay a safe distance from real cats.</p>`,liveMode);
+ if(liveMode&&liveCamera?.active){
   const stage=$('encounter-stage'),video=liveCamera.video;
   video.id='encounter-video';video.className='encounter-backdrop encounter-live-video';
   stage.prepend(video);stage.classList.add('live-encounter');
   const tag=stage.querySelector('.encounter-capture-tag');if(tag)tag.textContent='● LIVE · private';
   const crop=$('encounter-cat-crop');if(crop)crop.style.display='none';
   const status=$('encounter-status');if(status)status.textContent='Tap the cat to place the target, then drag a tool from the right.';
-  liveCamera.timer=setInterval(()=>sampleLiveFrame(liveCamera),450);
+  scheduleLiveSampling(liveCamera);
  }
  const selectTool=kind=>{
   if(s.encounterCaptured)return;
@@ -532,10 +583,11 @@ function showEncounter(image,quality,options={}){
  $('encounter-continue').onclick=()=>showCatForm(s.image);
  // Cancelling Android's picker or the browser file dialog keeps this photo.
  // A successful replacement restarts the encounter with a new quality report.
- $('encounter-retake').onclick=()=>requestEncounterPhoto(true);
- $('encounter-replace').onclick=()=>requestEncounterPhoto(false);
+ $('encounter-retake').onclick=()=>s.encounterLive?startLiveEncounter():requestEncounterPhoto(true);
+ $('encounter-replace').onclick=()=>{s.encounterLive=false;requestEncounterPhoto(false)};
  // A tap in the letterbox margins must not move the cat target.
  const stage=$('encounter-stage'),backdrop=$('encounter-photo');
+ [stage,$('encounter-status'),$('encounter-quality'),$('encounter-meow'),$('tool-ball'),$('tool-lure'),$('throw-item')].filter(Boolean).forEach(el=>{el.oncontextmenu=e=>e.preventDefault();el.onselectstart=e=>e.preventDefault();el.ondragstart=()=>false;});
  stage.addEventListener('click',event=>{
   const visual=$('encounter-video')||backdrop;
   if(s.encounterCaptured||!(event.target===stage||event.target===backdrop||event.target===visual))return;
@@ -562,11 +614,14 @@ function encounterAimAt(clientX,clientY,target){
 }
 function setupEncounterDrag(){
  const item=$('throw-item'),cat=$('encounter-cat'),guide=$('encounter-aim-guide');if(!item||!cat)return;
- let pointerId=null,startX=0,startY=0;
+ let pointerId=null,startX=0,startY=0,moveFrame=0,latestMove=null,lastStatus='';
  const reset=()=>{
+  if(moveFrame)cancelAnimationFrame(moveFrame);
+  moveFrame=0;latestMove=null;lastStatus='';
   item.classList.remove('dragging');item.style.transform='';
   cat.classList.remove('aim-hit');
   guide?.classList.add('hidden');guide?.classList.remove('aim-hit');
+  if(liveCamera?.active)liveCamera.dragging=false;
  };
  const guideTo=(x,y,hit)=>{
   if(!guide)return;
@@ -581,17 +636,24 @@ function setupEncounterDrag(){
  item.onpointerdown=event=>{
   if(s.encounterCaptured||pointerId!==null||event.button>0)return;
   pointerId=event.pointerId;startX=event.clientX;startY=event.clientY;
+  if(liveCamera?.active)liveCamera.dragging=true;
   item.classList.add('dragging');item.setPointerCapture(event.pointerId);
   event.preventDefault();
  };
+ const paintMove=()=>{
+  moveFrame=0;
+  if(pointerId===null||!latestMove)return;
+  const {x,y}=latestMove,travelled=Math.hypot(x-startX,y-startY);
+  item.style.transform=`translate3d(${x-startX}px,${y-startY}px,0)`;
+  const aim=encounterAimAt(x,y,cat);
+  guideTo(x,y,aim.hit);
+  const message=travelled<24?'Drag further to throw…':aim.hit?'On target! Release to use your '+encounterToolLabel(s.encounterTool)+'.':'Keep aiming for the glowing ring…';
+  if(message!==lastStatus){const status=$('encounter-status');if(status)status.textContent=message;lastStatus=message}
+ };
  item.onpointermove=event=>{
   if(event.pointerId!==pointerId)return;
-  const travelled=Math.hypot(event.clientX-startX,event.clientY-startY);
-  item.style.transform=`translate(${event.clientX-startX}px,${event.clientY-startY}px)`;
-  const aim=encounterAimAt(event.clientX,event.clientY,cat);
-  guideTo(event.clientX,event.clientY,aim.hit);
-  const status=$('encounter-status');
-  if(status)status.textContent=travelled<24?'Drag further to throw…':aim.hit?'On target! Release to use your '+encounterToolLabel(s.encounterTool)+'.':'Keep aiming for the glowing ring…';
+  latestMove={x:event.clientX,y:event.clientY};
+  if(!moveFrame)moveFrame=requestAnimationFrame(paintMove);
  };
  item.onpointerup=event=>{
   if(event.pointerId!==pointerId)return;
@@ -624,15 +686,17 @@ function handleEncounterHit(kind,accuracy=.45){
 }
 async function runEncounterCapture(){
  if(s.encounterCaptured)return;s.encounterCaptured=true;
+ const originalStage=$('encounter-stage'),originalEpoch=encounterEpoch;
  if(liveCamera)await freezeLiveEncounter();
- const cat=$('encounter-cat'),orb=$('encounter-orb'),status=$('encounter-status');
+ if(originalEpoch!==encounterEpoch||originalStage!==$('encounter-stage')||!originalStage?.isConnected)return;
+ const cat=$('encounter-cat'),orb=$('encounter-orb'),status=$('encounter-status'),meow=$('encounter-meow');
  if(!cat?.isConnected)return;
- if(cat)cat.classList.add('captured');if(orb){orb.classList.remove('hidden');orb.classList.add('active')}
- if(status)status.textContent=`${s.captureSummary.throwRating} Whisker Pod hit!`;
+ if(cat)cat.classList.add('captured','grabbed');if(orb){orb.classList.remove('hidden');orb.classList.add('active')}
+ if(status)status.textContent=`${s.captureSummary.throwRating} catch!`;
  const stage=$('encounter-stage');
- setTimeout(()=>{if(stage?.isConnected&&status)status.textContent='Shake 1 of 2…';if(stage?.isConnected)orb?.classList.add('shake-1')},320);
- setTimeout(()=>{if(stage?.isConnected&&status)status.textContent='Shake 2 of 2…';if(stage?.isConnected){orb?.classList.remove('shake-1');orb?.classList.add('shake-2')}},760);
- setTimeout(()=>{if(!stage?.isConnected)return;orb?.classList.remove('shake-2');if(status)status.textContent=`You captured this cat! ${s.captureSummary.throwRating}`;$('encounter-continue')?.classList.remove('hidden')},1320);
+ setTimeout(()=>{if(stage?.isConnected&&status)status.textContent='Paw grab…';if(stage?.isConnected)orb?.classList.add('grab-1')},260);
+ setTimeout(()=>{if(stage?.isConnected&&status)status.textContent='Holding on…';if(stage?.isConnected){orb?.classList.remove('grab-1');orb?.classList.add('grab-2');if(meow){meow.classList.remove('hidden');meow.classList.add('float')}}},650);
+ setTimeout(()=>{if(!stage?.isConnected)return;orb?.classList.remove('grab-2');cat?.classList.remove('grabbed');if(meow)meow.classList.remove('float');if(status)status.textContent=`You captured this cat! ${s.captureSummary.throwRating}`;$('encounter-continue')?.classList.remove('hidden')},1180);
 }
 function showCatForm(image){s.image=image;const request=++matchRequest;openModal(`<div class="sheet-head"><h2>Nice spotting! 🐾</h2><button class="close-btn" data-close aria-label="Close">×</button></div><img class="photo-preview" src="${image}" alt="Your chosen cat photo">${s.captureSummary?`<div class="info-note"><strong>Encounter complete.</strong> Captured with ${esc(s.encounterLured?'the Dangle Lure + Whisker Pod combo':'a Whisker Pod')}. ${esc(s.captureSummary.throwRating||'Nice!')} Photo clarity: <strong>${esc(s.captureSummary.quality?.label||'Unrated')}</strong>.</div>`:''}<p class="dim" style="font-size:12px;margin-bottom:11px">Is this a new cat or one you've met before?</p><div class="chips" style="margin-top:0"><button id="mode-new" class="chip ${s.revisitId?'':'selected'}">✨ New cat</button><button id="mode-repeat" class="chip ${s.revisitId?'selected':''}">🐾 Seen before</button></div><div id="catch-extra"></div><div id="possible-matches" aria-live="polite"></div><label class="check-row"><input id="real-cat" type="checkbox"><span>I saw a real cat and took this picture without disturbing or approaching it unsafely.</span></label><label class="check-row"><input id="pin-check" type="checkbox"><span>Add an optional private location pin (never shared).</span></label><div class="actions"><button id="save-catch" class="primary">Add to my CatDex →</button></div><p class="footnote">Only the selected still image is saved to your CatDex. Live mode compares recent frames locally when supported; no video is stored.</p>`);s.catchMode=s.revisitId?'repeat':'new';const drawExtra=()=>{const extra=$('catch-extra');if(s.catchMode==='new'){extra.innerHTML=`<div class="field-group"><label for="cat-name">Give your cat a name</label><input class="field" id="cat-name" maxlength="36" placeholder="e.g. Sir Pounce-a-lot" autocomplete="off"></div><div class="field-group"><label for="cat-coat">Coat / appearance</label><select class="select" id="cat-coat">${COATS.map(c=>`<option>${c}</option>`).join('')}</select></div><div class="field-group"><label for="cat-personality">Personality (your impression)</label><select class="select" id="cat-personality">${PERSONALITIES.map(t=>`<option>${t}</option>`).join('')}</select></div><div class="field-group"><label for="cat-note">Little memory (optional)</label><input class="field" id="cat-note" maxlength="140" placeholder="e.g. Sleeping in the café window"></div>`}else{extra.innerHTML=s.cats.length?`<div class="field-group"><label for="repeat-cat">Which cat did you see again?</label><select id="repeat-cat" class="select">${s.cats.map(c=>`<option value="${esc(c.id)}" ${c.id===s.revisitId?'selected':''}>${esc(c.name)} (${esc(c.coat)})</option>`).join('')}</select></div><div class="field-group"><label for="repeat-note">Add a memory (optional)</label><input id="repeat-note" class="field" maxlength="140" placeholder="What was your friend up to?"></div>`:`<div class="info-note">No cats collected yet. Add your first new cat!</div>`}};drawExtra();$('mode-new').onclick=()=>{s.catchMode='new';$('mode-new').classList.add('selected');$('mode-repeat').classList.remove('selected');drawExtra()};$('mode-repeat').onclick=()=>{s.catchMode='repeat';$('mode-repeat').classList.add('selected');$('mode-new').classList.remove('selected');drawExtra()};$('save-catch').onclick=saveCatch;findPossibleMatches(image,request)}
 async function locationPrompt(){return new Promise(resolve=>{let settled=false;const timer=setTimeout(()=>{if(!settled){settled=true;resolve(null)}},14000);const finish=coords=>{if(settled)return;settled=true;clearTimeout(timer);resolve(coords)};if(window.whiskerNativeReady){window.whiskerNativeLocation=(lat,lng)=>finish({lat:Number(lat),lng:Number(lng)});window.whiskerNativeLocationError=()=>finish(null);location.href='whiskerhunt://location';return}if(!navigator.geolocation){finish(null);return}navigator.geolocation.getCurrentPosition(pos=>finish({lat:pos.coords.latitude,lng:pos.coords.longitude}),()=>finish(null),{timeout:10500,enableHighAccuracy:false,maximumAge:60000})})}

@@ -17,6 +17,8 @@ public static class MauiProgram
             handler.PlatformView.Settings.JavaScriptEnabled = true;
             handler.PlatformView.Settings.DomStorageEnabled = true;
             handler.PlatformView.Settings.DatabaseEnabled = true;
+            // The native CatDex is stored outside the WebView cache. Never cache stale bundled UI assets.
+            handler.PlatformView.Settings.CacheMode = Android.Webkit.CacheModes.NoCache;
             // Preserve MAUI's native file picker while handling only local
             // camera-video permission requests for the live encounter.
             handler.PlatformView.SetWebChromeClient(new WhiskerWebChromeClient(handler));

@@ -60,7 +60,7 @@ async def main():
   assert not errors,errors
   cs=(ROOT/'WhiskerHunt/MainPage.xaml.cs').read_text()
   assert 'sightingIds' in cs and 'xp.TryGetDouble' in cs
-  assert "const CACHE='whisker-hunt-shell-v19'" in (ROOT/'BrowserPreview/sw.js').read_text()
+  assert "const CACHE='whisker-hunt-shell-v22'" in (ROOT/'BrowserPreview/sw.js').read_text()
   print('PASSED v1.0: cover selection, first-photo retention, native ACK rollback, XP/IDs/schema unchanged, cache version')
   await browser.close()
 

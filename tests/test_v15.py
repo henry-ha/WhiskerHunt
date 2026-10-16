@@ -98,7 +98,7 @@ async def main():
         assert await page.evaluate('s.profile.xp')==xp
         assert (ROOT/'BrowserPreview/app.js').read_text()==(ROOT/'WhiskerHunt/Resources/Raw/app.js').read_text()
         assert (ROOT/'BrowserPreview/style.css').read_text()==(ROOT/'WhiskerHunt/Resources/Raw/style.css').read_text()
-        assert "const CACHE='whisker-hunt-shell-v19'" in (ROOT/'BrowserPreview/sw.js').read_text()
+        assert "const CACHE='whisker-hunt-shell-v22'" in (ROOT/'BrowserPreview/sw.js').read_text()
         assert not errors,errors
         print('PASS v1.5: exposure/detail checks, retake/cancel, replacement, no premature saves, repeat-cat intent, latest photo wins')
         await browser.close()

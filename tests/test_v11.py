@@ -76,7 +76,7 @@ async def main():
   assert not errors,errors
   js=(ROOT/'BrowserPreview/app.js').read_text();native=(ROOT/'WhiskerHunt/Resources/Raw/app.js').read_text()
   assert js==native
-  assert "const CACHE='whisker-hunt-shell-v19'" in (ROOT/'BrowserPreview/sw.js').read_text()
+  assert "const CACHE='whisker-hunt-shell-v22'" in (ROOT/'BrowserPreview/sw.js').read_text()
   print('PASSED v1.1: quest double-tap lock, failed claim rollback/retry, read-only audit, unordered-sighting cooldown, unchanged backup schema, asset sync')
   await browser.close()
 if __name__=='__main__':asyncio.run(main())

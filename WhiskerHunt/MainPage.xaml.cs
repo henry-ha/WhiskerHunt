@@ -206,7 +206,11 @@ public partial class MainPage : ContentPage
             photo = (await MediaPicker.Default.PickPhotosAsync(options)).FirstOrDefault();
         }
 
-        if (photo is null) return; // User cancelled.
+        if (photo is null)
+        {
+            await GameWebView.EvaluateJavaScriptAsync("window.whiskerNativePickerCancelled?.();");
+            return; // The chooser remains available after cancellation.
+        }
         // Read with a hard limit even for non-seekable Android content-provider streams.
         // CopyToAsync followed by a size check could allocate unbounded memory.
         const int maxPhotoBytes = 8 * 1024 * 1024;

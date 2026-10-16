@@ -52,7 +52,7 @@ async def main():
         await page.evaluate('handleEncounterHit("ball",0.2)')
         await page.locator('#encounter-continue').wait_for()
         assert await page.get_by_text('Whisker Pod', exact=False).count() >= 1
-        assert 'whisker-hunt-shell-v19' in (ROOT / 'BrowserPreview/sw.js').read_text()
+        assert 'whisker-hunt-shell-v22' in (ROOT / 'BrowserPreview/sw.js').read_text()
         assert not errors, errors
         print('PASSED v1.7: Whisker Pod UI, in-preview dock, capture summary, v17 cache')
         await browser.close()
