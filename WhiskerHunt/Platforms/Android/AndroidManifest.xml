@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- All optional, foreground-only permissions. No background tracking. -->
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-feature android:name="android.hardware.camera" android:required="false" />
+  <uses-feature android:name="android.hardware.location" android:required="false" />
+  <queries>
+    <intent><action android:name="android.media.action.IMAGE_CAPTURE" /></intent>
+  </queries>
+  <application android:allowBackup="false" android:usesCleartextTraffic="false" />
+</manifest>
