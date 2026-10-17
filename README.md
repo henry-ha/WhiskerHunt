@@ -1,25 +1,25 @@
-# Whisker Hunt v2.5.0 (build 25)
+# Whisker Hunt v3.3.0 · Build 35
 
-This archive is the Android .NET MAUI source code and web assets for the Whisker Hunt prototype.
+Android-first offline CatDex and AR Safari prototype, developed in .NET MAUI with a WebView frontend.
 
-## Install/update safely
+## Release highlights
 
-1. Export your CatDex JSON backup in the currently installed app, and keep a copy outside the app.
-2. Extract this **entire new folder** to a new location. Open `WhiskerHunt.sln` from the extracted v2.5 project (not the old solution).
-3. In Visual Studio, choose **Restore NuGet Packages**, **Clean Solution** and **Rebuild Solution**.
-4. Deploy to the phone over the existing installed app. **Do not uninstall the app or clear app storage**, because that can remove the collection.
-5. Open **Catch → Live encounter**. Check the green stamp **Whisker Hunt v2.5.0 · build 25** at the top of the encounter sheet. If you still see the old design or there is no stamp, you are not running these new web assets.
-6. Test: Retake live → immediately Use normal camera instead → cancel the system camera. The app should show **Choose your camera**, with working Live, Normal camera and Gallery buttons, not the old spinner.
+- **Cleaner live capture:** Only the *other* tool appears in the tool dock. When Paw is active, the selector says **Switch to Lure**; when Lure is active, it says **Switch to Paw**.
+- **Tool-change animation:** A small, short spring-pop signals tool changes. Reduced-motion preferences are respected.
+- **Less AR Safari clutter:** Long camera instructions, quality box and extra launch instructions are hidden in AR Safari, keeping the camera and cat more prominent. Live-camera classic mode still provides detail.
+- **Find missing cats:** A recovery wizard in Explorer profile checks the Android private `.bak` snapshot and previews possible missing cats, without modifying storage. Users explicitly confirm any merge. Users may also select a previously exported JSON backup. The recovery wizard's **Save my current CatDex first** action exports a cache copy *without rotating the recovery snapshot*.
+- Same Android application ID and v1 CatDex schema: upgrading over the existing app should preserve data. Do **not** uninstall the app or clear app storage.
 
-The Android `ApplicationId` remains `uk.whiskerhunt.mobile`, to retain existing private app data on an in-place upgrade. The display version is now **2.5.0** and Android version code **25**.
+## Where to find recovery
 
-## Native UI files
+**Explorer profile → Find missing cats**. On Android, it reads `whisker-hunt-state.json.bak` if present and valid. If unavailable, select a previously exported backup. No recovery is guaranteed when Android app storage has already been erased.
 
-- `WhiskerHunt/MainPage.xaml`: loads `index_v25.html`
-- `WhiskerHunt/Resources/Raw/index_v25.html`: loads `app_v25.js` + `style_v25.css`
-- `WhiskerHunt/MauiProgram.cs`: WebView settings including cache mode
-- `WhiskerHunt/MainPage.xaml.cs`: local CatDex persistence + native camera/photo picker bridge
+## Installation and testing
 
-## Platform validation
+1. Make a full CatDex backup and keep the file somewhere safe before deploying.
+2. Extract the complete source ZIP into a **new folder**, then open `WhiskerHunt.sln`.
+3. Ensure your Android device and **Build + Deploy** are enabled in Visual Studio Configuration Manager.
+4. Clean, rebuild and deploy **over** the existing installation. Do not uninstall.
+5. Confirm the app shows **v3.3.0 · build 35**.
 
-Browser smoke and regression tests passed. No Android APK was compiled; .NET Android SDK and on-device verification are required.
+Browser tests pass. **No Android APK was compiled in this environment**; native recovery and live-camera performance still require a device test.
