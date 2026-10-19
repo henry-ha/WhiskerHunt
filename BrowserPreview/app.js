@@ -1,6 +1,6 @@
 /* Whisker Hunt 2.7 — offline-first, no accounts, no tracking, no server. */
 'use strict';
-const WHISKER_BUILD='3.3.0', WHISKER_BUILD_NUMBER=35;
+const WHISKER_BUILD='3.7.4', WHISKER_BUILD_NUMBER=43;
 const DATABASE='whiskerhunt_local_v1', DB_VERSION=1;
 const COATS=['Tabby','Ginger','Black','White','Tuxedo','Calico','Grey','Other'];
 const PERSONALITIES=['Unknown','Curious','Sleepy','Playful','Shy','Friendly','Adventurous'];
@@ -16,7 +16,7 @@ let encounterResizeObserver=null;
 let liveCamera=null;
 let liveRequestEpoch=0;
 let captureShots=[]; // Ephemeral review options only; never saved to CatDex or backups.
-const s={cats:[],profile:{name:'Cat Explorer',xp:0,claimed:[]},screen:'home',filter:'All',search:'',dexSort:'recent',image:'',cardBase64:'',catchMode:'new',selectedId:'',revisitId:'',journalFilter:'All',journalSearch:'',busy:false,db:null,native:false,storageBlocked:false,recoveryApproved:false,encounterLive:false};
+const s={cats:[],profile:{name:'Cat Explorer',xp:0,claimed:[]},screen:'home',filter:'All',search:'',dexSort:'recent',image:'',cardBase64:'',catchMode:'new',selectedId:'',revisitId:'',journalFilter:'All',journalSearch:'',busy:false,db:null,native:false,storageBlocked:false,recoveryApproved:false,encounterLive:false,pendingApproxLocation:null,pendingApproxLocationAt:0};
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const id=()=>globalThis.crypto?.randomUUID?.()??String(Date.now())+Math.random().toString(36).slice(2);
@@ -30,6 +30,10 @@ const friendLabel=c=>catches(c)>=6?'Best buddies':catches(c)>=3?'Getting acquain
 const allSightings=()=>s.cats.filter(c=>!c.virtual).flatMap(c=>c.sightings||[]);
 const level=()=>Math.floor(s.profile.xp/200)+1;
 const levelTitle=()=>['Curious Kitten','Street Spotter','Cat Whisperer','Whisker Scout','Paw Legend','Alley Explorer','Cat Chronicler','Purr Master','Legendary Spotter','Whisker Guardian'][Math.min(level()-1,9)];
+// The Android WebView can handle native actions even when the CatDex is using
+// legacy IndexedDB storage. NEVER use this as a reason to switch databases:
+// doing so can hide collections/photos saved by older app versions.
+function hasAndroidActionBridge(){return window.whiskerNativeBridge===true || window.whiskerAndroidShell===true || window.whiskerNativeReady===true}
 // Android ships a private native JSON CatDex; only obsolete service worker caches
 // are cleared. Never clear IndexedDB, application files, or user photos.
 async function retireAndroidShellWorker(){
@@ -102,7 +106,7 @@ async function boot(){if(window.whiskerAndroidShell){
 }
 function navigate(page){closeModal();s.screen=page;window.scrollTo(0,0);document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('current',b.dataset.nav===page));render()}
 function render(){const views={home:renderHome,dex:renderDex,explore:renderExplore,quests:renderQuests,profile:renderProfile,journal:renderJournal};$('view').innerHTML=(views[s.screen]||renderHome)();wireScreen()}
-function wireScreen(){document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));document.querySelectorAll('[data-cat]').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.cat)));document.querySelectorAll('[data-claim]').forEach(b=>b.addEventListener('click',()=>claimQuest(b.dataset.claim)));document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{s.filter=b.dataset.filter;render()}));if($('dex-search')){$('dex-search').value=s.search;$('dex-search').addEventListener('input',e=>{s.search=e.target.value;updateDexGrid()})}if($('dex-sort')){$('dex-sort').value=s.dexSort;$('dex-sort').addEventListener('change',e=>{s.dexSort=e.target.value;updateDexGrid()})}document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>action(b.dataset.action)));document.querySelectorAll('[data-journal-catch]').forEach(b=>b.addEventListener('click',startCatch));document.querySelectorAll('[data-journal-filter]').forEach(b=>b.addEventListener('click',()=>{s.journalFilter=b.dataset.journalFilter;render()}));if($('journal-search')){$('journal-search').value=s.journalSearch;$('journal-search').addEventListener('input',e=>{s.journalSearch=e.target.value;updateJournalCards()})}}
+function wireScreen(){document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));document.querySelectorAll('[data-cat]').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.cat)));document.querySelectorAll('[data-claim]').forEach(b=>b.addEventListener('click',()=>claimQuest(b.dataset.claim)));document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{s.filter=b.dataset.filter;render()}));if($('dex-search')){$('dex-search').value=s.search;$('dex-search').addEventListener('input',e=>{s.search=e.target.value;updateDexGrid()})}if($('dex-sort')){$('dex-sort').value=s.dexSort;$('dex-sort').addEventListener('change',e=>{s.dexSort=e.target.value;updateDexGrid()})}document.querySelectorAll('[data-map-select]').forEach(b=>b.addEventListener('click',()=>selectPrivateMapPin(Number(b.dataset.mapSelect))));document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>action(b.dataset.action)));document.querySelectorAll('[data-journal-catch]').forEach(b=>b.addEventListener('click',startCatch));document.querySelectorAll('[data-journal-filter]').forEach(b=>b.addEventListener('click',()=>{s.journalFilter=b.dataset.journalFilter;render()}));if($('journal-search')){$('journal-search').value=s.journalSearch;$('journal-search').addEventListener('input',e=>{s.journalSearch=e.target.value;updateJournalCards()})}}
 function section(label,link='',go=''){return `<div class="section-title"><h2>${label}</h2>${link?`<button class="text-btn" data-go="${go}">${link} →</button>`:''}</div>`}
 function renderHome(){const total=allSightings().length;const daily=dailyQuests()[0];const latest=[...s.cats].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,6);return `<div class="intro"><div class="eyebrow">YOUR CAT-CHASING ADVENTURE</div><h1>Hello, explorer <span>👋</span></h1><p class="dim no-margin" style="font-size:13px">Every whisker has a story. Find yours.</p></div><section class="hero"><span class="pill lime">✦ THE WORLD IS YOUR CATDEX</span><div class="hero-title">See a cat?<br>Catch the moment.</div><p class="hero-desc">Meet real cats, level up and build your own legendary collection.</p><button id="hero-catch" class="primary">📸 Catch a cat →</button><span class="hero-cat" aria-hidden="true">🐈</span></section><div class="stats"><div class="stat"><strong>${s.cats.length}</strong><span>Unique cats</span></div><div class="stat"><strong>${total}</strong><span>Sightings</span></div><div class="stat"><strong>${streak()}</strong><span>Day streak</span></div></div><div class="level-card"><div class="level-top"><span class="level-num">✦ LEVEL ${level()}</span><span class="level-name">${levelTitle()}</span></div><div class="progress"><b style="width:${s.profile.xp%200/2}%"></b></div><p class="progress-copy">${s.profile.xp%200} / 200 XP to your next level · ${s.profile.xp} total XP</p></div>${section('Today\'s challenge','All quests','quests')}<div class="quest-card"><div class="quest-top"><div class="quest-icon">${daily.icon}</div><div class="quest-details"><h3>${daily.title}</h3><p>${daily.description}</p></div><div class="quest-reward">+${daily.xp} XP</div></div><div class="quest-bar"><span style="width:${Math.min(100,100*daily.progress/daily.target)}%"></span></div><div class="flex between" style="margin-top:9px"><span class="count-label">${Math.min(daily.progress,daily.target)} / ${daily.target}</span>${questAction(daily)}</div></div>${section('Your cat collection','View CatDex','dex')}${latest.length?`<div class="cat-strip">${latest.map(c=>`<button class="mini-cat" data-cat="${esc(c.id)}"><img src="${c.photo}" alt="${esc(c.name)}"><strong>${esc(c.name)}</strong><small>${esc(c.coat)} · ${catches(c)} sighting${catches(c)!==1?'s':''}</small></button>`).join('')}</div>`:`<div class="feature-empty"><div class="big">🐈‍⬛</div><h3>Your adventure starts here</h3><p>Found a friendly-looking feline? Snap your first cat and bring your CatDex to life.</p><button id="empty-catch" class="secondary">Catch your first cat</button></div>`}`}
 function renderDex(){const realCats=s.cats.filter(c=>!c.virtual);const coats=new Set(realCats.map(c=>c.coat));return `<div class="page-head"><div class="eyebrow">YOUR COLLECTION</div><h1>The CatDex 🐈</h1><p class="subtitle">${realCats.length} real cats · ${s.cats.filter(c=>c.virtual).length} virtual friends</p></div>${renderVirtualGallery()}<div class="bingo"><div class="flex between"><div><div class="eyebrow">COAT COLLECTION CHALLENGE</div><h3>Cat Bingo</h3></div><span class="bingo-progress">${coats.size} / ${COATS.length}</span></div><div class="bingo-grid">${COATS.map(c=>`<button class="bingo-tile ${coats.has(c)?'found':''}" data-filter="${c}" aria-label="Filter ${c} cats"><span>${EMOJIS[c]}</span><small>${c}</small>${coats.has(c)?'<b>✓</b>':'<b>?</b>'}</button>`).join('')}</div><p class="bingo-sub">${coats.size===COATS.length?'🎉 Your coat collection is complete!':'Meet cats with different coats to fill your album. Tap a tile to filter.'}</p></div><input class="search-input" id="dex-search" aria-label="Search cats" placeholder="⌕   Search your feline friends..."><div class="chips">${['All','Favourites',...COATS].map(c=>`<button class="chip ${s.filter===c?'selected':''}" data-filter="${c}">${c==='All'?'✦ ':c==='Favourites'?'♥ ':''}${c}</button>`).join('')}</div><div class="dex-sort-row"><label for="dex-sort">Sort your collection</label><select id="dex-sort" class="select" aria-label="Sort cats"><option value="recent">Recently discovered</option><option value="last">Last seen</option><option value="name">Name A–Z</option><option value="visits">Most sightings</option><option value="favourites">Favourites first</option></select></div><div id="dex-grid">${dexGrid()}</div>`}
@@ -118,7 +122,70 @@ function dailyQuests(){const todaySightings=allSightings().filter(a=>dateKey(a.a
 function questAction(q){if(s.profile.claimed.includes(questMarker(q)))return `<span class="complete-word">✓ CLAIMED</span>`;if(q.progress>=q.target)return `<button class="text-btn" data-claim="${q.id}">Claim reward ✦</button>`;return `<span class="count-label">In progress</span>`}
 function medals(){const cs=s.cats.filter(c=>!c.virtual);const coats=new Set(cs.map(c=>c.coat));return [{icon:'🥇',name:'First Pawprint',desc:'Find your first cat',ok:cs.length>=1},{icon:'🐾',name:'Whisker Whisperer',desc:'Find 5 different cats',ok:cs.length>=5},{icon:'🌈',name:'Colour Collector',desc:'Discover 4 coat types',ok:coats.size>=4},{icon:'⭐',name:'Old Friends',desc:'Spot the same cat 3 times',ok:cs.some(c=>catches(c)>=3)},{icon:'👑',name:'Neighbourhood Legend',desc:'Spot one cat 5 times',ok:cs.some(c=>catches(c)>=5)},{icon:'🔥',name:'Dedicated Explorer',desc:'Reach a 3-day streak',ok:streak()>=3}]}
 function renderQuests(){const qs=dailyQuests();return `<div class="page-head"><div class="eyebrow">DAILY & WEEKLY ADVENTURES</div><h1>Quests & rewards ✨</h1><p class="subtitle">Earn XP by exploring naturally. No need to disturb cats or visit private property.</p></div><div class="soft-card"><div class="flex between"><div><div class="eyebrow">TOTAL EXPERIENCE</div><h2 style="font-size:29px;margin:6px 0 0">${s.profile.xp} <small style="color:#c7abec;font-size:13px">XP</small></h2></div><div class="icon-round">🏆</div></div></div>${section('Daily quests')}<p class="quest-hint">Reset daily at local midnight.</p><div class="quest-grid">${qs.map(renderQuestCard).join('')}</div>${section('Weekly adventures')}<p class="quest-hint">Reset every Monday. Previous rewards remain yours.</p><div class="quest-grid">${weeklyQuests().map(renderQuestCard).join('')}</div>${section('Your badges')}<div class="medal-grid">${medals().map(m=>`<div class="medal ${m.ok?'unlocked':''}"><span>${m.icon}</span><strong>${m.name}</strong><small>${m.ok?'✓ Unlocked':m.desc}</small></div>`).join('')}</div>`}
-function renderExplore(){const geo=s.cats.flatMap(c=>(c.sightings||[]).filter(x=>x.lat!=null&&x.lng!=null).map(x=>({...x,name:c.name,photo:c.photo,id:c.id})));let pins='';if(geo.length){const minX=Math.min(...geo.map(x=>x.lng)),maxX=Math.max(...geo.map(x=>x.lng)),minY=Math.min(...geo.map(x=>x.lat)),maxY=Math.max(...geo.map(x=>x.lat));pins=geo.map(g=>{const x=maxX===minX?50:25+50*((g.lng-minX)/(maxX-minX)),y=maxY===minY?51:28+47*(1-(g.lat-minY)/(maxY-minY));return `<button class="map-pin" style="left:${x}%;top:${y}%" title="${esc(g.name)}" data-cat="${esc(g.id)}"><span>🐾</span></button>`}).join('')}return `<div class="page-head"><div class="eyebrow">YOUR PRIVATE TRAIL</div><h1>Cat map 🗺️</h1><p class="subtitle">Remember the places you met your feline friends. Locations never leave this device.</p></div><div class="map-board">${pins||`<div style="position:absolute;top:42%;width:100%;text-align:center;z-index:1;font-size:48px">🐾<p style="color:#c4c6db;font-size:12px;margin-top:3px">No location pins yet</p></div>`}</div><div class="map-foot"><span>🔒</span><div>This is a <strong>private coordinate plot</strong>, not a street map. Pins are saved only if you opt in when catching a cat. Nearby pins are separated slightly for visibility.</div></div>${section(`Saved locations (${geo.length})`)}${geo.length?geo.slice().reverse().slice(0,20).map(g=>`<div class="map-entry"><img src="${g.photo}" alt=""><div><strong>${esc(g.name)}</strong><small>${dateDisplay(g.at)} · Private ${s.cats.find(c=>c.id===g.id)?.virtual?'approximate':'opt-in'} location</small></div><button class="text-btn" data-action="osm:${g.lat},${g.lng}">View map ↗</button></div>`).join(''):`<div class="feature-empty"><div class="big">📍</div><h3>Make memories, not public pins</h3><p>When you save a sighting, you can optionally add its location. Never follow cats onto private property.</p></div>`}<div class="info-note">Opening OpenStreetMap shares the selected coordinates with that external site. Your pins are not uploaded by Whisker Hunt.</div>`}
+function savedMapPoints(){
+ return s.cats.flatMap(cat=>(cat.sightings||[]).filter(x=>x &&
+    typeof x.lat==='number' && Number.isFinite(x.lat) && Math.abs(x.lat)<=90 &&
+    typeof x.lng==='number' && Number.isFinite(x.lng) && Math.abs(x.lng)<=180)
+  .map((entry)=>({lat:entry.lat,lng:entry.lng,at:entry.at,catId:cat.id,sightingId:entry.id,name:cat.name,photo:entry.photo||cat.photo,virtual:cat.virtual===true})))
+  .sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
+}
+// A deliberately private coordinate plot, not map tiles: drawing it doesn't transmit GPS.
+// Keep a marker clearly visible even when there is only one saved place.
+function privatePlotPosition(point,points,index){
+ if(points.length===1)return {x:50,y:50};
+ const minLat=Math.min(...points.map(p=>p.lat)),maxLat=Math.max(...points.map(p=>p.lat));
+ const minLng=Math.min(...points.map(p=>p.lng)),maxLng=Math.max(...points.map(p=>p.lng));
+ let x=maxLng===minLng?50:22+56*(point.lng-minLng)/(maxLng-minLng);
+ let y=maxLat===minLat?50:22+56*(maxLat-point.lat)/(maxLat-minLat);
+ // Distinguish discoveries saved to the same rounded (approximately 1 km) cell.
+ const duplicateRank=points.slice(0,index).filter(p=>p.lat===point.lat && p.lng===point.lng).length;
+ if(duplicateRank){const angle=duplicateRank*2.4,offset=12*Math.min(duplicateRank,2);x+=Math.cos(angle)*offset;y+=Math.sin(angle)*offset}
+ return {x:Math.max(13,Math.min(87,x)),y:Math.max(22,Math.min(78,y))};
+}
+function renderExplore(){
+ const geo=savedMapPoints(),pins=geo.map((g,i)=>{
+  const {x,y}=privatePlotPosition(g,geo,i);
+  return `<button type="button" class="map-pin map-pin-v43 ${i===0?'map-pin-selected':''}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%" data-map-select="${i}" aria-label="Show ${esc(g.name)} on your private discovery plot"><span class="map-pin-icon">🐾</span><span class="map-pin-label">${esc(g.name)}</span></button>`;
+ }).join('');
+ const latest=geo[0];
+ return `<div class="page-head"><div class="eyebrow">YOUR PRIVATE TRAIL</div><h1>Cat map 🗺️</h1><p class="subtitle">Your saved discoveries appear here. Viewing this private plot never sends your location anywhere.</p></div>
+ <div class="map-board map-board-v43" id="private-map-board" role="group" aria-label="Private plot of ${geo.length} saved cat location${geo.length===1?'':'s'}">
+  <div class="map-plot-caption">📍 ${geo.length} saved location${geo.length===1?'':'s'}</div>
+  ${pins||`<div class="map-no-pins"><span>🐾</span><p>No location pins yet</p></div>`}
+  ${latest?`<div id="map-selected-card" class="map-selected-card"><img src="${latest.photo}" alt=""><div><strong>${esc(latest.name)}</strong><small>📍 Saved approximate area · ${dateDisplay(latest.at)}</small></div></div>`:''}
+ </div>
+ <div class="map-foot"><span>🔒</span><div>This is a <strong>private location plot</strong>, not a street map. Tap a paw to see its saved discovery. For real streets, choose <strong>Open street map</strong> below; that requires your permission.</div></div>
+ ${section(`Saved locations (${geo.length})`)}
+ ${geo.length?geo.slice(0,40).map((g,i)=>`<div class="map-entry map-entry-v43 ${i===0?'map-entry-selected':''}" data-map-entry="${i}"><img src="${g.photo}" alt=""><div><strong>${esc(g.name)}</strong><small>${dateDisplay(g.at)} · Private ${g.virtual?'approximate':'saved'} location</small></div><button type="button" class="text-btn" data-map-select="${i}">Show pin</button><button type="button" class="text-btn map-street-btn" data-action="osm:${g.lat},${g.lng}">Street map ↗</button></div>`).join(''):
+ `<div class="feature-empty"><div class="big">📍</div><h3>No saved places yet</h3><p>When you save a sighting, you can optionally add a private area. Never follow cats onto private property.</p></div>`}
+ <div class="info-note">OpenStreetMap is an external website. We ask before sharing any selected approximate coordinates with it.</div>`;
+}
+function selectPrivateMapPin(index){
+ const geo=savedMapPoints(),g=geo[index];if(!g)return;
+ document.querySelectorAll('[data-map-select]').forEach(el=>el.classList.toggle('map-pin-selected',el.classList.contains('map-pin') && Number(el.dataset.mapSelect)===index));
+ document.querySelectorAll('[data-map-entry]').forEach(el=>el.classList.toggle('map-entry-selected',Number(el.dataset.mapEntry)===index));
+ const card=$('map-selected-card');
+ if(card)card.innerHTML=`<img src="${g.photo}" alt=""><div><strong>${esc(g.name)}</strong><small>📍 Saved approximate area · ${dateDisplay(g.at)}</small></div>`;
+ const board=$('private-map-board');board?.scrollIntoView?.({behavior:'smooth',block:'center'});
+}
+function askOpenStreetMap(lat,lng){
+ if(!Number.isFinite(lat)||Math.abs(lat)>90||!Number.isFinite(lng)||Math.abs(lng)>180)return;
+ const url=`https://www.openstreetmap.org/?mlat=${encodeURIComponent(lat)}&mlon=${encodeURIComponent(lng)}#map=16/${lat}/${lng}`;
+ openModal(`<div class="sheet-head"><h2>Open a street map? 🗺️</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p>Whisker Hunt will open <strong>OpenStreetMap in your browser</strong>.</p><p class="dim">Only the selected saved <strong>approximate location</strong> is sent to OpenStreetMap. Your CatDex photos and other discoveries stay on this device. Ask a trusted adult if you are unsure.</p><div class="actions"><button id="map-stay-private" type="button" class="secondary">Stay private</button><button id="map-open-browser" type="button" class="primary">Open street map ↗</button></div>`);
+ $('map-stay-private').onclick=closeModal;
+ $('map-open-browser').onclick=()=>{
+  closeModal();
+  if(hasAndroidActionBridge()){
+   location.href='whiskerhunt://open?url='+encodeURIComponent(url);
+  }else{
+   const anchor=document.createElement('a');anchor.href=url;anchor.target='_blank';anchor.rel='noopener noreferrer';document.body.appendChild(anchor);anchor.click();anchor.remove();
+  }
+ };
+}
+window.whiskerExternalMapResult=function(success){
+ if(!success)toast('No browser could open the street map. Your pin is still saved in CatDex.');
+};
+
 function journalEntries(){return s.cats.flatMap(cat=>(cat.sightings||[]).map((entry,index)=>({cat,entry,isFirst:index===0}))).filter(x=>x.entry&&typeof x.entry.at==='string'&&Number.isFinite(Date.parse(x.entry.at))).sort((a,b)=>Date.parse(b.entry.at)-Date.parse(a.entry.at))}
 function journalCards(){const query=s.journalSearch.trim().toLowerCase();const entries=journalEntries().filter(x=>(s.journalFilter==='All'||(s.journalFilter==='New cats'&&x.isFirst)||(s.journalFilter==='Reunions'&&!x.isFirst))&&(!query||[x.cat.name,x.cat.coat,x.entry.note||''].some(v=>String(v).toLowerCase().includes(query))));if(!entries.length)return `<div class="feature-empty"><div class="big">📖</div><h3>No matching memories</h3><p>Try another filter, or capture a cat to start your journal.</p><button class="secondary" data-journal-catch>📸 Catch a cat</button></div>`;let lastDay='';return entries.slice(0,100).map(({cat,entry,isFirst})=>{const day=dateKey(entry.at);const heading=day!==lastDay?`<h3 class="journal-day">${esc(dateDisplay(entry.at))}</h3>`:'';lastDay=day;return `${heading}<button class="journal-card" data-cat="${esc(cat.id)}"><img src="${entry.photo||cat.photo}" alt=""><span class="journal-card-body"><strong>${esc(cat.name)}</strong><small>${isFirst?'✨ First discovery':'🐾 Reunion'} · ${esc(cat.coat)}</small>${entry.note?`<span class="journal-note">${esc(entry.note)}</span>`:''}</span><span class="journal-arrow">›</span></button>`}).join('')+(entries.length>100?'<p class="footnote">Showing your 100 most recent matching sightings.</p>':'')}
 function updateJournalCards(){const target=$('journal-results');if(!target)return;target.innerHTML=journalCards();target.querySelectorAll('[data-cat]').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.cat)));const catchButton=target.querySelector('[data-journal-catch]');if(catchButton)catchButton.addEventListener('click',startCatch)}
@@ -763,14 +830,163 @@ async function runEncounterCapture(){
  setTimeout(()=>{if(stage?.isConnected&&status)status.textContent='Holding on…';if(stage?.isConnected){orb?.classList.remove('grab-1');orb?.classList.add('grab-2');if(meow){meow.classList.remove('hidden');meow.classList.add('float')}}},650);
  setTimeout(()=>{if(!stage?.isConnected)return;orb?.classList.remove('grab-2');cat?.classList.remove('grabbed');if(meow)meow.classList.remove('float');if(status)status.textContent=`You captured this cat! ${s.captureSummary.throwRating}`;$('encounter-continue')?.classList.remove('hidden')},1180);
 }
-function showCatForm(image){s.image=image;const request=++matchRequest;openModal(`<div class="sheet-head"><h2>Nice spotting! 🐾</h2><button class="close-btn" data-close aria-label="Close">×</button></div><img class="photo-preview" src="${image}" alt="Your chosen cat photo">${s.captureSummary?`<div class="info-note"><strong>Encounter complete.</strong> Captured with ${esc(s.encounterLured?'the Dangle Lure + Whisker Paw combo':'a Whisker Paw')}. ${esc(s.captureSummary.throwRating||'Nice!')} Photo clarity: <strong>${esc(s.captureSummary.quality?.label||'Unrated')}</strong>.</div>`:''}<p class="dim" style="font-size:12px;margin-bottom:11px">Is this a new cat or one you've met before?</p><div class="chips" style="margin-top:0"><button id="mode-new" class="chip ${s.revisitId?'':'selected'}">✨ New cat</button><button id="mode-repeat" class="chip ${s.revisitId?'selected':''}">🐾 Seen before</button></div><div id="catch-extra"></div><div id="possible-matches" aria-live="polite"></div><label class="check-row"><input id="real-cat" type="checkbox"><span>I saw a real cat and took this picture without disturbing or approaching it unsafely.</span></label><label class="check-row"><input id="pin-check" type="checkbox"><span>Add an optional private location pin (never shared).</span></label><p id="pin-failure" class="pin-failure hidden" role="alert"></p><div class="actions"><button id="save-catch" class="primary">Add to my CatDex →</button></div><p class="footnote">Only the selected still image is saved to your CatDex. Live mode compares recent frames locally when supported; no video is stored.</p>`);s.catchMode=s.revisitId?'repeat':'new';const drawExtra=()=>{const extra=$('catch-extra');if(s.catchMode==='new'){extra.innerHTML=`<div class="field-group"><label for="cat-name">Give your cat a name</label><input class="field" id="cat-name" maxlength="36" placeholder="e.g. Sir Pounce-a-lot" autocomplete="off"></div><div class="field-group"><label for="cat-coat">Coat / appearance</label><select class="select" id="cat-coat">${COATS.map(c=>`<option>${c}</option>`).join('')}</select></div><div class="field-group"><label for="cat-personality">Personality (your impression)</label><select class="select" id="cat-personality">${PERSONALITIES.map(t=>`<option>${t}</option>`).join('')}</select></div><div class="field-group"><label for="cat-note">Little memory (optional)</label><input class="field" id="cat-note" maxlength="140" placeholder="e.g. Sleeping in the café window"></div>`}else{extra.innerHTML=s.cats.length?`<div class="field-group"><label for="repeat-cat">Which cat did you see again?</label><select id="repeat-cat" class="select">${s.cats.filter(c=>!c.virtual).map(c=>`<option value="${esc(c.id)}" ${c.id===s.revisitId?'selected':''}>${esc(c.name)} (${esc(c.coat)})</option>`).join('')}</select></div><div class="field-group"><label for="repeat-note">Add a memory (optional)</label><input id="repeat-note" class="field" maxlength="140" placeholder="What was your friend up to?"></div>`:`<div class="info-note">No cats collected yet. Add your first new cat!</div>`}};drawExtra();$('mode-new').onclick=()=>{s.catchMode='new';$('mode-new').classList.add('selected');$('mode-repeat').classList.remove('selected');drawExtra();addDiceButton('cat-name','dice-name','name');addDiceButton('cat-note','dice-memory','memory')};$('mode-repeat').onclick=()=>{s.catchMode='repeat';$('mode-repeat').classList.add('selected');$('mode-new').classList.remove('selected');drawExtra();addDiceButton('repeat-note','dice-repeat-memory','memory')};$('save-catch').onclick=saveCatch;findPossibleMatches(image,request)}
+function showCatForm(image){s.image=image;const request=++matchRequest;openModal(`<div class="sheet-head"><h2>Nice spotting! 🐾</h2><button class="close-btn" data-close aria-label="Close">×</button></div><img class="photo-preview" src="${image}" alt="Your chosen cat photo">${s.captureSummary?`<div class="info-note"><strong>Encounter complete.</strong> Captured with ${esc(s.encounterLured?'the Dangle Lure + Whisker Paw combo':'a Whisker Paw')}. ${esc(s.captureSummary.throwRating||'Nice!')} Photo clarity: <strong>${esc(s.captureSummary.quality?.label||'Unrated')}</strong>.</div>`:''}<p class="dim" style="font-size:12px;margin-bottom:11px">Is this a new cat or one you've met before?</p><div class="chips" style="margin-top:0"><button id="mode-new" class="chip ${s.revisitId?'':'selected'}">✨ New cat</button><button id="mode-repeat" class="chip ${s.revisitId?'selected':''}">🐾 Seen before</button></div><div id="catch-extra"></div><div id="possible-matches" aria-live="polite"></div><label class="check-row"><input id="real-cat" type="checkbox"><span>I saw a real cat and took this picture without disturbing or approaching it unsafely.</span></label><label class="check-row"><input id="pin-check" type="checkbox"><span>Add an optional private location pin (never shared).</span></label><p id="pin-failure" class="pin-failure hidden" role="alert"></p><div id="pin-helper" class="location-helper hidden" aria-hidden="true"><p id="pin-helper-note">To add a private map pin, allow location on this device. Whisker Hunt stores only an approximate rounded area. Ask a parent or trusted adult if you are unsure.</p><div class="location-helper-actions"><button type="button" id="pin-allow" class="secondary">Allow location</button><button type="button" id="pin-settings" class="secondary">Open app settings</button><button type="button" id="pin-device-location" class="text-btn">Phone Location switch</button><button type="button" id="pin-retry" class="text-btn">Retry</button><button type="button" id="pin-status-check" class="text-btn">Check location status</button></div><p id="pin-diagnostics" class="location-diagnostics hidden" role="status"></p></div><div class="actions"><button id="save-catch" class="primary">Add to my CatDex →</button></div><p class="footnote">Only the selected still image is saved to your CatDex. Live mode compares recent frames locally when supported; no video is stored.</p>`);s.catchMode=s.revisitId?'repeat':'new';const drawExtra=()=>{const extra=$('catch-extra');if(s.catchMode==='new'){extra.innerHTML=`<div class="field-group"><label for="cat-name">Give your cat a name</label><input class="field" id="cat-name" maxlength="36" placeholder="e.g. Sir Pounce-a-lot" autocomplete="off"></div><div class="field-group"><label for="cat-coat">Coat / appearance</label><select class="select" id="cat-coat">${COATS.map(c=>`<option>${c}</option>`).join('')}</select></div><div class="field-group"><label for="cat-personality">Personality (your impression)</label><select class="select" id="cat-personality">${PERSONALITIES.map(t=>`<option>${t}</option>`).join('')}</select></div><div class="field-group"><label for="cat-note">Little memory (optional)</label><input class="field" id="cat-note" maxlength="140" placeholder="e.g. Sleeping in the café window"></div>`}else{extra.innerHTML=s.cats.length?`<div class="field-group"><label for="repeat-cat">Which cat did you see again?</label><select id="repeat-cat" class="select">${s.cats.filter(c=>!c.virtual).map(c=>`<option value="${esc(c.id)}" ${c.id===s.revisitId?'selected':''}>${esc(c.name)} (${esc(c.coat)})</option>`).join('')}</select></div><div class="field-group"><label for="repeat-note">Add a memory (optional)</label><input id="repeat-note" class="field" maxlength="140" placeholder="What was your friend up to?"></div>`:`<div class="info-note">No cats collected yet. Add your first new cat!</div>`}};drawExtra();$('mode-new').onclick=()=>{s.catchMode='new';$('mode-new').classList.add('selected');$('mode-repeat').classList.remove('selected');drawExtra();addDiceButton('cat-name','dice-name','name');addDiceButton('cat-note','dice-memory','memory')};$('mode-repeat').onclick=()=>{s.catchMode='repeat';$('mode-repeat').classList.add('selected');$('mode-new').classList.remove('selected');drawExtra();addDiceButton('repeat-note','dice-repeat-memory','memory')};$('save-catch').onclick=saveCatch;findPossibleMatches(image,request)}
 function isUsableLocation(loc){return !!loc && Number.isFinite(loc.lat) && Number.isFinite(loc.lng) && Math.abs(loc.lat)<=90 && Math.abs(loc.lng)<=180}
-function showPinFailure(){
- const el=$('pin-failure')||$('virtual-pin-failure');
- if(el){el.textContent='Location was not saved. Check your Android location permission and GPS, then try Save again — or untick the location option to save without a pin.';el.classList.remove('hidden')}
- toast('Location unavailable — no map pin was saved. Retry or untick the option.');
+function roundApproxLocation(loc){return isUsableLocation(loc)?{lat:Math.round(Number(loc.lat)*100)/100,lng:Math.round(Number(loc.lng)*100)/100}:null}
+function hasFreshApproxLocation(){return isUsableLocation(s.pendingApproxLocation)&&Date.now()-(s.pendingApproxLocationAt||0)<120000}
+function setPendingApproxLocation(loc){const rounded=roundApproxLocation(loc);s.pendingApproxLocation=rounded;s.pendingApproxLocationAt=rounded?Date.now():0;return rounded}
+function showLocationHelper(prefix='pin',message='Location is optional. If your app permission is already allowed, check the phone Location switch. Ask an adult if you are unsure.'){
+ const helper=$(prefix+'-helper');const note=$(prefix+'-helper-note');
+ if(helper){helper.classList.remove('hidden');helper.setAttribute('aria-hidden','false')}
+ if(note)note.textContent=message;
 }
-async function locationPrompt(){return new Promise(resolve=>{let settled=false;const timer=setTimeout(()=>{if(!settled){settled=true;resolve(null)}},14000);const finish=coords=>{if(settled)return;settled=true;clearTimeout(timer);resolve(coords)};if(window.whiskerNativeReady){window.whiskerNativeLocation=(lat,lng)=>finish({lat:Number(lat),lng:Number(lng)});window.whiskerNativeLocationError=()=>finish(null);location.href='whiskerhunt://location';return}if(!navigator.geolocation){finish(null);return}navigator.geolocation.getCurrentPosition(pos=>finish({lat:pos.coords.latitude,lng:pos.coords.longitude}),()=>finish(null),{timeout:10500,enableHighAccuracy:false,maximumAge:60000})})}
+function hideLocationHelper(prefix='pin'){const helper=$(prefix+'-helper');if(helper){helper.classList.add('hidden');helper.setAttribute('aria-hidden','true')}}
+const LOCATION_HELP={
+ permission:'Location is not allowed yet. Tap Allow location, or check the Whisker Hunt permissions in Android settings.',
+ disabled:'Your phone’s Location switch is off. Turn on device Location and tap Retry.',
+ timeout:'Your phone could not find its position in time. Move near a window or outdoors and try again.',
+ no_fix:'Location is allowed, but your phone has no usable position yet. Turn on device Location or try near a window.',
+ unsupported:'This device cannot provide location right now. You may still save the cat without a map pin.',
+ bridge:'The app could not contact Android location services. Close and reopen Whisker Hunt, then retry.',
+ cancelled:'The location check was cancelled. Tap Retry when you are ready.',
+ unknown:'Location is allowed but could not be read. Check the phone Location switch and try again.'
+};
+let locationLastError='';
+let inFlightApproxLocation=null;
+function locationFailureText(){return LOCATION_HELP[locationLastError]||LOCATION_HELP.unknown}
+function showPinFailure(prefix='pin'){
+ const el=$(prefix+'-failure')||$('pin-failure')||$('virtual-pin-failure');
+ const wasHidden=Boolean(el?.classList.contains('hidden'));
+ if(el){el.textContent=locationFailureText();el.classList.remove('hidden')}
+ showLocationHelper(prefix,locationFailureText());
+ // If Android says permission is missing, show its real native status rather
+ // than repeatedly directing an already-authorised user to Settings.
+ if(locationLastError==='permission'||locationLastError==='bridge')
+  checkAndroidLocationStatus(prefix);
+ if(wasHidden)toast('No map pin yet — check the help below.');
+}
+function clearPinFailure(prefix='pin'){const el=$(prefix+'-failure');if(el)el.classList.add('hidden')}
+function openLocationSettings(){
+ try{if(hasAndroidActionBridge()){location.href='whiskerhunt://app-settings';return}}catch(e){console.warn('Could not open Android app settings',e)}
+ toast('Go to your device settings and allow Location for Whisker Hunt.');
+}
+function openDeviceLocationSettings(){
+ try{if(hasAndroidActionBridge()){location.href='whiskerhunt://device-location-settings';return}}catch(e){console.warn('Could not open device Location settings',e)}
+ toast('Open your phone Settings → Location and turn Location on.');
+}
+// Request tokens prevent stale GPS responses from placing a marker on a different cat.
+let locationRequestSequence=0, activeLocationFinish=null;
+async function locationPrompt(){
+ if(activeLocationFinish)activeLocationFinish(null,'cancelled');
+ const token=String(++locationRequestSequence);
+ const androidShell=hasAndroidActionBridge();
+ return new Promise(resolve=>{
+  let settled=false;
+  const finish=(coords,error='')=>{
+   if(settled)return;
+   settled=true;clearTimeout(timer);
+   if(activeLocationFinish===finish){
+    activeLocationFinish=null;
+    window.whiskerNativeLocation=null;
+    window.whiskerNativeLocationError=null;
+    locationLastError=error;
+   }
+   resolve(roundApproxLocation(coords));
+  };
+  // Android may have to show a permission dialog before asking the provider
+  // for a fix. The earlier 14-second JS timeout could expire first.
+  const timer=setTimeout(()=>finish(null,'timeout'),androidShell?45000:23000);
+  activeLocationFinish=finish;
+  locationLastError='';
+  if(androidShell){
+   window.whiskerNativeLocation=(lat,lng,returnedToken)=>{
+    if(String(returnedToken)!==token)return;
+    const coords={lat:Number(lat),lng:Number(lng)};
+    if(isUsableLocation(coords))finish(coords);
+    else finish(null,'no_fix');
+   };
+   window.whiskerNativeLocationError=(returnedToken,reason='unknown')=>{
+    if(String(returnedToken)!==token)return;
+    finish(null,typeof reason==='string'?reason:'unknown');
+   };
+   try{location.href='whiskerhunt://location?request='+encodeURIComponent(token)}
+   catch{finish(null,'bridge')}
+   return;
+  }
+  if(!navigator.geolocation){finish(null,'unsupported');return}
+  navigator.geolocation.getCurrentPosition(
+   pos=>finish({lat:pos.coords.latitude,lng:pos.coords.longitude}),
+   error=>finish(null,error?.code===1?'permission':error?.code===3?'timeout':'no_fix'),
+   {timeout:19000,enableHighAccuracy:false,maximumAge:60000}
+  );
+ });
+}
+async function ensureApproxLocation(prefix='pin'){
+ if(inFlightApproxLocation)return inFlightApproxLocation;
+ const note=$(prefix+'-helper-note');
+ if(note)note.textContent='Checking for a private approximate area… This may take a few seconds.';
+ const run=(async()=>{
+  const loc=setPendingApproxLocation(await locationPrompt());
+  if(loc){
+   clearPinFailure(prefix);
+   if(note)note.textContent='Private map area ready ✓. Your exact GPS position is never stored.';
+   toast('Private map area ready.');
+   return loc;
+  }
+  showPinFailure(prefix);return null;
+ })();
+ inFlightApproxLocation=run;
+ try{return await run}finally{if(inFlightApproxLocation===run)inFlightApproxLocation=null}
+}
+let locationDiagnosticRequest=0;
+function checkAndroidLocationStatus(prefix='pin'){
+ const box=$(prefix+'-diagnostics');
+ if(!box)return;
+ box.classList.remove('hidden');
+ box.textContent='Checking device permission and Location switch…';
+ const token=String(++locationDiagnosticRequest);
+ const checkTimeout=setTimeout(()=>{
+  if(box.isConnected && box.dataset.pendingLocationCheck===token){
+   box.textContent='Android did not answer this request. Please close and reopen Whisker Hunt, then try again.';
+   delete box.dataset.pendingLocationCheck;
+  }
+ },6500);
+ box.dataset.pendingLocationCheck=token;
+ window.whiskerNativeLocationDiagnostic=(returnedToken,details)=>{
+  if(String(returnedToken)!==token)return;
+  clearTimeout(checkTimeout);
+  delete box.dataset.pendingLocationCheck;
+  if(!details){box.textContent='Android diagnostics are unavailable here.';return}
+  const yesNo=value=>value===true?'allowed':value===false?'not granted':'unknown';
+  const onOff=value=>value===true?'on':value===false?'off':'unknown';
+  box.textContent=`App version ${details.build||'unknown'} · Approximate: ${yesNo(details.coarse)} · Precise: ${yesNo(details.fine)} · Phone Location: ${onOff(details.deviceEnabled)}. No coordinates are shown.`;
+ };
+ if(hasAndroidActionBridge()){
+  try{location.href='whiskerhunt://location-check?request='+encodeURIComponent(token)}
+  catch{box.textContent='Could not contact Android location diagnostics.'}
+ }else{box.textContent='Location status check is available in the Android app only.'}
+}
+function wireLocationOptIn(prefix,checkboxId){
+ const check=$(checkboxId);if(!check)return;
+ const sync=()=>{if(check.checked)showLocationHelper(prefix);else{hideLocationHelper(prefix);clearPinFailure(prefix)}};
+ check.addEventListener('change',sync);sync();
+ $(prefix+'-allow')?.addEventListener('click',()=>ensureApproxLocation(prefix));
+ $(prefix+'-settings')?.addEventListener('click',openLocationSettings);
+ $(prefix+'-device-location')?.addEventListener('click',openDeviceLocationSettings);
+ $(prefix+'-retry')?.addEventListener('click',()=>ensureApproxLocation(prefix));
+ $(prefix+'-status-check')?.addEventListener('click',()=>checkAndroidLocationStatus(prefix));
+ const actions=$(prefix+'-helper')?.querySelector('.location-helper-actions');
+ if(actions&&!$(prefix+'-skip')){
+  const skip=document.createElement('button');skip.type='button';skip.id=prefix+'-skip';
+  skip.className='text-btn';skip.textContent='Save cat without a pin';
+  skip.addEventListener('click',()=>{
+   check.checked=false;check.dispatchEvent(new Event('change'));
+   setPendingApproxLocation(null);
+   $(prefix==='virtual-pin'?'virtual-save-final':'save-catch')?.click();
+  });
+  actions.append(skip);
+ }
+}
 async function saveCatch(){
  if(s.busy)return;if(!$('real-cat')?.checked)return toast('Please confirm this is a respectful real-cat encounter.');
  if(!s.db)return toast('Device storage is not ready.');
@@ -801,8 +1017,8 @@ async function saveCatch(){
   if(mode==='new'){s.cats.push(cat);added=true}
   s.profile.xp+=earned;
   await persistCatchAtomic(cat);
-  closeModal();navigate('dex');toast(`${mode==='new'?'🐱 New cat added!':'🐾 Reunited with '+cat.name+'!'} +${earned} XP`);
- }catch(e){console.error(e);s.profile.xp-=earned;if(appended)cat.sightings.pop();if(added)s.cats=s.cats.filter(c=>c.id!==cat.id);if(e?.message==='PIN_NOT_SAVED')showPinFailure();else toast('Save failed. Please try again.');btn.disabled=false;btn.textContent='Add to my CatDex →';}
+  closeModal();navigate('dex');toast(`${mode==='new'?'🐱 New cat added!':'🐾 Reunited with '+cat.name+'!'} +${earned} XP${wantsPin?' · 📍 Private map pin saved':''}`);
+ }catch(e){console.error(e);s.profile.xp-=earned;if(appended)cat.sightings.pop();if(added)s.cats=s.cats.filter(c=>c.id!==cat.id);if(e?.message==='PIN_NOT_SAVED')showPinFailure('pin');else toast('Save failed. Please try again.');btn.disabled=false;btn.textContent='Add to my CatDex →';}
  finally{s.busy=false}
 }
 function openDetail(catId){
@@ -881,7 +1097,7 @@ async function exportCatCard(cat){
 async function editName(cat){openModal(`<div class="sheet-head"><h2>Rename your cat</h2><button class="close-btn" data-close>×</button></div><input id="new-name" maxlength="36" class="field" value="${esc(cat.name)}"><div class="actions"><button id="name-save" class="primary">Save name</button></div>`);$('name-save').onclick=async()=>{const name=$('new-name').value.trim();if(!name)return toast('Enter a name.');const previous=cat.name;cat.name=name;try{await saveCat(cat);closeModal();render();toast('Cat renamed!')}catch(e){cat.name=previous;toast('Could not save name. Please retry.')}}}
 async function deleteCat(cat){openModal(`<div class="sheet-head"><h2>Delete ${esc(cat.name)}?</h2><button class="close-btn" data-close>×</button></div><p class="dim">This permanently removes the cat, its photos and sighting journal from this device. XP already earned will remain.</p><div class="actions"><button class="secondary" id="cancel-delete">Cancel</button><button class="primary" id="confirm-delete">Delete forever</button></div>`);$('cancel-delete').onclick=closeModal;$('confirm-delete').onclick=async()=>{if(s.busy)return;s.busy=true;const previous=s.cats;s.cats=s.cats.filter(c=>c.id!==cat.id);try{await removeCat(cat);closeModal();render();toast('Cat removed from your CatDex.')}catch(e){s.cats=previous;toast('Could not delete cat. Your collection was kept.')}finally{s.busy=false}}}
 async function shareCat(cat){const message=`🐾 Meet ${cat.name}, a ${cat.coat.toLowerCase()} cat in my Whisker Hunt CatDex! ${catches(cat)} sighting${catches(cat)!==1?'s':''}. #WhiskerHunt`;if(window.whiskerNativeReady){location.href='whiskerhunt://share?text='+encodeURIComponent(message);return}try{if(navigator.share)await navigator.share({title:'Whisker Hunt',text:message});else if(navigator.clipboard){await navigator.clipboard.writeText(message);toast('Caption copied!')}}catch(e){if(e.name!=='AbortError')toast('Could not share on this browser.')}}
-function action(kind){if(kind.startsWith('osm:')){const [lat,lng]=kind.slice(4).split(',').map(Number);if(!Number.isFinite(lat)||!Number.isFinite(lng))return;if(!confirm('Open OpenStreetMap? This sends this selected location to OpenStreetMap in your browser.'))return;const url=`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`;if(window.whiskerNativeReady)location.href='whiskerhunt://open?url='+encodeURIComponent(url);else window.open(url,'_blank','noopener,noreferrer');return}if(kind==='privacy-tools')return openPrivacyTools();if(kind==='health-check')return openCollectionHealth();if(kind==='rename-profile')return editProfile();if(kind==='export')return exportBackup();if(kind==='import'){if(window.whiskerNativeReady){location.href='whiskerhunt://restore';return}return $('backup-input').click()}if(kind==='about')return openModal(`<div class="sheet-head"><h2>Privacy & cat safety 🐾</h2><button class="close-btn" data-close>×</button></div><p class="dim">Whisker Hunt v1.1 saves your photos, cat names, sightings and optional coordinates <strong>on this device only</strong>. We don't have a server, accounts, adverts or analytics.</p><p class="dim">Choose whether to attach a location to each encounter. Locations do not appear in shared text. You decide before opening an external map.</p><p class="dim">Keep a respectful distance. Do not trespass, lure cats into dangerous places, follow them into roads, or reveal somebody's home or garden.</p><p class="dim">Export backups before uninstalling or resetting app/browser storage. Photo resemblance hints run on-device, can be wrong, and never automatically identify or merge cats. The app cannot verify whether an image contains a cat.</p>`) }
+function action(kind){if(kind.startsWith('osm:')){const [lat,lng]=kind.slice(4).split(',').map(Number);askOpenStreetMap(lat,lng);return}if(kind==='privacy-tools')return openPrivacyTools();if(kind==='health-check')return openCollectionHealth();if(kind==='rename-profile')return editProfile();if(kind==='export')return exportBackup();if(kind==='import'){if(window.whiskerNativeReady){location.href='whiskerhunt://restore';return}return $('backup-input').click()}if(kind==='about')return openModal(`<div class="sheet-head"><h2>Privacy & cat safety 🐾</h2><button class="close-btn" data-close>×</button></div><p class="dim">Whisker Hunt v1.1 saves your photos, cat names, sightings and optional coordinates <strong>on this device only</strong>. We don't have a server, accounts, adverts or analytics.</p><p class="dim">Choose whether to attach a location to each encounter. Locations do not appear in shared text. You decide before opening an external map.</p><p class="dim">Keep a respectful distance. Do not trespass, lure cats into dangerous places, follow them into roads, or reveal somebody's home or garden.</p><p class="dim">Export backups before uninstalling or resetting app/browser storage. Photo resemblance hints run on-device, can be wrong, and never automatically identify or merge cats. The app cannot verify whether an image contains a cat.</p>`) }
 function editProfile(){openModal(`<div class="sheet-head"><h2>Your explorer name</h2><button class="close-btn" data-close>×</button></div><input id="new-profile-name" class="field" maxlength="30" value="${esc(s.profile.name)}"><div class="actions"><button id="profile-save" class="primary">Save</button></div>`);$('profile-save').onclick=async()=>{const name=$('new-profile-name').value.trim();if(!name)return toast('Enter a name');const previous=s.profile.name;s.profile.name=name;try{await saveProfile();closeModal();render();toast('Profile updated!')}catch(e){s.profile.name=previous;toast('Could not save your name. Please retry.')}}}
 // Restore is additive: a backup cannot erase local edits or sightings for an existing ID.
 function mergeCatRecord(local,imported){
@@ -994,7 +1210,8 @@ const AR_CAT_MODELS=[
  {key:'british-cloud',name:'British Shorthair',coat:'Grey',base:'#97a6c8',belly:'#cfd8ea',accent:'#7081ab',ear:'#d0b3c2',eye:'#f0d36b',shadow:'#58667d',pattern:'cloud'}
 ];
 function getArModel(key){return AR_CAT_MODELS.find(m=>m.key===key)||AR_CAT_MODELS[0]}
-function randomArModel(except=''){const caught=new Set(s.cats.filter(c=>c.virtual).map(c=>c.arModelHint));const missing=AR_CAT_MODELS.filter(m=>!caught.has(m.key)&&m.key!==except);const pool=missing.length?missing:AR_CAT_MODELS.filter(m=>m.key!==except);return pool[Math.floor(Math.random()*pool.length)]||AR_CAT_MODELS[0]}
+function rarityWeight(rarity){return ({common:1,uncommon:.72,rare:.44,epic:.22,legendary:.1}[rarity]||1)}
+function randomArModel(except=''){const caught=new Set(s.cats.filter(c=>c.virtual).map(c=>c.arModelHint));const missing=AR_CAT_MODELS.filter(m=>!caught.has(m.key)&&m.key!==except);const pool=(missing.length?missing:AR_CAT_MODELS.filter(m=>m.key!==except)).map(m=>({model:m,w:rarityWeight(m.rarity)}));const total=pool.reduce((sum,x)=>sum+x.w,0);let pick=Math.random()*total;for(const item of pool){pick-=item.w;if(pick<=0)return item.model}return pool[0]?.model||AR_CAT_MODELS[0]}
 function arModelPattern(model){
  switch(model.pattern){
   case 'tabby': return `<g fill="none" stroke="${model.accent}" stroke-width="4" stroke-linecap="round" opacity=".9"><path d="M84 64c8-9 24-9 32 0"/><path d="M72 93c11-8 57-8 69 0"/><path d="M70 108c12-7 61-7 74 0"/><path d="M90 31c6 6 14 6 20 0"/></g>`;
@@ -1008,42 +1225,40 @@ function arModelPattern(model){
 function renderArCatSvg(model,compact=false){
  const label=esc(model.name),uid='ar'+String(model.key||'cat').replace(/[^a-z0-9]+/gi,'')+(compact?'c':'f');
  const fluff=model.fur==='long',hairless=model.fur==='hairless',sleek=model.fur==='sleek';
- const earY=fluff?'17':'20',headRy=fluff?'31':'30';
- const bodyRx=fluff?'54':'50',bodyRy=fluff?'39':'36';
- const tailWidth=fluff?'15':'12';
- const cheekLeft=fluff?`<path d="M64 58c-8 4-12 12-13 21 10 0 18-4 23-10" fill="url(#${uid}-base)" opacity=".98"/>`:'';
- const cheekRight=fluff?`<path d="M132 59c7 5 10 12 11 21-10 0-17-4-22-11" fill="url(#${uid}-base)" opacity=".98"/>`:'';
- const chest=fluff?`<path d="M85 105c7 10 24 10 31 0 5 9 1 20-15 25-17-5-22-15-16-25Z" fill="url(#${uid}-belly)" opacity=".95"/>`:'';
- const furStroke=hairless?'':`<g stroke="${model.accent}" stroke-width="2.2" stroke-linecap="round" opacity="${fluff?'.46':'.28'}"><path d="M70 123 64 130"/><path d="M84 128 78 138"/><path d="M117 128 123 138"/><path d="M133 123 139 130"/></g>`;
- return `<svg class="ar-cat-svg" viewBox="0 0 200 160" role="img" aria-label="${label}">
+ const earY=fluff?'16':'19',headRy=fluff?'31':'29';
+ const bodyRx=fluff?'53':'49',bodyRy=fluff?'40':'36';
+ const tailWidth=fluff?'16':'12';
+ const furStroke=hairless?'':`<g stroke="${model.accent}" stroke-width="1.8" stroke-linecap="round" opacity="${fluff?'.42':'.22'}"><path d="M69 120 63 128"/><path d="M82 128 77 138"/><path d="M118 128 123 139"/><path d="M132 120 138 128"/></g>`;
+ return `<svg class="ar-cat-svg ar-cat-realish" viewBox="0 0 200 160" role="img" aria-label="${label}">
  <defs>
-   <linearGradient id="${uid}-base" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${hairless?model.belly:model.base}"/><stop offset=".58" stop-color="${model.base}"/><stop offset="1" stop-color="${model.shadow||model.accent}"/></linearGradient>
-   <radialGradient id="${uid}-belly" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="${model.belly}"/><stop offset="1" stop-color="${hairless?model.base:model.belly}"/></radialGradient>
-   <radialGradient id="${uid}-eye" cx=".5" cy=".45" r=".55"><stop offset="0" stop-color="#ffffff"/><stop offset=".4" stop-color="${model.eye}"/><stop offset="1" stop-color="#1b2029"/></radialGradient>
+  <linearGradient id="${uid}-base" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${hairless?model.belly:model.base}"/><stop offset=".55" stop-color="${model.base}"/><stop offset="1" stop-color="${model.shadow||shiftHex(model.accent,-18)}"/></linearGradient>
+  <radialGradient id="${uid}-belly" cx=".5" cy=".28" r=".82"><stop offset="0" stop-color="${model.belly}"/><stop offset="1" stop-color="${hairless?model.base:model.belly}"/></radialGradient>
+  <radialGradient id="${uid}-eye" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="#ffffff"/><stop offset=".38" stop-color="${model.eye}"/><stop offset="1" stop-color="#15202b"/></radialGradient>
+  <linearGradient id="${uid}-tail" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${model.accent}"/><stop offset="1" stop-color="${model.shadow||shiftHex(model.accent,-20)}"/></linearGradient>
  </defs>
- <ellipse cx="100" cy="145" rx="46" ry="9" fill="#00000020"/>
- <path d="M154 111c17-10 24-34 8-48-5-5-13-8-22-8" fill="none" stroke="${model.accent}" stroke-width="${tailWidth}" stroke-linecap="round" opacity="${hairless?'.8':'.95'}"/>
- <ellipse cx="104" cy="99" rx="${bodyRx}" ry="${bodyRy}" fill="url(#${uid}-base)"/>
- <ellipse cx="104" cy="110" rx="29" ry="18" fill="url(#${uid}-belly)" opacity=".95"/>
- ${chest}<g>${arModelPattern(model)}</g>
- <ellipse cx="97" cy="58" rx="35" ry="${headRy}" fill="url(#${uid}-base)"/>
- ${cheekLeft}${cheekRight}
- <path d="M67 42 80 ${earY} 89 44Z" fill="url(#${uid}-base)"/>
- <path d="M106 44 118 ${earY} 128 42Z" fill="url(#${uid}-base)"/>
- <path d="M73 39 80 26 86 40Z" fill="${model.ear}" opacity=".92"/>
- <path d="M110 40 118 26 124 39Z" fill="${model.ear}" opacity=".92"/>
- <ellipse cx="86" cy="58" rx="6" ry="7" fill="url(#${uid}-eye)"/>
- <ellipse cx="108" cy="58" rx="6" ry="7" fill="url(#${uid}-eye)"/>
- <ellipse cx="86" cy="58" rx="1.7" ry="4.1" fill="#12151b"/>
- <ellipse cx="108" cy="58" rx="1.7" ry="4.1" fill="#12151b"/>
- <ellipse cx="84.5" cy="56.2" rx="1.15" ry="1.15" fill="#fff" opacity=".8"/><ellipse cx="106.5" cy="56.2" rx="1.15" ry="1.15" fill="#fff" opacity=".8"/>
- <path d="M97 66 92 72h10Z" fill="#ef8fa8"/><path d="M92 74c5 5 10 5 15 0" fill="none" stroke="#7a4b55" stroke-width="2.2" stroke-linecap="round"/>
- <g stroke="#f0f3ff" stroke-width="2" stroke-linecap="round" opacity=".84"><path d="M89 70 67 65"/><path d="M89 74 66 75"/><path d="M105 70 127 65"/><path d="M105 74 128 75"/></g>
- <g fill="url(#${uid}-base)"><ellipse cx="77" cy="127" rx="9" ry="13"/><ellipse cx="96" cy="129" rx="9" ry="14"/><ellipse cx="118" cy="129" rx="9" ry="14"/><ellipse cx="136" cy="126" rx="9" ry="13"/></g>
+ <ellipse cx="100" cy="146" rx="50" ry="10" fill="#00000022"/>
+ <path d="M154 112c19-12 24-36 6-49-5-4-12-7-21-7" fill="none" stroke="url(#${uid}-tail)" stroke-width="${tailWidth}" stroke-linecap="round" opacity=".97"/>
+ <path d="M63 114 C62 82 74 61 103 61 C132 61 146 82 145 114 C136 129 119 138 101 138 C83 138 69 129 63 114 Z" fill="url(#${uid}-base)"/>
+ <ellipse cx="103" cy="112" rx="30" ry="20" fill="url(#${uid}-belly)" opacity=".97"/>
+ <path d="M77 92 C90 84 116 84 130 92" fill="none" stroke="#ffffff20" stroke-width="3" stroke-linecap="round"/>
+ ${arModelPattern(model)}
+ <path d="M95 88 C83 88 71 79 69 64 C67 49 78 31 98 29 C117 27 131 38 133 57 C135 75 123 88 111 88 Z" fill="url(#${uid}-base)"/>
+ ${fluff?`<path d="M66 58 C61 64 61 75 68 81 C74 83 82 82 86 78" fill="${model.base}" opacity=".85"/><path d="M135 58 C141 64 141 75 134 81 C128 83 120 82 116 78" fill="${model.base}" opacity=".85"/>`:''}
+ <path d="M69 42 80 ${earY} 90 43Z" fill="url(#${uid}-base)"/><path d="M106 43 118 ${earY} 128 41Z" fill="url(#${uid}-base)"/>
+ <path d="M74 40 80 27 86 41Z" fill="${model.ear}" opacity=".92"/><path d="M111 41 118 27 124 40Z" fill="${model.ear}" opacity=".92"/>
+ <ellipse cx="87" cy="57" rx="6.6" ry="7.6" fill="url(#${uid}-eye)"/><ellipse cx="109" cy="57" rx="6.6" ry="7.6" fill="url(#${uid}-eye)"/>
+ <ellipse cx="87" cy="57" rx="1.8" ry="4.5" fill="#11161c"/><ellipse cx="109" cy="57" rx="1.8" ry="4.5" fill="#11161c"/>
+ <ellipse cx="85.5" cy="55.2" rx="1.2" ry="1.2" fill="#fff" opacity=".88"/><ellipse cx="107.5" cy="55.2" rx="1.2" ry="1.2" fill="#fff" opacity=".88"/>
+ <path d="M94 65 98 69 102 65" fill="#e899a5"/><path d="M98 69v5" fill="none" stroke="#6f4752" stroke-width="1.7" stroke-linecap="round"/><path d="M92 76c3 3 9 3 12 0" fill="none" stroke="#6f4752" stroke-width="1.9" stroke-linecap="round"/>
+ <path d="M84 68c7 3 18 3 26 0" fill="none" stroke="#ffffff26" stroke-width="1.7" stroke-linecap="round"/>
+ <g stroke="#eff6ff" stroke-width="1.7" stroke-linecap="round" opacity=".9"><path d="M89 69 67 64"/><path d="M89 74 65 75"/><path d="M107 69 129 64"/><path d="M107 74 131 75"/></g>
+ <g fill="url(#${uid}-base)"><ellipse cx="79" cy="126" rx="8" ry="12"/><ellipse cx="95" cy="129" rx="8" ry="12.5"/><ellipse cx="117" cy="129" rx="8" ry="12.5"/><ellipse cx="133" cy="126" rx="8" ry="12"/></g>
+ <g fill="#ffffff1f"><ellipse cx="96" cy="104" rx="13" ry="8"/><ellipse cx="118" cy="104" rx="10" ry="7"/></g>
  ${furStroke}
- ${sleek?'<path d="M66 96c14-12 55-12 76 0" fill="none" stroke="#ffffff26" stroke-width="2"/>':''}
+ ${sleek?'<path d="M72 96c12-10 48-10 61 0" fill="none" stroke="#ffffff2a" stroke-width="2"/>':''}
  </svg>`
 }
+
 function renderArModelButtons(){
  return AR_CAT_MODELS.map(model=>`<button type="button" class="ar-model-btn ${s.arModelKey===model.key?'selected':''}" data-ar-model="${esc(model.key)}" aria-pressed="${s.arModelKey===model.key?'true':'false'}"><span class="ar-thumb">${renderArCatSvg(model,true)}</span><small>${esc(model.name)}</small></button>`).join('')
 }
@@ -1098,7 +1313,7 @@ startCatch=function(catId=null){
  captureShots=[];nativePhotoRequestToken=null;photoSelectionEpoch++;
  if(s.busy)return toast('Please wait for the current save to finish.');
  if(s.storageBlocked)return toast('Restore your CatDex backup before adding cats.');
- s.image='';s.encounterLive=false;s.encounterAr=false;s.arModelManual=false;s.arModelSuggested='';
+ s.image='';setPendingApproxLocation(null);s.encounterLive=false;s.encounterAr=false;s.arModelManual=false;s.arModelSuggested='';
  s.revisitId=typeof catId==='string'&&s.cats.some(c=>c.id===catId)?catId:'';s.catchMode=s.revisitId?'repeat':'new';s.selectedId='';s.captureSummary=null;
  openModal(`<div class="sheet-head"><h2>Catch a cat! 📸</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim" style="font-size:13px">Start with a respectful real-cat photo, then pick the encounter style that feels best.</p><div class="capture-choice capture-choice-v28"><button id="ar-photo" class="choice choice-ar"><span>✨</span><strong>AR safari</strong><small>Full-screen live camera + stylised cat model prototype</small></button><button id="live-photo" class="choice"><span>🎥</span><strong>Live encounter</strong><small>Drag tools over the live camera</small></button><button id="take-photo" class="choice"><span>📸</span><strong>Take a photo</strong><small>Reliable camera fallback</small></button><button id="pick-photo" class="choice"><span>🖼️</span><strong>Choose a photo</strong><small>From your gallery</small></button></div><p class="footnote center">AR safari keeps only recent still frames locally and overlays a virtual cat on the live view. It is a prototype, not full object-recognition AR.</p>`);
  $('ar-photo').onclick=startArEncounter;
@@ -1152,7 +1367,7 @@ showEncounter=function(image,quality,options={}){
  s.encounterLive=liveMode; s.encounterAr=arMode; s.encounterFocus={x:.52,y:(arMode ? .69 : .40)}; s.captureSummary={quality,throwRating:null};
  const model=getArModel(s.arModelKey),habitat=getArHabitat(s.arHabitatKey); if(arMode&&habitat)s.encounterFocus={x:habitat.focus.x,y:habitat.focus.y};
  const help=arMode?'✨ Cat found! Drag the claw to catch it.':'① Tap the cat · ② Drag the paw · ③ Catch!';
- const summary=arMode?`<div class="encounter-ar-tools"><div class="ar-model-badge" id="ar-model-badge">Wild encounter: ${esc(model.name)}</div><span class="rarity-label">${s.cats.some(c=>c.virtual&&c.arModelHint===model.key)?'Previously discovered':'New discovery!'}</span></div><p class="ar-smart-note">Collect all ${AR_CAT_MODELS.length} cat types across ${AR_HABITATS.length} habitats. Today's visitor is in <strong>${esc(habitat.name)}</strong> · ${esc(habitat.badge)}.</p>`:'';
+ const summary=arMode?`<div class="encounter-ar-tools"><div class="ar-model-badge" id="ar-model-badge">Wild encounter: ${esc(model.name)}</div><span class="rarity-label">${(model.rarity||'common').replace(/^./,m=>m.toUpperCase())} · ${s.cats.some(c=>c.virtual&&c.arModelHint===model.key)?'Seen before':'New discovery'}</span></div><p class="ar-smart-note">Collect over ${AR_CAT_MODELS.length} cat types across ${AR_HABITATS.length} habitats. Today's visitor is in <strong>${esc(habitat.name)}</strong> · ${esc(habitat.badge)}. Rarer cats appear less often.</p>`:'';
  openModal(`<div class="sheet-head"><h2>${arMode?'AR safari ✨':liveMode?'Live encounter 🎥':'Encounter! 🐾'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="encounter-quick-help">${help}</p><details class="encounter-help"><summary>${arMode?'How does AR safari work?':'How do the tools work?'}</summary><p>${arMode?'A virtual cat appears automatically. Drag the paw to catch it. The camera overlay does not yet detect floors or tables; true ARCore surface tracking is planned. No video is saved.':'Tap the cat to place your target. Drag the Whisker Paw onto the target to catch it, or use the Dangle Lure first to make catching easier. Stay at a safe distance from real cats.'}</p></details><div id="encounter-aim-guide" class="encounter-aim-guide hidden" aria-hidden="true"></div><div id="encounter-stage" class="encounter-stage ${arMode?'encounter-stage-ar':''}"><img id="encounter-photo" class="encounter-backdrop" src="${image}" alt="${arMode?'Live encounter backdrop':'Your selected cat photo'}"><div class="encounter-vignette"></div><div id="encounter-cat" class="encounter-cat ${arMode?'ar-model-target':''}"><div class="encounter-cat-ring"></div>${arMode?`<div id="encounter-ar-cat" class="encounter-ar-cat">${renderArCatSvg(model)}</div><span id="encounter-ar-label">${esc(model.name)}</span>`:`<img id="encounter-cat-crop" src="${image}" alt="Selected cat photo crop"><span>Your cat target</span>`}</div><div class="encounter-capture-tag">${arMode?'● VIRTUAL CAT · BETA':'Capture preview'}</div><div class="encounter-tool-dock" aria-label="Capture tools"><button type="button" id="tool-ball" class="dock-tool selected" aria-pressed="true" title="Whisker Paw"><span>🐾</span><small>Paw</small></button><button type="button" id="tool-lure" class="dock-tool" aria-label="Switch to Lure" aria-pressed="false" title="Switch to Lure"><span>🪶</span><small>Lure</small></button><div id="throw-item" class="throw-item throw-ball" role="button" aria-label="Drag ${encounterToolLabel('ball')} to the cat" tabindex="0"><svg class="whisker-paw-svg" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg><span class="throw-stick">🎣</span><span class="throw-lure-body">🧶</span><span class="drag-prompt">DRAG</span></div></div><div id="encounter-orb" class="encounter-orb hidden"><svg class="whisker-paw-svg capture-paw" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine-captured" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg></div><div id="encounter-status" class="encounter-status" role="status" aria-live="polite">${arMode?`A ${esc(model.name)} appeared in ${esc(habitat.name)}! Drag the paw onto it to catch it.`:'Tap the cat to move the target. Then drag an item from the tool dock on the right.'}</div><div id="encounter-meow" class="encounter-meow hidden" aria-hidden="true">Meow!</div></div><div id="encounter-quality" class="encounter-quality">${arMode?'⚡ Smooth AR mode · Lower-latency camera preview · No video saved or uploaded.':liveMode?'🎥 Live preview · <span id="live-frame-count">1 recent frame</span> · Whisker Hunt keeps a few recent stills and picks the clearest one near your target when you capture.':'Photo clarity estimate: <strong>'+esc(quality.label)+'</strong> · '+esc(quality.note)} <small>${arMode?'Auto habitat placement on screen. Native world-tracked AR is a future upgrade.':'No video recording or upload.'}</small></div>${summary}<div id="encounter-shots" class="encounter-shots hidden" aria-label="Choose best frame"></div>${arMode?'':`<div class="encounter-photo-actions"><button type="button" id="encounter-retake" class="secondary">${liveMode?'🎥 Retake live capture':'📸 Retake photo'}</button><button type="button" id="encounter-replace" class="secondary">🖼️ Choose another</button></div>`}<div class="encounter-launch"><div class="encounter-instructions">${arMode?`Look around gently. ${esc(model.name)} has appeared in ${esc(habitat.name)} — no tapping needed.`:'Drag the paw from the right. A green ring means your throw is on target.'}</div></div><div class="actions">${arMode?'':'<button id="encounter-skip" class="secondary">Save photo without game</button>'}<button id="encounter-continue" class="primary hidden">${arMode?'Keep this cat 🐾':'Continue to CatDex →'}</button></div><p class="footnote">${arMode?'Virtual cat preview: automatic placement in a themed habitat with lighter camera settings for smoother play. Full world tracking will need native ARCore later.':'Live camera is local to your device; only the selected still is saved. No cat recognition.'} Stay a safe distance from real cats.</p>`,liveMode,arMode?'ar-sheet':'');
  if(liveMode&&liveCamera?.active){
   const stage=$('encounter-stage'),video=liveCamera.video;
@@ -1195,7 +1410,7 @@ saveCatch=function(){return (async()=>{
  try{
   const hash=await visualFingerprint(s.image).catch(()=>null); if(mode==='new')cat.visualHash=hash;
   const wantsPin=$('pin-check').checked;
-  const loc=wantsPin?await locationPrompt():null;
+  const loc=wantsPin?(hasFreshApproxLocation()?s.pendingApproxLocation:await ensureApproxLocation('pin')):null;
   if(wantsPin&&!isUsableLocation(loc))throw new Error('PIN_NOT_SAVED');
   const note=mode==='new'?cat.note:$('repeat-note')?.value.trim();
   const now=Date.now(); const lastSeen=Math.max(0,...(cat.sightings||[]).map(v=>Date.parse(v.at)).filter(t=>Number.isFinite(t)&&t<=now));
@@ -1203,8 +1418,8 @@ saveCatch=function(){return (async()=>{
   cat.sightings.push({id:id(),visualHash:hash,at:new Date().toISOString(),note,photo:mode==='new'?null:s.image,signature:sig,lat:loc&&Number.isFinite(loc.lat)&&Math.abs(loc.lat)<=90?loc.lat:null,lng:loc&&Number.isFinite(loc.lng)&&Math.abs(loc.lng)<=180?loc.lng:null,captureMode:s.encounterAr?'ar-live':s.encounterLive?'live':'photo',arModel:s.encounterAr?s.arModelKey:null}); appended=true;
   if(mode==='new'){s.cats.push(cat);added=true}
   s.profile.xp+=earned; await persistCatchAtomic(cat);
-  closeModal();navigate('dex');toast(`${mode==='new'?'🐱 New cat added!':'🐾 Reunited with '+cat.name+'!'} +${earned} XP`);
- }catch(e){ console.error(e);s.profile.xp-=earned;if(appended)cat.sightings.pop();if(added)s.cats=s.cats.filter(c=>c.id!==cat.id);if(e?.message==='PIN_NOT_SAVED')showPinFailure();else toast('Save failed. Please try again.');btn.disabled=false;btn.textContent='Add to my CatDex →'; }
+  closeModal();navigate('dex');toast(`${mode==='new'?'🐱 New cat added!':'🐾 Reunited with '+cat.name+'!'} +${earned} XP${wantsPin?' · 📍 Private map pin saved':''}`);
+ }catch(e){ console.error(e);s.profile.xp-=earned;if(appended)cat.sightings.pop();if(added)s.cats=s.cats.filter(c=>c.id!==cat.id);if(e?.message==='PIN_NOT_SAVED')showPinFailure('pin');else toast('Save failed. Please try again.');btn.disabled=false;btn.textContent='Add to my CatDex →'; }
  finally{s.busy=false}
  })()};
 
@@ -1254,7 +1469,7 @@ const AR_HABITATS=[
 function hexMix(a,b,t=.5){const pa=parseInt(a.slice(1),16),pb=parseInt(b.slice(1),16);const ar=(pa>>16)&255,ag=(pa>>8)&255,ab=pa&255,br=(pb>>16)&255,bg=(pb>>8)&255,bb=pb&255;const mix=v=>Math.max(0,Math.min(255,Math.round(v)));return '#'+[mix(ar+(br-ar)*t),mix(ag+(bg-ag)*t),mix(ab+(bb-ab)*t)].map(v=>v.toString(16).padStart(2,'0')).join('')}
 function shiftHex(hex,delta=0){const p=parseInt(hex.slice(1),16),r=((p>>16)&255)+delta,g=((p>>8)&255)+delta,b=(p&255)+delta;return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
 function slugifyText(text){return String(text||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')}
-function buildArCatalog(){const out=[];for(const breed of AR_BREED_ARCHETYPES){for(const coat of AR_COAT_VARIANTS){const key=`${breed.slug}-${coat.slug}`;out.push({key,name:`${coat.label} ${breed.name}`,breed:breed.name,coat:coat.coat,base:hexMix(breed.base,coat.base,.55),belly:hexMix(breed.belly,coat.belly,.5),accent:hexMix(breed.accent,coat.accent,.55),accent2:coat.accent2||shiftHex(coat.accent,-26),ear:hexMix(breed.ear,coat.ear,.5),eye:coat.eye||breed.eye,pattern:coat.pattern||breed.pattern,fur:breed.fur,rarity:['common','common','common','uncommon','uncommon','rare','rare','epic'][out.length%8]})}}return out.slice(0,120)}
+function buildArCatalog(){const rarityCycle=['common','common','common','uncommon','uncommon','rare','rare','epic','legendary'];const out=[];for(const breed of AR_BREED_ARCHETYPES){for(const coat of AR_COAT_VARIANTS){const key=`${breed.slug}-${coat.slug}`;out.push({key,name:`${coat.label} ${breed.name}`,breed:breed.name,coat:coat.coat,base:hexMix(breed.base,coat.base,.55),belly:hexMix(breed.belly,coat.belly,.5),accent:hexMix(breed.accent,coat.accent,.55),accent2:coat.accent2||shiftHex(coat.accent,-26),ear:hexMix(breed.ear,coat.ear,.5),eye:coat.eye||breed.eye,pattern:coat.pattern||breed.pattern,fur:breed.fur,rarity:rarityCycle[out.length%rarityCycle.length]})}}return out.slice(0,128)}
 AR_CAT_MODELS.splice(0,AR_CAT_MODELS.length,...buildArCatalog())
 s.arHabitatKey='window-perch';
 function getArHabitat(key){return AR_HABITATS.find(h=>h.key===key)||AR_HABITATS[0]}
@@ -1263,7 +1478,7 @@ function randomArHabitat(except=''){const discovered=discoveredHabitatKeys();con
 function renderVirtualGallery(){
  const virtual=s.cats.filter(c=>c.virtual);
  const habitatCount=discoveredHabitatKeys().size;
- return `<section class="virtual-gallery"><div class="section-title"><div><div class="eyebrow">VIRTUAL FRIENDS</div><h3>My AR cats 🐾</h3></div><span class="pill purple">${virtual.length} / ${AR_CAT_MODELS.length} cats</span></div><div class="info-note" style="margin-bottom:12px"><strong>Safari progress:</strong> ${virtual.length} cats discovered · ${habitatCount} / ${AR_HABITATS.length} habitats visited. New cats and unseen habitats are prioritised first.</div>${virtual.length?`<div class="ar-collected-list">${virtual.map(c=>{const last=(c.sightings||[]).at(-1)||{};const habitat=last.habitat?getArHabitat(last.habitat).name:'Mystery habitat';return `<button type="button" class="ar-collected" data-cat="${esc(c.id)}"><img src="${c.photo}" alt="${esc(c.name)}"><span>${esc(c.name)}</span><small>${c.sightings.length} catches · ${esc(habitat)}</small></button>`}).join('')}</div>`:`<p class="dim">Your virtual friends will appear here. Open AR Safari to meet a new cat in a new habitat!</p>`}</section>`;
+ return `<section class="virtual-gallery"><div class="section-title"><div><div class="eyebrow">VIRTUAL FRIENDS</div><h3>My AR cats 🐾</h3></div><span class="pill purple">${virtual.length} / ${AR_CAT_MODELS.length} cats</span></div><div class="info-note" style="margin-bottom:12px"><strong>Safari progress:</strong> ${virtual.length} cats discovered · ${habitatCount} / ${AR_HABITATS.length} habitats visited. Over ${AR_CAT_MODELS.length} cats are available, and rarer cats appear less often.</div>${virtual.length?`<div class="ar-collected-list">${virtual.map(c=>{const last=(c.sightings||[]).at(-1)||{};const habitat=last.habitat?getArHabitat(last.habitat).name:'Mystery habitat';return `<button type="button" class="ar-collected" data-cat="${esc(c.id)}"><img src="${c.photo}" alt="${esc(c.name)}"><span>${esc(c.name)}</span><small>${c.sightings.length} catches · ${esc(habitat)} · ${(getArModel(c.arModelHint).rarity||'common').replace(/^./,m=>m.toUpperCase())}</small></button>`}).join('')}</div>`:`<p class="dim">Your virtual friends will appear here. Open AR Safari to meet a new cat in a new habitat!</p>`}</section>`;
 }
 // Browser/MAUI asset path: the generated image is a PNG data URI, compatible
 // with Whisker Hunt's v1 JSON validation and old backup readers.
@@ -1296,16 +1511,16 @@ async function saveVirtualArCatch(){
   }
   const memory=($('virtual-memory')?.value.trim()||'A magical encounter!').slice(0,140);
   const wantsPin=$('virtual-pin')?.checked;
-  const pin=wantsPin?await locationPrompt():null;
+  const pin=wantsPin?(hasFreshApproxLocation()?s.pendingApproxLocation:await ensureApproxLocation('virtual-pin')):null;
   if(wantsPin&&!isUsableLocation(pin))throw new Error('PIN_NOT_SAVED');
   const lat=pin&&Number.isFinite(pin.lat)?Math.round(pin.lat*100)/100:null;
   const lng=pin&&Number.isFinite(pin.lng)?Math.round(pin.lng*100)/100:null;
   const sightingPhoto=existing?await makeVirtualScenePhoto(model,s.image,s.encounterFocus,habitat):null;
   cat.arHabitatHint=habitat.key;
   cat.sightings.push({id:id(),at:new Date().toISOString(),note:memory,photo:sightingPhoto,lat,lng,captureMode:'ar-virtual',arModel:key,habitat:habitat.key});appended=true;
-  await persistCatchAtomic(cat);
-  closeModal();navigate('dex');toast(`🐾 ${model.name} explored your ${habitat.name.toLowerCase()}!`);
- }catch(e){console.error(e);if(appended)cat?.sightings.pop();if(added)s.cats=s.cats.filter(c=>c.id!==cat.id);if(e?.message==='PIN_NOT_SAVED')showPinFailure();else toast('Could not save the virtual cat. Try again.');if(btn){btn.disabled=false;btn.textContent='Try saving again'}}
+  await persistCatchAtomic(cat);setPendingApproxLocation(null);
+  closeModal();navigate('dex');toast(`🐾 ${model.name} explored your ${habitat.name.toLowerCase()}!${wantsPin?' 📍 Private map pin saved':''}`);
+ }catch(e){console.error(e);if(appended)cat?.sightings.pop();if(added)s.cats=s.cats.filter(c=>c.id!==cat.id);if(e?.message==='PIN_NOT_SAVED')showPinFailure('virtual-pin');else toast('Could not save the virtual cat. Try again.');if(btn){btn.disabled=false;btn.textContent='Try saving again'}}
  finally{s.busy=false}
 }
 
@@ -1349,7 +1564,7 @@ function addDiceButton(id,buttonId,label){
  const button=document.createElement('button');button.type='button';button.id=buttonId;button.className='dice-button';button.textContent='🎲';button.title='Suggest a '+label;button.setAttribute('aria-label','Generate random '+label);button.onclick=()=>{el.value=label==='name'?rollWhiskerName():rollWhiskerMemory();el.dispatchEvent(new Event('input',{bubbles:true}))};wrapper.append(button);
 }
 const originalRealFormV30=showCatForm;
-showCatForm=function(photo){originalRealFormV30(photo);addDiceButton('cat-name','dice-name','name');addDiceButton('cat-note','dice-memory','memory');const checkbox=$('pin-check');if(checkbox){checkbox.checked=false;const description=checkbox.closest('label')?.querySelector('span');if(description)description.textContent='📍 Add a private map pin for this sighting? (optional; asks location permission)';}}
+showCatForm=function(photo){originalRealFormV30(photo);addDiceButton('cat-name','dice-name','name');addDiceButton('cat-note','dice-memory','memory');const checkbox=$('pin-check');if(checkbox){checkbox.checked=false;const description=checkbox.closest('label')?.querySelector('span');if(description)description.textContent='📍 Add a private map pin for this sighting? (optional; safe and private)';}wireLocationOptIn('pin','pin-check')}
 let multiPhotos=[],multiPhotoActive=false,multiSelected=0;
 function startMultiPhotoCapture(){multiPhotos=[];multiSelected=0;multiPhotoActive=true;requestEncounterPhoto(true)}
 function deliverPhoto(image){
@@ -1371,9 +1586,9 @@ function showVirtualNamingForm(){
  if(!s.encounterCaptured)return;
  const model=getArModel(s.arModelKey),habitat=getArHabitat(s.arHabitatKey),existing=s.cats.find(c=>c.virtual&&c.arModelHint===model.key);
  const proposed=existing?.name||rollWhiskerName();const memo=rollWhiskerMemory();
- openModal(`<div class="sheet-head"><h2>${existing?'You met again!':'A new virtual friend!'} 🐾</h2><button class="close-btn" data-close aria-label="Close">×</button></div><div class="virtual-photo-preview" id="virtual-photo-preview">Preparing your AR photo…</div><p class="dim" style="font-size:12px">${esc(model.name)} · ${esc(habitat.name)} · ${existing?'Already in your collection':'New discovery'} · Rename it or use the dice.</p><div class="field-group"><label for="virtual-name">Cat name</label><input id="virtual-name" class="field" maxlength="36" value="${esc(proposed)}" ${existing?'readonly':''}></div><div class="field-group"><label for="virtual-memory">Little memory</label><textarea id="virtual-memory" class="field" maxlength="140" rows="3">${esc(memo)}</textarea></div><label class="check-row"><input type="checkbox" id="virtual-pin"><span>📍 Save an approximate private area on my map (optional)</span></label><p id="virtual-pin-failure" class="pin-failure hidden" role="alert"></p><p class="footnote">Location is off by default. If enabled, we ask permission and round the coordinates to roughly 1 km. Photos and location stay on your device. Habitat tags stay private too.</p><div class="actions"><button id="virtual-save-final" type="button" class="primary">Keep this cat 🐾</button></div>`);
+ openModal(`<div class="sheet-head"><h2>${existing?'You met again!':'A new virtual friend!'} 🐾</h2><button class="close-btn" data-close aria-label="Close">×</button></div><div class="virtual-photo-preview" id="virtual-photo-preview">Preparing your AR photo…</div><p class="dim" style="font-size:12px">${esc(model.name)} · ${esc(habitat.name)} · ${existing?'Already in your collection':'New discovery'} · Rename it or use the dice.</p><div class="field-group"><label for="virtual-name">Cat name</label><input id="virtual-name" class="field" maxlength="36" value="${esc(proposed)}" ${existing?'readonly':''}></div><div class="field-group"><label for="virtual-memory">Little memory</label><textarea id="virtual-memory" class="field" maxlength="140" rows="3">${esc(memo)}</textarea></div><label class="check-row"><input type="checkbox" id="virtual-pin"><span>📍 Save an approximate private area on my map (optional)</span></label><p id="virtual-pin-failure" class="pin-failure hidden" role="alert"></p><div id="virtual-pin-helper" class="location-helper hidden" aria-hidden="true"><p id="virtual-pin-helper-note">Your app permission and the phone Location switch must both allow location. Only an approximate area is kept on this device.</p><div class="location-helper-actions"><button type="button" id="virtual-pin-allow" class="secondary">Allow location</button><button type="button" id="virtual-pin-settings" class="secondary">Open app settings</button><button type="button" id="virtual-pin-device-location" class="text-btn">Phone Location switch</button><button type="button" id="virtual-pin-retry" class="text-btn">Retry</button><button type="button" id="virtual-pin-status-check" class="text-btn">Check location status</button></div><p id="virtual-pin-diagnostics" class="location-diagnostics hidden" role="status"></p></div><p class="footnote">Location is off by default. If enabled, we ask permission and round the coordinates to roughly 1 km. Photos and location stay on your device. Habitat tags stay private too.</p><div class="actions"><button id="virtual-save-final" type="button" class="primary">Keep this cat 🐾</button></div>`);
  if(!existing)addDiceButton('virtual-name','virtual-dice-name','name');addDiceButton('virtual-memory','virtual-dice-memory','memory');
- $('virtual-save-final').onclick=saveVirtualArCatch;
+ $('virtual-save-final').onclick=saveVirtualArCatch;wireLocationOptIn('virtual-pin','virtual-pin');
  const key=s.arModelKey,frame=s.image,focus={...s.encounterFocus};
  makeVirtualScenePhoto(model,frame,focus,habitat).then(data=>{if($('virtual-photo-preview')&&s.arModelKey===key){$('virtual-photo-preview').innerHTML=`<img class="photo-preview" alt="Virtual cat in your captured camera scene" src="${data}">`}}).catch(()=>{if($('virtual-photo-preview'))$('virtual-photo-preview').textContent='Photo preview unavailable; the cat can still be saved.'});
 }
@@ -1408,7 +1623,7 @@ action=function(kind){if(kind==='export-safe')return exportSafeBackup();return o
 /* v3.2.0 — cleaner live tool switcher and cat-claw paw polish */
 encounterToolLabel = kind => kind==='lure' ? 'Dangle Lure' : 'Whisker Paw';
 function whiskerPawSvgMarkup(extraClass=''){
- return `<svg class="whisker-paw-svg ${extraClass}" viewBox="0 0 100 118" aria-hidden="true" focusable="false"><g class="paw-claws"><path class="paw-claw" d="M18 24 L22 10 L27 24 Z"/><path class="paw-claw" d="M38 13 L42 1 L46 13 Z"/><path class="paw-claw" d="M56 13 L60 1 L64 13 Z"/><path class="paw-claw" d="M74 24 L78 10 L83 24 Z"/></g><ellipse class="paw-toe toe-1" cx="20" cy="36" rx="11" ry="14" transform="rotate(-18 20 36)"/><ellipse class="paw-toe toe-2" cx="40" cy="23" rx="10.5" ry="14.5" transform="rotate(-7 40 23)"/><ellipse class="paw-toe toe-3" cx="60" cy="23" rx="10.5" ry="14.5" transform="rotate(7 60 23)"/><ellipse class="paw-toe toe-4" cx="80" cy="36" rx="11" ry="14" transform="rotate(18 80 36)"/><path class="paw-center" d="M50 52 C64 49 74 58 81 70 C88 82 83 99 69 104 C61 108 56 102 50 102 C44 102 39 108 31 104 C17 99 12 82 19 70 C26 58 36 49 50 52 Z"/><path class="paw-pad-split" d="M35 81 C40 75 46 74 50 79 C54 74 60 75 65 81"/></svg>`;
+ return `<svg class="whisker-paw-svg ${extraClass}" viewBox="0 0 100 118" aria-hidden="true" focusable="false"><defs><linearGradient id="paw-fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd9ea"/><stop offset=".58" stop-color="#fb86bd"/><stop offset="1" stop-color="#8d58dc"/></linearGradient></defs><g class="paw-claws"><path class="paw-claw claw-1" d="M17 26 C17 18 20 11 23 6 C26 12 27 20 26 27 Z"/><path class="paw-claw claw-2" d="M37 15 C37 9 39 3 42 0 C45 5 46 11 45 16 Z"/><path class="paw-claw claw-3" d="M55 15 C55 9 58 3 60 0 C63 5 64 11 63 16 Z"/><path class="paw-claw claw-4" d="M74 26 C74 18 77 11 80 6 C83 12 84 20 83 27 Z"/></g><g class="paw-digits"><ellipse class="paw-toe toe-1" cx="20" cy="36" rx="11" ry="14" transform="rotate(-18 20 36)" fill="url(#paw-fill)"/><ellipse class="paw-toe toe-2" cx="40" cy="23" rx="10.5" ry="14.5" transform="rotate(-7 40 23)" fill="url(#paw-fill)"/><ellipse class="paw-toe toe-3" cx="60" cy="23" rx="10.5" ry="14.5" transform="rotate(7 60 23)" fill="url(#paw-fill)"/><ellipse class="paw-toe toe-4" cx="80" cy="36" rx="11" ry="14" transform="rotate(18 80 36)" fill="url(#paw-fill)"/></g><path class="paw-center" d="M50 52 C64 49 74 58 81 70 C88 82 83 99 69 104 C61 108 56 102 50 102 C44 102 39 108 31 104 C17 99 12 82 19 70 C26 58 36 49 50 52 Z" fill="url(#paw-fill)"/><path class="paw-pad-split" d="M35 81 C40 75 46 74 50 79 C54 74 60 75 65 81"/><path class="paw-sheen" d="M26 63 C39 54 60 52 74 63"/></svg>`;
 }
 function syncEncounterToolDock(kind){
  const tools=[['ball',$('tool-ball')],['lure',$('tool-lure')]];
@@ -1440,7 +1655,7 @@ showEncounter=function(image,quality,options={}){
  s.encounterLive=liveMode; s.encounterAr=arMode; s.encounterFocus={x:.52,y:(arMode ? .69 : .40)}; s.captureSummary={quality,throwRating:null}; s.encounterTool='ball';
  const model=getArModel(s.arModelKey),habitat=getArHabitat(s.arHabitatKey); if(arMode&&habitat)s.encounterFocus={x:habitat.focus.x,y:habitat.focus.y};
  const help=arMode?'✨ Cat found! Drag the claw to catch it.':'① Tap the cat · ② Drag the paw · ③ Catch!';
- const summary=arMode?`<div class="encounter-ar-tools"><div class="ar-model-badge" id="ar-model-badge">Wild encounter: ${esc(model.name)}</div><span class="rarity-label">${s.cats.some(c=>c.virtual&&c.arModelHint===model.key)?'Previously discovered':'New discovery!'}</span></div><p class="ar-smart-note">Collect all ${AR_CAT_MODELS.length} cat types across ${AR_HABITATS.length} habitats. Today's visitor is in <strong>${esc(habitat.name)}</strong> · ${esc(habitat.badge)}.</p>`:'';
+ const summary=arMode?`<div class="encounter-ar-tools"><div class="ar-model-badge" id="ar-model-badge">Wild encounter: ${esc(model.name)}</div><span class="rarity-label">${(model.rarity||'common').replace(/^./,m=>m.toUpperCase())} · ${s.cats.some(c=>c.virtual&&c.arModelHint===model.key)?'Seen before':'New discovery'}</span></div><p class="ar-smart-note">Collect over ${AR_CAT_MODELS.length} cat types across ${AR_HABITATS.length} habitats. Today's visitor is in <strong>${esc(habitat.name)}</strong> · ${esc(habitat.badge)}. Rarer cats appear less often.</p>`:'';
  openModal(`<div class="sheet-head"><h2>${arMode?'AR safari ✨':liveMode?'Live encounter 🎥':'Encounter! 🐾'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="encounter-quick-help">${help}</p><details class="encounter-help"><summary>${arMode?'How does AR safari work?':'How do the tools work?'}</summary><p>${arMode?'A virtual cat appears automatically. Drag the paw to catch it. The camera overlay does not yet detect floors or tables; true ARCore surface tracking is planned. No video is saved.':'Tap the cat to place your target. Drag the Whisker Paw onto the target to catch it, or use the Dangle Lure first to make catching easier. Stay at a safe distance from real cats.'}</p></details><div id="encounter-aim-guide" class="encounter-aim-guide hidden" aria-hidden="true"></div><div id="encounter-stage" class="encounter-stage ${arMode?'encounter-stage-ar':''}"><img id="encounter-photo" class="encounter-backdrop" src="${image}" alt="${arMode?'Live encounter backdrop':'Your selected cat photo'}"><div class="encounter-vignette"></div><div id="encounter-cat" class="encounter-cat ${arMode?'ar-model-target':''}"><div class="encounter-cat-ring"></div>${arMode?`<div id="encounter-ar-cat" class="encounter-ar-cat">${renderArCatSvg(model)}</div><span id="encounter-ar-label">${esc(model.name)}</span>`:`<img id="encounter-cat-crop" src="${image}" alt="Selected cat photo crop"><span>Your cat target</span>`}</div><div class="encounter-capture-tag">${arMode?'● VIRTUAL CAT · BETA':'Capture preview'}</div><div class="encounter-tool-dock" aria-label="Capture tools"><button type="button" id="tool-ball" class="dock-tool" aria-label="Switch to Paw" aria-pressed="true" title="Switch to Paw" hidden aria-hidden="true" tabindex="-1"><span>🐾</span><small>Paw</small></button><button type="button" id="tool-lure" class="dock-tool" aria-label="Switch to Lure" aria-pressed="false" title="Switch to Lure"><span>🪶</span><small>Lure</small></button><div id="throw-item" class="throw-item throw-ball" role="button" aria-label="Drag ${encounterToolLabel('ball')} to the cat" tabindex="0">${whiskerPawSvgMarkup()}<span class="throw-stick">🎣</span><span class="throw-lure-body">🧶</span><span class="drag-prompt">DRAG</span></div></div><div id="encounter-orb" class="encounter-orb hidden">${whiskerPawSvgMarkup('capture-paw')}</div><div id="encounter-status" class="encounter-status" role="status" aria-live="polite">${arMode?`A ${esc(model.name)} appeared in ${esc(habitat.name)}! Drag the paw onto it to catch it.`:'Tap the cat to move the target. Then drag the paw from the right.'}</div><div id="encounter-meow" class="encounter-meow hidden" aria-hidden="true">Meow!</div></div><div id="encounter-quality" class="encounter-quality">${arMode?'⚡ Smooth AR mode · Lower-latency camera preview · No video saved or uploaded.':liveMode?'🎥 Live preview · <span id="live-frame-count">1 recent frame</span> · Whisker Hunt keeps a few recent stills and picks the clearest one near your target when you capture.':'Photo clarity estimate: <strong>'+esc(quality.label)+'</strong> · '+esc(quality.note)} <small>${arMode?'Auto habitat placement on screen. Native world-tracked AR is a future upgrade.':'No video recording or upload.'}</small></div>${summary}<div id="encounter-shots" class="encounter-shots hidden" aria-label="Choose best frame"></div>${arMode?'':`<div class="encounter-photo-actions"><button type="button" id="encounter-retake" class="secondary">${liveMode?'🎥 Retake live capture':'📸 Retake photo'}</button><button type="button" id="encounter-replace" class="secondary">🖼️ Choose another</button></div>`}<div class="encounter-launch"><div class="encounter-instructions">${arMode?`Look around gently. ${esc(model.name)} has appeared in ${esc(habitat.name)} — no tapping needed.`:'Drag the paw from the right. Only the other tool is shown, so the view stays clean.'}</div></div><div class="actions">${arMode?'':'<button id="encounter-skip" class="secondary">Save photo without game</button>'}<button id="encounter-continue" class="primary hidden">${arMode?'Keep this cat 🐾':'Continue to CatDex →'}</button></div><p class="footnote">${arMode?'Virtual cat preview: automatic placement in a themed habitat with lighter camera settings for smoother play. Full world tracking will need native ARCore later.':'Live camera is local to your device; only the selected still is saved. No cat recognition.'} Stay a safe distance from real cats.</p>`,liveMode,arMode?'ar-sheet':'');
  if(liveMode&&liveCamera?.active){
   const stage=$('encounter-stage'),video=liveCamera.video;

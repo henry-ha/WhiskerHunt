@@ -14,8 +14,9 @@ internal sealed class WhiskerWebChromeClient : MauiWebChromeClient
 {
     public WhiskerWebChromeClient(IWebViewHandler handler) : base(handler) { }
 
-    public override void OnPermissionRequest(PermissionRequest request)
+    public override void OnPermissionRequest(PermissionRequest? request)
     {
+        if (request is null) return;
         var origin = request.Origin;
         var localUi = origin is not null &&
             (string.Equals(origin.Scheme, "file", StringComparison.OrdinalIgnoreCase) ||

@@ -18,6 +18,7 @@ public partial class MainPage : ContentPage
 {
     private readonly SemaphoreSlim _stateWriteLock = new(1, 1);
     private bool _stateRecoveryBlocked;
+    private const string NativeLocationSettingsHost = "device-location-settings";
     private string StatePath => Path.Combine(FileSystem.AppDataDirectory, "whisker-hunt-state.json");
     private string BackupStatePath => StatePath + ".bak";
 
@@ -132,7 +133,37 @@ public partial class MainPage : ContentPage
                     break;
                 case "capture": await GetPhotoAsync(true, GetQuery(request, "request")); break;
                 case "import": await GetPhotoAsync(false, GetQuery(request, "request")); break;
-                case "location": await GetLocationAsync(); break;
+                case "location": await GetLocationAsync(GetQuery(request, "request")); break;
+                case "location-check": await GetLocationDiagnosticAsync(GetQuery(request, "request")); break;
+                case "app-settings":
+#if ANDROID
+                    try
+                    {
+                        // Open this app's own settings, not a generic settings page.
+                        var context = Android.App.Application.Context;
+                        var intent = new Android.Content.Intent(
+                            Android.Provider.Settings.ActionApplicationDetailsSettings,
+                            Android.Net.Uri.Parse("package:" + context.PackageName));
+                        intent.AddFlags(Android.Content.ActivityFlags.NewTask);
+                        context.StartActivity(intent);
+                    }
+                    catch (Exception ex) { Debug.WriteLine($"App settings unavailable: {ex}"); }
+#else
+                    try { AppInfo.Current.ShowSettingsUI(); }
+                    catch (Exception ex) { Debug.WriteLine($"App settings unavailable: {ex}"); }
+#endif
+                    break;
+                case NativeLocationSettingsHost:
+#if ANDROID
+                    try
+                    {
+                        var intent = new Android.Content.Intent(Android.Provider.Settings.ActionLocationSourceSettings);
+                        intent.AddFlags(Android.Content.ActivityFlags.NewTask);
+                        Android.App.Application.Context.StartActivity(intent);
+                    }
+                    catch (Exception ex) { Debug.WriteLine($"Location settings unavailable: {ex}"); }
+#endif
+                    break;
                 case "export": await ExportBackupAsync(); break;
                 case "export-safe": await ExportSafeBackupAsync(); break;
                 case "sticker": await ShareCatCardAsync(); break;
@@ -157,11 +188,36 @@ public partial class MainPage : ContentPage
                         });
                     break;
                 case "open":
+                    // The WebView is loaded from file://. Open external maps with a native
+                    // ACTION_VIEW intent instead of navigating the WebView or silently failing.
                     var url = GetQuery(request, "url");
+                    var launched = false;
                     if (Uri.TryCreate(url, UriKind.Absolute, out var target) &&
                         target.Scheme == Uri.UriSchemeHttps &&
                         target.Host.Equals("www.openstreetmap.org", StringComparison.OrdinalIgnoreCase))
-                        await Launcher.Default.OpenAsync(target);
+                    {
+                        try
+                        {
+#if ANDROID
+                            var context = Android.App.Application.Context;
+                            var intent = new Android.Content.Intent(
+                                Android.Content.Intent.ActionView,
+                                Android.Net.Uri.Parse(target.AbsoluteUri));
+                            intent.AddCategory(Android.Content.Intent.CategoryBrowsable);
+                            intent.AddFlags(Android.Content.ActivityFlags.NewTask);
+                            context.StartActivity(intent);
+                            launched = true;
+#else
+                            launched = await Launcher.Default.TryOpenAsync(target);
+#endif
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"OpenStreetMap launch failed: {ex}");
+                        }
+                    }
+                    await GameWebView.EvaluateJavaScriptAsync(
+                        $"window.whiskerExternalMapResult?.({(launched ? "true" : "false")});");
                     break;
             }
         }
@@ -363,32 +419,166 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async Task GetLocationAsync()
+    /// <summary>
+    /// Reports permission/provider status only. Does not request or reveal location.
+    /// Useful when Android Settings says Allowed but the app reports Denied.
+    /// </summary>
+    private Task GetLocationDiagnosticAsync(string? requestToken)
     {
+#if ANDROID
+        var context = Android.App.Application.Context;
+        var diagnostic = new
+        {
+            build = AppInfo.Current.VersionString,
+            coarse = context.CheckSelfPermission(Android.Manifest.Permission.AccessCoarseLocation) ==
+                Android.Content.PM.Permission.Granted,
+            fine = context.CheckSelfPermission(Android.Manifest.Permission.AccessFineLocation) ==
+                Android.Content.PM.Permission.Granted,
+            deviceEnabled = AndroidApproximateLocationProvider.IsDeviceLocationEnabled()
+        };
+        return GameWebView.EvaluateJavaScriptAsync(
+            $"window.whiskerNativeLocationDiagnostic?.({JsonSerializer.Serialize(requestToken)},{JsonSerializer.Serialize(diagnostic)});");
+#else
+        return GameWebView.EvaluateJavaScriptAsync(
+            $"window.whiskerNativeLocationDiagnostic?.({JsonSerializer.Serialize(requestToken)},null);");
+#endif
+    }
+
+    /// <summary>
+    /// Foreground-only, opt-in, approximate location. Permission being allowed
+    /// does not guarantee that Android has a GPS/network fix (e.g., indoors).
+    /// Returns a typed failure reason so the UI can help without asking the
+    /// child to re-enable a permission that is already granted.
+    /// </summary>
+    private async Task GetLocationAsync(string? requestToken)
+    {
+        var safeToken = JsonSerializer.Serialize(requestToken);
+        async Task FailAsync(string reason) => await GameWebView.EvaluateJavaScriptAsync(
+            $"window.whiskerNativeLocationError?.({safeToken},{JsonSerializer.Serialize(reason)});");
+
         try
         {
-        var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
-        if (status != PermissionStatus.Granted)
-            status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
-        if (status != PermissionStatus.Granted)
-        {
-            await GameWebView.EvaluateJavaScriptAsync("window.whiskerNativeLocationError?.();");
-            return;
+#if ANDROID
+            // Android can report LocationWhenInUse as denied when the user
+            // granted only Approximate location. COARSE alone is sufficient.
+            var permitted = AndroidApproximateLocationProvider.HasForegroundPermission();
+            if (!permitted)
+            {
+                // Request only ACCESS_COARSE_LOCATION. The combined MAUI location
+                // request may report Denied for an Android approximate-only grant.
+                // Do not request precise or background access for a private area pin.
+                await Permissions.RequestAsync<WhiskerCoarseLocationPermission>();
+                // The OS grant, not MAUI's grouped status, is authoritative.
+                permitted = AndroidApproximateLocationProvider.HasForegroundPermission();
+            }
+            if (!permitted)
+            {
+                await FailAsync("permission");
+                return;
+            }
+            if (AndroidApproximateLocationProvider.IsDeviceLocationEnabled() == false)
+            {
+                await FailAsync("disabled");
+                return;
+            }
+
+            // Use Android's foreground providers directly. MAUI's generic
+            // geolocation wrapper can reject an approximate-only grant.
+            var position = await AndroidApproximateLocationProvider.TryGetAsync(TimeSpan.FromSeconds(18));
+#else
+            var permission = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+            if (permission != PermissionStatus.Granted)
+                permission = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+            if (permission != PermissionStatus.Granted)
+            {
+                await FailAsync("permission");
+                return;
+            }
+            Location? position = null;
+#endif
+            if (position is null)
+            {
+                try
+                {
+                    position = await Geolocation.Default.GetLocationAsync(
+                        new GeolocationRequest(GeolocationAccuracy.Low, TimeSpan.FromSeconds(10)));
+                }
+                catch (FeatureNotEnabledException)
+                {
+                    await FailAsync("disabled");
+                    return;
+                }
+                catch (PermissionException ex)
+                {
+                    Debug.WriteLine($"MAUI geolocation permission check rejected coarse access: {ex.GetType().Name}");
+#if ANDROID
+                    // Do not incorrectly tell users with COARSE permission that
+                    // location is denied. The native fallback was already tried.
+                    if (!AndroidApproximateLocationProvider.HasForegroundPermission())
+                    {
+                        await FailAsync("permission");
+                        return;
+                    }
+#else
+                    await FailAsync("permission");
+                    return;
+#endif
+                }
+                catch (OperationCanceledException)
+                {
+                    // Last-known location is still worth checking.
+                }
+            }
+            if (position is null)
+            {
+                try
+                {
+                    var cached = await Geolocation.Default.GetLastKnownLocationAsync();
+                    if (cached != null && cached.Timestamp <= DateTimeOffset.UtcNow.AddSeconds(10)
+                        && DateTimeOffset.UtcNow - cached.Timestamp <= TimeSpan.FromMinutes(2))
+                        position = cached;
+                }
+                catch (Exception ex) { Debug.WriteLine($"Last-known location: {ex.GetType().Name}"); }
+            }
+            if (position is null || !double.IsFinite(position.Latitude) ||
+                !double.IsFinite(position.Longitude) || Math.Abs(position.Latitude) > 90 ||
+                Math.Abs(position.Longitude) > 180)
+            {
+                await FailAsync("no_fix");
+                return;
+            }
+
+            // Never send precise coordinates into the WebView / JSON backups.
+            var lat = Math.Round(position.Latitude, 2, MidpointRounding.AwayFromZero);
+            var lng = Math.Round(position.Longitude, 2, MidpointRounding.AwayFromZero);
+            await GameWebView.EvaluateJavaScriptAsync(
+                $"window.whiskerNativeLocation?.({lat.ToString(System.Globalization.CultureInfo.InvariantCulture)},{lng.ToString(System.Globalization.CultureInfo.InvariantCulture)},{safeToken});");
         }
-        var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
-        var position = await Geolocation.Default.GetLocationAsync(request);
-        if (position is null)
+        catch (FeatureNotEnabledException ex)
         {
-            await GameWebView.EvaluateJavaScriptAsync("window.whiskerNativeLocationError?.();");
-            return;
+            Debug.WriteLine(ex); await FailAsync("disabled");
         }
-        await GameWebView.EvaluateJavaScriptAsync(
-            $"window.whiskerNativeLocation({position.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)},{position.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)});");
+        catch (FeatureNotSupportedException ex)
+        {
+            Debug.WriteLine(ex); await FailAsync("unsupported");
+        }
+        catch (PermissionException ex)
+        {
+            Debug.WriteLine(ex);
+#if ANDROID
+            await FailAsync(AndroidApproximateLocationProvider.HasForegroundPermission() ? "no_fix" : "permission");
+#else
+            await FailAsync("permission");
+#endif
+        }
+        catch (OperationCanceledException ex)
+        {
+            Debug.WriteLine(ex); await FailAsync("timeout");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-            await GameWebView.EvaluateJavaScriptAsync("window.whiskerNativeLocationError?.();");
+            Debug.WriteLine($"Whisker Hunt native location failure: {ex}");
+            await FailAsync("no_fix");
         }
     }
 

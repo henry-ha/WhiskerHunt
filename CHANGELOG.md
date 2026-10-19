@@ -1,20 +1,19 @@
-# Whisker Hunt v3.3.0 changelog
+# Whisker Hunt v3.7.4 (Build 43)
 
-## Live capture / AR Safari
-- Alternative-only tool selector with clear **Switch to Lure** and **Switch to Paw** labels.
-- 250 ms spring-pop when the selected capture tool changes, disabled by reduced-motion accessibility settings.
-- Minimal AR Safari HUD: shorter instructions, no redundant photo-quality and launch panels during virtual encounters.
-- Retains the stylised clawed Whisker Paw from v3.2.
+## Cat Map improvements
+- **Fixed the Android external-map handoff in source**: `View map` used a WebView URL that could fail silently. The native `open` bridge now launches a verified OpenStreetMap HTTPS URL using Android's external `ACTION_VIEW` intent, and sends a success/failure result to the app.
+- **No more raw `file://` confirmation dialogue**: Whisker Hunt shows its own clear "Open a street map?" confirmation. Only pressing **Open street map** shares the selected location with OpenStreetMap.
+- **Visible private location plot**: existing saved places appear as larger, bright paw markers, labelled with each cat's name. A pinned cat photo/name card appears even with only one discovery.
+- **Interactive saved-location list**: **Show pin** highlights the chosen marker in the private plot; **Street map** opens the external-map consent screen.
+- Added slight visual separation for duplicate pins in the same rounded area, without changing the coordinates.
+- No network access is necessary to view the private plot. It remains a **coordinate plot, not a street-tile map**.
 
-## Child-friendly collection recovery
-- **Find missing cats** option on Explorer profile.
-- Android read-only inspection of last valid `.bak` copy, reporting missing cat IDs and cats with potentially missing sightings. No photo or GPS content included in preview metadata.
-- Explicitly confirmed additive restoration via existing v1 backup merge; never replaces unrelated current cats.
-- **Save my current CatDex first** export avoids native save/backup rotation, protecting the last-known-good recovery copy while inspecting it.
-- Fallback to importing an existing JSON backup when no usable local recovery snapshot exists.
+## Preserved
+- Existing CatDex cats, photos, sightings, location coordinates, XP, quests, and version 1 JSON backup format.
+- No storage migration or automatic upload.
 
-## Compatibility and limitations
-- Keeps `uk.whiskerhunt.mobile` application ID and v1 CatDex backup format.
-- No existing cats, photos, XP, quests, or pins are deleted or migrated by this UI update.
-- A deleted Android app or cleared app data may be unrecoverable unless a separate JSON backup exists.
-- Android APK not compiled; native .NET MAUI recovery path requires testing on a physical device.
+## Testing
+- `tests/test_v43_map.py` passed (map UI, multiple pins, consent, native route simulation, data preservation).
+- `tests/test_browser.py` passed (CatDex smoke test).
+- `node --check BrowserPreview/app.js` passed.
+- Android build/APK not compiled in this environment (no .NET SDK installed); device verification required.

@@ -1,25 +1,23 @@
-# Whisker Hunt v3.3.0 · Build 35
+# Whisker Hunt 3.7.4 · Build 43
 
-Android-first offline CatDex and AR Safari prototype, developed in .NET MAUI with a WebView frontend.
+Complete Android .NET MAUI project and browser preview.
 
-## Release highlights
+## Install safely
+1. Back up the existing CatDex first from **Your data → Save full backup**.
+2. Extract this ZIP into a fresh folder and open `WhiskerHunt.sln` in Visual Studio.
+3. Keep the current Whisker Hunt app **installed** on the phone. Never uninstall or clear app storage, because that may erase your collection.
+4. Select Android **Debug** and your OnePlus device. Confirm Build and Deploy are enabled in Configuration Manager.
+5. Clean, rebuild, and deploy over the installed app.
+6. Verify the in-app version stamp reads **Whisker Hunt v3.7.4 · build 43**.
 
-- **Cleaner live capture:** Only the *other* tool appears in the tool dock. When Paw is active, the selector says **Switch to Lure**; when Lure is active, it says **Switch to Paw**.
-- **Tool-change animation:** A small, short spring-pop signals tool changes. Reduced-motion preferences are respected.
-- **Less AR Safari clutter:** Long camera instructions, quality box and extra launch instructions are hidden in AR Safari, keeping the camera and cat more prominent. Live-camera classic mode still provides detail.
-- **Find missing cats:** A recovery wizard in Explorer profile checks the Android private `.bak` snapshot and previews possible missing cats, without modifying storage. Users explicitly confirm any merge. Users may also select a previously exported JSON backup. The recovery wizard's **Save my current CatDex first** action exports a cache copy *without rotating the recovery snapshot*.
-- Same Android application ID and v1 CatDex schema: upgrading over the existing app should preserve data. Do **not** uninstall the app or clear app storage.
+## Test the map
+- Go to **Map → Saved locations**. A cat with a saved pin (e.g. Socks) should now have a large labelled marker and cat photo card.
+- Tap **Show pin** to highlight it on the private plot.
+- Tap **Street map → Open street map**. Android should offer/open an external browser showing the saved approximate area in OpenStreetMap.
+- Tapping **Stay private** should remain in Whisker Hunt and contact no map website.
 
-## Where to find recovery
+## Privacy
+The in-app coordinate plot works fully offline and does not show street tiles. An external street map can be viewed only with explicit user consent; then only the selected approximate saved location is shared with OpenStreetMap. Never use the app to follow cats into unsafe/private areas.
 
-**Explorer profile → Find missing cats**. On Android, it reads `whisker-hunt-state.json.bak` if present and valid. If unavailable, select a previously exported backup. No recovery is guaranteed when Android app storage has already been erased.
-
-## Installation and testing
-
-1. Make a full CatDex backup and keep the file somewhere safe before deploying.
-2. Extract the complete source ZIP into a **new folder**, then open `WhiskerHunt.sln`.
-3. Ensure your Android device and **Build + Deploy** are enabled in Visual Studio Configuration Manager.
-4. Clean, rebuild and deploy **over** the existing installation. Do not uninstall.
-5. Confirm the app shows **v3.3.0 · build 35**.
-
-Browser tests pass. **No Android APK was compiled in this environment**; native recovery and live-camera performance still require a device test.
+## Build note
+The Android APK has **not** been compiled in this environment. The native external-browser handoff still needs your physical-device test.

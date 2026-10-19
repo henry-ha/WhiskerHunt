@@ -9,8 +9,8 @@
     <Nullable>enable</Nullable>
     <ApplicationTitle>Whisker Hunt</ApplicationTitle>
     <ApplicationId>uk.whiskerhunt.mobile</ApplicationId>
-    <ApplicationDisplayVersion>3.3.0</ApplicationDisplayVersion>
-    <ApplicationVersion>35</ApplicationVersion>
+    <ApplicationDisplayVersion>3.7.4</ApplicationDisplayVersion>
+    <ApplicationVersion>43</ApplicationVersion>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
   </PropertyGroup>

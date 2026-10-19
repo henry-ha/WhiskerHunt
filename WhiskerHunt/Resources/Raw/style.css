@@ -387,3 +387,54 @@
 .recovery-help .primary{width:100%;margin-top:10px}
 .recovery-names{margin:10px 0;padding-left:18px;font-size:14px}
 @media(prefers-reduced-motion:reduce){#throw-item.tool-switch-pop:not(.dragging){animation:none!important}}
+
+/* v3.4 live claw animation, safer location helper, more detailed AR cats */
+.location-helper{margin:10px 0 0;padding:12px;border-radius:14px;background:rgba(120,86,186,.18);border:1px solid rgba(186,160,248,.35);font-size:12px;line-height:1.45}
+.location-helper.hidden{display:none!important}
+.location-helper p{margin:0 0 10px;color:#efe8ff}
+.location-helper-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.location-helper .secondary,.location-helper .text-btn{margin:0!important}
+.whisker-paw-svg .paw-pad-split{fill:none;stroke:#ffeaf4;stroke-width:3;stroke-linecap:round;opacity:.95}
+.whisker-paw-svg .paw-sheen{fill:none;stroke:#ffffff52;stroke-width:3;stroke-linecap:round;opacity:.8}
+.whisker-paw-svg .paw-claw{fill:#fffafc;stroke:#ffdcea;stroke-width:1.1;stroke-linejoin:round;transform-box:fill-box;transform-origin:50% 100%;transition:transform .2s ease, opacity .2s ease}
+#encounter-orb .paw-claws,#encounter-orb .paw-digits,#encounter-orb .paw-center{transition:transform .22s ease-out, opacity .22s ease-out;transform-box:fill-box;transform-origin:center}
+#encounter-orb.grab-1 .paw-claws{transform:translateY(9px) scaleY(.86)}
+#encounter-orb.grab-1 .claw-1,#encounter-orb.grab-1 .claw-2,#encounter-orb.grab-1 .claw-3,#encounter-orb.grab-1 .claw-4{transform:translateY(6px) scaleY(.65);opacity:.45}
+#encounter-orb.grab-2 .paw-claws{transform:translateY(-2px) scaleY(1.08)}
+#encounter-orb.grab-2 .claw-1,#encounter-orb.grab-2 .claw-2,#encounter-orb.grab-2 .claw-3,#encounter-orb.grab-2 .claw-4{transform:translateY(-3px) scaleY(1.15);opacity:1}
+.ar-cat-realish{filter:drop-shadow(0 8px 14px rgba(0,0,0,.18))}
+@media(prefers-reduced-motion:reduce){#encounter-orb .paw-claws,.whisker-paw-svg .paw-claw{transition:none!important;transform:none!important}}
+
+/* v3.6 location assistance: legible status and settings links */
+.location-helper-actions .text-btn{min-height:38px;text-align:left}
+.location-helper p{line-height:1.55}
+
+/* v3.6 location assistance: legible status and settings links */
+.location-helper-actions .text-btn{min-height:38px;text-align:left}
+.location-helper p{line-height:1.55}
+
+/* v3.7.2: read-only Android permission and provider diagnostic */
+.location-diagnostics{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:rgba(17,28,51,.85);border:1px solid rgba(129,244,216,.32);font-size:12px;line-height:1.45;overflow-wrap:anywhere;color:#dbf8f0}
+.location-diagnostics.hidden{display:none!important}
+
+/* v3.7.4: brighter private discovery pins, selectable card and clear street-map actions */
+.map-board-v43{min-height:370px;background:radial-gradient(ellipse at 52% 48%,#364466 0%,#1d2941 60%,#151a2b 100%);border-color:#726889}
+.map-board-v43:before{opacity:.9;background-size:44px 44px}
+.map-board-v43:after{display:none}
+.map-plot-caption{position:absolute;top:16px;left:16px;z-index:2;background:rgba(12,21,37,.88);color:#f5e6ff;border:1px solid #68607c;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800}
+.map-pin-v43{width:56px;height:56px;rotate:none;transform:translate(-50%,-50%);border-radius:50%;border:3px solid #fff1fa;background:linear-gradient(145deg,#ffb7d4,#f165a0);box-shadow:0 0 0 9px rgba(255,142,192,.19),0 7px 23px rgba(255,102,169,.48);display:grid;place-items:center;padding:0;z-index:3;transition:box-shadow .2s,scale .2s}
+.map-pin-v43:hover,.map-pin-v43.map-pin-selected{scale:1.08;box-shadow:0 0 0 12px rgba(122,240,213,.19),0 0 0 4px #89ffe0,0 8px 24px rgba(255,112,182,.55)}
+.map-pin-v43 .map-pin-icon{font-size:28px;rotate:none;line-height:1;color:#552044}
+.map-pin-v43 .map-pin-label{position:absolute;rotate:none;left:50%;top:59px;transform:translateX(-50%);max-width:125px;min-width:68px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;background:#161a32e8;border:1px solid #6b5b87;color:white;border-radius:99px;padding:5px 9px;font-size:11px;font-weight:850;box-shadow:0 3px 8px #0009;pointer-events:none}
+.map-selected-card{position:absolute;left:13px;right:13px;bottom:12px;z-index:2;display:flex;align-items:center;gap:12px;padding:9px;border-radius:16px;border:1px solid #817198;background:rgba(20,23,44,.94);box-shadow:0 10px 24px #070910a0}
+.map-selected-card img{height:48px;width:48px;border-radius:10px;object-fit:cover}
+.map-selected-card strong,.map-selected-card small{display:block}
+.map-selected-card strong{font-size:14px;color:#fff}
+.map-selected-card small{font-size:11px;color:#c2c8e3;margin-top:3px}
+.map-no-pins{position:absolute;top:39%;width:100%;text-align:center;color:#d0d6ea}
+.map-no-pins span{font-size:49px}.map-no-pins p{font-size:13px}
+.map-entry-v43{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:center}
+.map-entry-v43>div{min-width:0}.map-entry-v43 small{line-height:1.5}.map-entry-v43 .map-street-btn{grid-column:2/4;justify-self:end;margin:0}
+.map-entry-selected{border-color:#7bd9cf;box-shadow:inset 0 0 0 1px #7bd9cf33}
+@media(min-width:410px){.map-entry-v43{grid-template-columns:52px minmax(0,1fr) auto auto}.map-entry-v43 .map-street-btn{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.map-pin-v43{transition:none!important}}
