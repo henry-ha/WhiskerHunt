@@ -1,11 +1,11 @@
 /* Whisker Hunt 2.7 — offline-first, no accounts, no tracking, no server. */
 'use strict';
-const WHISKER_BUILD='3.7.4', WHISKER_BUILD_NUMBER=43;
+const WHISKER_BUILD='3.8.3', WHISKER_BUILD_NUMBER=47;
 const DATABASE='whiskerhunt_local_v1', DB_VERSION=1;
-const COATS=['Tabby','Ginger','Black','White','Tuxedo','Calico','Grey','Other'];
+const COATS=['Tabby','Ginger','Brown','Black','White','Cream','Tuxedo','Calico','Tortoiseshell','Grey','Colourpoint','Other'];
 const PERSONALITIES=['Unknown','Curious','Sleepy','Playful','Shy','Friendly','Adventurous'];
 const PERSONALITY_EMOJI={Unknown:'🐱',Curious:'🔎',Sleepy:'💤',Playful:'🧶',Shy:'🌙',Friendly:'💗',Adventurous:'🧭'};
-const EMOJIS={Tabby:'🐯',Ginger:'🧡',Black:'🖤',White:'🤍',Tuxedo:'🎩',Calico:'🎨',Grey:'🌫️',Other:'🐱'};
+const EMOJIS={Tabby:'🐯',Ginger:'🧡',Black:'🖤',White:'🤍',Tuxedo:'🎩',Calico:'🎨',Grey:'🌫️',Brown:'🤎',Cream:'🥛',Tortoiseshell:'🍁',Colourpoint:'🎭',Other:'🐱'};
 const similarityCache=new Map();
 let matchRequest=0;
 let encounterEpoch=0;
@@ -108,25 +108,25 @@ function navigate(page){closeModal();s.screen=page;window.scrollTo(0,0);document
 function render(){const views={home:renderHome,dex:renderDex,explore:renderExplore,quests:renderQuests,profile:renderProfile,journal:renderJournal};$('view').innerHTML=(views[s.screen]||renderHome)();wireScreen()}
 function wireScreen(){document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));document.querySelectorAll('[data-cat]').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.cat)));document.querySelectorAll('[data-claim]').forEach(b=>b.addEventListener('click',()=>claimQuest(b.dataset.claim)));document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{s.filter=b.dataset.filter;render()}));if($('dex-search')){$('dex-search').value=s.search;$('dex-search').addEventListener('input',e=>{s.search=e.target.value;updateDexGrid()})}if($('dex-sort')){$('dex-sort').value=s.dexSort;$('dex-sort').addEventListener('change',e=>{s.dexSort=e.target.value;updateDexGrid()})}document.querySelectorAll('[data-map-select]').forEach(b=>b.addEventListener('click',()=>selectPrivateMapPin(Number(b.dataset.mapSelect))));document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>action(b.dataset.action)));document.querySelectorAll('[data-journal-catch]').forEach(b=>b.addEventListener('click',startCatch));document.querySelectorAll('[data-journal-filter]').forEach(b=>b.addEventListener('click',()=>{s.journalFilter=b.dataset.journalFilter;render()}));if($('journal-search')){$('journal-search').value=s.journalSearch;$('journal-search').addEventListener('input',e=>{s.journalSearch=e.target.value;updateJournalCards()})}}
 function section(label,link='',go=''){return `<div class="section-title"><h2>${label}</h2>${link?`<button class="text-btn" data-go="${go}">${link} →</button>`:''}</div>`}
-function renderHome(){const total=allSightings().length;const daily=dailyQuests()[0];const latest=[...s.cats].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,6);return `<div class="intro"><div class="eyebrow">YOUR CAT-CHASING ADVENTURE</div><h1>Hello, explorer <span>👋</span></h1><p class="dim no-margin" style="font-size:13px">Every whisker has a story. Find yours.</p></div><section class="hero"><span class="pill lime">✦ THE WORLD IS YOUR CATDEX</span><div class="hero-title">See a cat?<br>Catch the moment.</div><p class="hero-desc">Meet real cats, level up and build your own legendary collection.</p><button id="hero-catch" class="primary">📸 Catch a cat →</button><span class="hero-cat" aria-hidden="true">🐈</span></section><div class="stats"><div class="stat"><strong>${s.cats.length}</strong><span>Unique cats</span></div><div class="stat"><strong>${total}</strong><span>Sightings</span></div><div class="stat"><strong>${streak()}</strong><span>Day streak</span></div></div><div class="level-card"><div class="level-top"><span class="level-num">✦ LEVEL ${level()}</span><span class="level-name">${levelTitle()}</span></div><div class="progress"><b style="width:${s.profile.xp%200/2}%"></b></div><p class="progress-copy">${s.profile.xp%200} / 200 XP to your next level · ${s.profile.xp} total XP</p></div>${section('Today\'s challenge','All quests','quests')}<div class="quest-card"><div class="quest-top"><div class="quest-icon">${daily.icon}</div><div class="quest-details"><h3>${daily.title}</h3><p>${daily.description}</p></div><div class="quest-reward">+${daily.xp} XP</div></div><div class="quest-bar"><span style="width:${Math.min(100,100*daily.progress/daily.target)}%"></span></div><div class="flex between" style="margin-top:9px"><span class="count-label">${Math.min(daily.progress,daily.target)} / ${daily.target}</span>${questAction(daily)}</div></div>${section('Your cat collection','View CatDex','dex')}${latest.length?`<div class="cat-strip">${latest.map(c=>`<button class="mini-cat" data-cat="${esc(c.id)}"><img src="${c.photo}" alt="${esc(c.name)}"><strong>${esc(c.name)}</strong><small>${esc(c.coat)} · ${catches(c)} sighting${catches(c)!==1?'s':''}</small></button>`).join('')}</div>`:`<div class="feature-empty"><div class="big">🐈‍⬛</div><h3>Your adventure starts here</h3><p>Found a friendly-looking feline? Snap your first cat and bring your CatDex to life.</p><button id="empty-catch" class="secondary">Catch your first cat</button></div>`}`}
-function renderDex(){const realCats=s.cats.filter(c=>!c.virtual);const coats=new Set(realCats.map(c=>c.coat));return `<div class="page-head"><div class="eyebrow">YOUR COLLECTION</div><h1>The CatDex 🐈</h1><p class="subtitle">${realCats.length} real cats · ${s.cats.filter(c=>c.virtual).length} virtual friends</p></div>${renderVirtualGallery()}<div class="bingo"><div class="flex between"><div><div class="eyebrow">COAT COLLECTION CHALLENGE</div><h3>Cat Bingo</h3></div><span class="bingo-progress">${coats.size} / ${COATS.length}</span></div><div class="bingo-grid">${COATS.map(c=>`<button class="bingo-tile ${coats.has(c)?'found':''}" data-filter="${c}" aria-label="Filter ${c} cats"><span>${EMOJIS[c]}</span><small>${c}</small>${coats.has(c)?'<b>✓</b>':'<b>?</b>'}</button>`).join('')}</div><p class="bingo-sub">${coats.size===COATS.length?'🎉 Your coat collection is complete!':'Meet cats with different coats to fill your album. Tap a tile to filter.'}</p></div><input class="search-input" id="dex-search" aria-label="Search cats" placeholder="⌕   Search your feline friends..."><div class="chips">${['All','Favourites',...COATS].map(c=>`<button class="chip ${s.filter===c?'selected':''}" data-filter="${c}">${c==='All'?'✦ ':c==='Favourites'?'♥ ':''}${c}</button>`).join('')}</div><div class="dex-sort-row"><label for="dex-sort">Sort your collection</label><select id="dex-sort" class="select" aria-label="Sort cats"><option value="recent">Recently discovered</option><option value="last">Last seen</option><option value="name">Name A–Z</option><option value="visits">Most sightings</option><option value="favourites">Favourites first</option></select></div><div id="dex-grid">${dexGrid()}</div>`}
+function renderHome(){const total=allSightings().length;const daily=dailyQuests()[0];const latest=[...s.cats].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,6);return `<div class="intro"><div class="eyebrow">YOUR CAT-CHASING ADVENTURE</div><h1>Hello, explorer <span>👋</span></h1><p class="dim no-margin" style="font-size:13px">Every whisker has a story. Find yours.</p></div><section class="hero"><span class="pill lime">✦ THE WORLD IS YOUR CATDEX</span><div class="hero-title">See a cat?<br>Catch the moment.</div><p class="hero-desc">Meet real cats, level up and build your own legendary collection.</p><button id="hero-catch" class="primary">📸 Catch a cat →</button><span class="hero-cat" aria-hidden="true">🐈</span></section><div class="stats"><div class="stat"><strong>${s.cats.length}</strong><span>Unique cats</span></div><div class="stat"><strong>${total}</strong><span>Sightings</span></div><div class="stat"><strong>${streak()}</strong><span>Day streak</span></div></div><div class="level-card"><div class="level-top"><span class="level-num">✦ LEVEL ${level()}</span><span class="level-name">${levelTitle()}</span></div><div class="progress"><b style="width:${s.profile.xp%200/2}%"></b></div><p class="progress-copy">${s.profile.xp%200} / 200 XP to your next level · ${s.profile.xp} total XP</p></div>${section('Today\'s challenge','All quests','quests')}<div class="quest-card"><div class="quest-top"><div class="quest-icon">${daily.icon}</div><div class="quest-details"><h3>${daily.title}</h3><p>${daily.description}</p></div><div class="quest-reward">+${daily.xp} XP</div></div><div class="quest-bar"><span style="width:${Math.min(100,100*daily.progress/daily.target)}%"></span></div><div class="flex between" style="margin-top:9px"><span class="count-label">${Math.min(daily.progress,daily.target)} / ${daily.target}</span>${questAction(daily)}</div></div>${section('Your cat collection','View CatDex','dex')}${latest.length?`<div class="cat-strip">${latest.map(c=>`<button class="mini-cat" data-cat="${esc(c.id)}"><img src="${c.photo}" alt="${esc(c.name)}"><strong>${esc(c.name)}</strong><small>${speciesIcon(speciesOf(c))} ${esc(speciesOf(c))}${c.speciesDetail?' · '+esc(c.speciesDetail):speciesOf(c)==='Cat'?' · '+esc(c.coat):''} · ${catches(c)} sighting${catches(c)!==1?'s':''}</small></button>`).join('')}</div>`:`<div class="feature-empty"><div class="big">🐈‍⬛</div><h3>Your adventure starts here</h3><p>Found a friendly-looking feline? Snap your first cat and bring your CatDex to life.</p><button id="empty-catch" class="secondary">Catch your first cat</button></div>`}`}
+function renderDex(){const realCats=s.cats.filter(c=>!c.virtual&&(c.species||'Cat')==='Cat');const coats=new Set(realCats.map(c=>c.coat));return `<div class="page-head"><div class="eyebrow">YOUR COLLECTION</div><h1>The CatDex 🐈</h1><p class="subtitle">${realCats.length} real cats · ${s.cats.filter(c=>c.virtual).length} virtual friends</p></div>${renderVirtualGallery()}<div class="bingo"><div class="flex between"><div><div class="eyebrow">COAT COLLECTION CHALLENGE</div><h3>Cat Bingo</h3></div><span class="bingo-progress">${coats.size} / ${COATS.length}</span></div><div class="bingo-grid">${COATS.map(c=>`<button class="bingo-tile ${coats.has(c)?'found':''}" data-filter="${c}" aria-label="Filter ${c} cats"><span>${EMOJIS[c]}</span><small>${c}</small>${coats.has(c)?'<b>✓</b>':'<b>?</b>'}</button>`).join('')}</div><p class="bingo-sub">${coats.size===COATS.length?'🎉 Your coat collection is complete!':'Meet cats with different coats to fill your album. Tap a tile to filter.'}</p></div><input class="search-input" id="dex-search" aria-label="Search cats" placeholder="⌕   Search your feline friends..."><div class="chips">${['All','Favourites',...COATS].map(c=>`<button class="chip ${s.filter===c?'selected':''}" data-filter="${c}">${c==='All'?'✦ ':c==='Favourites'?'♥ ':''}${c}</button>`).join('')}</div><div class="dex-sort-row"><label for="dex-sort">Sort your collection</label><select id="dex-sort" class="select" aria-label="Sort cats"><option value="recent">Recently discovered</option><option value="last">Last seen</option><option value="name">Name A–Z</option><option value="visits">Most sightings</option><option value="favourites">Favourites first</option></select></div><div id="dex-grid">${dexGrid()}</div>`}
 function dexGrid(){const q=s.search.toLowerCase();const cs=s.cats.filter(c=>!c.virtual).filter(c=>(s.filter==='All'||(s.filter==='Favourites'&&c.fav)||c.coat===s.filter)&&(c.name.toLowerCase().includes(q)||c.coat.toLowerCase().includes(q))).sort((a,b)=>{const last=c=>Math.max(0,...(c.sightings||[]).map(v=>Date.parse(v.at)||0));switch(s.dexSort){case 'name':return a.name.localeCompare(b.name);case 'last':return last(b)-last(a);case 'visits':return catches(b)-catches(a)||a.name.localeCompare(b.name);case 'favourites':return Number(b.fav)-Number(a.fav)||last(b)-last(a);default:return b.createdAt.localeCompare(a.createdAt)}});return cs.length?`<div class="cat-grid">${cs.map(c=>`<button class="cat-tile" data-cat="${esc(c.id)}"><img class="cat-img" src="${c.photo}" alt="${esc(c.name)}"><div class="cat-info"><strong>${esc(c.name)}</strong><small>${esc(c.coat)} · ${catches(c)} sightings${c.personality&&c.personality!=='Unknown'?' · '+esc(c.personality):''}</small><div class="tagline"><span class="tag">${rank(c)}</span><span class="badge-heart">${c.fav?'♥':'♡'}</span></div></div></button>`).join('')}</div>`:`<div class="feature-empty empty-dex"><div class="big">🐱</div><h3>No cats found (yet!)</h3><p>${s.cats.length?'Try another filter or search.':'Every great collection begins with one curious cat.'}</p><button class="primary" id="dex-catch">📸 Catch a cat</button></div>`}
 function updateDexGrid(){const node=$('dex-grid');if(node){node.innerHTML=dexGrid();node.querySelectorAll('[data-cat]').forEach(el=>el.addEventListener('click',()=>openDetail(el.dataset.cat)));const b=$('dex-catch');if(b)b.addEventListener('click',startCatch)}}
 function rank(cat){const n=catches(cat);return n>=5?'👑 Local legend':n>=3?'★ Old friend':'✦ New friend'}
 function streak(){const days=[...new Set(allSightings().map(x=>dateKey(x.at)))].sort().reverse();if(!days.length)return 0;const start=new Date();if(!days.includes(dateKey(start))){start.setDate(start.getDate()-1);if(!days.includes(dateKey(start)))return 0}let count=0;while(days.includes(dateKey(start))){count++;start.setDate(start.getDate()-1)}return count}
 function weekKey(){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return dateKey(d)}
-function weeklyQuests(){const entries=allSightings().filter(v=>dateKey(v.at)>=weekKey());const newCats=s.cats.filter(c=>!c.virtual&&dateKey(c.createdAt)>=weekKey());const repeatIds=new Set(s.cats.filter(c=>!c.virtual&&c.sightings.some((v,i)=>i>0&&dateKey(v.at)>=weekKey())).map(c=>c.id));return [{id:'weekly-new',weekly:true,icon:'🧭',title:'Neighbourhood explorer',description:'Discover 3 different cats this week',progress:newCats.length,target:3,xp:200},{id:'weekly-friends',weekly:true,icon:'💜',title:'Familiar faces',description:'Log a repeat sighting for 2 different cats',progress:repeatIds.size,target:2,xp:150},{id:'weekly-days',weekly:true,icon:'📆',title:'Adventure days',description:'Spot cats on 3 different days this week',progress:new Set(entries.map(v=>dateKey(v.at))).size,target:3,xp:150}]}
+function weeklyQuests(){const entries=s.cats.filter(c=>!c.virtual&&(c.species||'Cat')==='Cat').flatMap(c=>c.sightings||[]).filter(v=>dateKey(v.at)>=weekKey());const newCats=s.cats.filter(c=>!c.virtual&&(c.species||'Cat')==='Cat'&&dateKey(c.createdAt)>=weekKey());const repeatIds=new Set(s.cats.filter(c=>!c.virtual&&(c.species||'Cat')==='Cat'&&c.sightings.some((v,i)=>i>0&&dateKey(v.at)>=weekKey())).map(c=>c.id));return [{id:'weekly-new',weekly:true,icon:'🧭',title:'Neighbourhood explorer',description:'Discover 3 different cats this week',progress:newCats.length,target:3,xp:200},{id:'weekly-friends',weekly:true,icon:'💜',title:'Familiar faces',description:'Log a repeat sighting for 2 different cats',progress:repeatIds.size,target:2,xp:150},{id:'weekly-days',weekly:true,icon:'📆',title:'Adventure days',description:'Spot cats on 3 different days this week',progress:new Set(entries.map(v=>dateKey(v.at))).size,target:3,xp:150}]}
 function questMarker(q){return (q.weekly?weekKey():today())+':'+q.id}
 function renderQuestCard(q){return `<div class="quest-card ${s.profile.claimed.includes(questMarker(q))?'complete':''}"><div class="quest-top"><div class="quest-icon">${q.icon}</div><div class="quest-details"><h3>${q.title}</h3><p>${q.description}</p></div><div class="quest-reward">+${q.xp} XP</div></div><div class="quest-bar"><span style="width:${Math.min(100,100*q.progress/q.target)}%"></span></div><div class="flex between" style="margin-top:9px"><span class="count-label">${Math.min(q.progress,q.target)} / ${q.target}</span>${questAction(q)}</div></div>`}
-function dailyQuests(){const todaySightings=allSightings().filter(a=>dateKey(a.at)===today());const todayNew=s.cats.filter(c=>!c.virtual&&dateKey(c.createdAt)===today());const coats=new Set(todayNew.map(c=>c.coat));return [{id:'first',icon:'📷',title:'First whisker of the day',description:'Record a cat sighting today',progress:todaySightings.length,target:1,xp:35},{id:'double',icon:'🐾',title:'Double pawprints',description:'Record two cat encounters today',progress:todaySightings.length,target:2,xp:60},{id:'discover',icon:'✨',title:'New face in town',description:'Meet one new cat today',progress:todayNew.length,target:1,xp:75},{id:'variety',icon:'🌈',title:'Coat collector',description:'Meet two different coat types today',progress:coats.size,target:2,xp:100}]}
+function dailyQuests(){const todaySightings=s.cats.filter(c=>!c.virtual&&(c.species||'Cat')==='Cat').flatMap(c=>c.sightings||[]).filter(a=>dateKey(a.at)===today());const todayNew=s.cats.filter(c=>!c.virtual&&(c.species||'Cat')==='Cat'&&dateKey(c.createdAt)===today());const coats=new Set(todayNew.map(c=>c.coat));return [{id:'first',icon:'📷',title:'First whisker of the day',description:'Record a cat sighting today',progress:todaySightings.length,target:1,xp:35},{id:'double',icon:'🐾',title:'Double pawprints',description:'Record two cat encounters today',progress:todaySightings.length,target:2,xp:60},{id:'discover',icon:'✨',title:'New face in town',description:'Meet one new cat today',progress:todayNew.length,target:1,xp:75},{id:'variety',icon:'🌈',title:'Coat collector',description:'Meet two different coat types today',progress:coats.size,target:2,xp:100}]}
 function questAction(q){if(s.profile.claimed.includes(questMarker(q)))return `<span class="complete-word">✓ CLAIMED</span>`;if(q.progress>=q.target)return `<button class="text-btn" data-claim="${q.id}">Claim reward ✦</button>`;return `<span class="count-label">In progress</span>`}
-function medals(){const cs=s.cats.filter(c=>!c.virtual);const coats=new Set(cs.map(c=>c.coat));return [{icon:'🥇',name:'First Pawprint',desc:'Find your first cat',ok:cs.length>=1},{icon:'🐾',name:'Whisker Whisperer',desc:'Find 5 different cats',ok:cs.length>=5},{icon:'🌈',name:'Colour Collector',desc:'Discover 4 coat types',ok:coats.size>=4},{icon:'⭐',name:'Old Friends',desc:'Spot the same cat 3 times',ok:cs.some(c=>catches(c)>=3)},{icon:'👑',name:'Neighbourhood Legend',desc:'Spot one cat 5 times',ok:cs.some(c=>catches(c)>=5)},{icon:'🔥',name:'Dedicated Explorer',desc:'Reach a 3-day streak',ok:streak()>=3}]}
+function medals(){const cs=s.cats.filter(c=>!c.virtual&&(c.species||'Cat')==='Cat');const coats=new Set(cs.map(c=>c.coat));return [{icon:'🥇',name:'First Pawprint',desc:'Find your first cat',ok:cs.length>=1},{icon:'🐾',name:'Whisker Whisperer',desc:'Find 5 different cats',ok:cs.length>=5},{icon:'🌈',name:'Colour Collector',desc:'Discover 4 coat types',ok:coats.size>=4},{icon:'⭐',name:'Old Friends',desc:'Spot the same cat 3 times',ok:cs.some(c=>catches(c)>=3)},{icon:'👑',name:'Neighbourhood Legend',desc:'Spot one cat 5 times',ok:cs.some(c=>catches(c)>=5)},{icon:'🔥',name:'Dedicated Explorer',desc:'Reach a 3-day streak',ok:streak()>=3}]}
 function renderQuests(){const qs=dailyQuests();return `<div class="page-head"><div class="eyebrow">DAILY & WEEKLY ADVENTURES</div><h1>Quests & rewards ✨</h1><p class="subtitle">Earn XP by exploring naturally. No need to disturb cats or visit private property.</p></div><div class="soft-card"><div class="flex between"><div><div class="eyebrow">TOTAL EXPERIENCE</div><h2 style="font-size:29px;margin:6px 0 0">${s.profile.xp} <small style="color:#c7abec;font-size:13px">XP</small></h2></div><div class="icon-round">🏆</div></div></div>${section('Daily quests')}<p class="quest-hint">Reset daily at local midnight.</p><div class="quest-grid">${qs.map(renderQuestCard).join('')}</div>${section('Weekly adventures')}<p class="quest-hint">Reset every Monday. Previous rewards remain yours.</p><div class="quest-grid">${weeklyQuests().map(renderQuestCard).join('')}</div>${section('Your badges')}<div class="medal-grid">${medals().map(m=>`<div class="medal ${m.ok?'unlocked':''}"><span>${m.icon}</span><strong>${m.name}</strong><small>${m.ok?'✓ Unlocked':m.desc}</small></div>`).join('')}</div>`}
 function savedMapPoints(){
  return s.cats.flatMap(cat=>(cat.sightings||[]).filter(x=>x &&
     typeof x.lat==='number' && Number.isFinite(x.lat) && Math.abs(x.lat)<=90 &&
     typeof x.lng==='number' && Number.isFinite(x.lng) && Math.abs(x.lng)<=180)
-  .map((entry)=>({lat:entry.lat,lng:entry.lng,at:entry.at,catId:cat.id,sightingId:entry.id,name:cat.name,photo:entry.photo||cat.photo,virtual:cat.virtual===true})))
+  .map((entry)=>({lat:entry.lat,lng:entry.lng,at:entry.at,catId:cat.id,sightingId:entry.id,name:cat.name,photo:entry.photo||cat.photo,virtual:cat.virtual===true,species:speciesOf(cat)})))
   .sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
 }
 // A deliberately private coordinate plot, not map tiles: drawing it doesn't transmit GPS.
@@ -145,7 +145,7 @@ function privatePlotPosition(point,points,index){
 function renderExplore(){
  const geo=savedMapPoints(),pins=geo.map((g,i)=>{
   const {x,y}=privatePlotPosition(g,geo,i);
-  return `<button type="button" class="map-pin map-pin-v43 ${i===0?'map-pin-selected':''}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%" data-map-select="${i}" aria-label="Show ${esc(g.name)} on your private discovery plot"><span class="map-pin-icon">🐾</span><span class="map-pin-label">${esc(g.name)}</span></button>`;
+  return `<button type="button" class="map-pin map-pin-v43 ${i===0?'map-pin-selected':''}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%" data-map-select="${i}" aria-label="Show ${esc(g.name)} on your private discovery plot"><span class="map-pin-icon">${speciesIcon(g.species)}</span><span class="map-pin-label">${esc(g.name)}</span></button>`;
  }).join('');
  const latest=geo[0];
  return `<div class="page-head"><div class="eyebrow">YOUR PRIVATE TRAIL</div><h1>Cat map 🗺️</h1><p class="subtitle">Your saved discoveries appear here. Viewing this private plot never sends your location anywhere.</p></div>
@@ -187,11 +187,11 @@ window.whiskerExternalMapResult=function(success){
 };
 
 function journalEntries(){return s.cats.flatMap(cat=>(cat.sightings||[]).map((entry,index)=>({cat,entry,isFirst:index===0}))).filter(x=>x.entry&&typeof x.entry.at==='string'&&Number.isFinite(Date.parse(x.entry.at))).sort((a,b)=>Date.parse(b.entry.at)-Date.parse(a.entry.at))}
-function journalCards(){const query=s.journalSearch.trim().toLowerCase();const entries=journalEntries().filter(x=>(s.journalFilter==='All'||(s.journalFilter==='New cats'&&x.isFirst)||(s.journalFilter==='Reunions'&&!x.isFirst))&&(!query||[x.cat.name,x.cat.coat,x.entry.note||''].some(v=>String(v).toLowerCase().includes(query))));if(!entries.length)return `<div class="feature-empty"><div class="big">📖</div><h3>No matching memories</h3><p>Try another filter, or capture a cat to start your journal.</p><button class="secondary" data-journal-catch>📸 Catch a cat</button></div>`;let lastDay='';return entries.slice(0,100).map(({cat,entry,isFirst})=>{const day=dateKey(entry.at);const heading=day!==lastDay?`<h3 class="journal-day">${esc(dateDisplay(entry.at))}</h3>`:'';lastDay=day;return `${heading}<button class="journal-card" data-cat="${esc(cat.id)}"><img src="${entry.photo||cat.photo}" alt=""><span class="journal-card-body"><strong>${esc(cat.name)}</strong><small>${isFirst?'✨ First discovery':'🐾 Reunion'} · ${esc(cat.coat)}</small>${entry.note?`<span class="journal-note">${esc(entry.note)}</span>`:''}</span><span class="journal-arrow">›</span></button>`}).join('')+(entries.length>100?'<p class="footnote">Showing your 100 most recent matching sightings.</p>':'')}
+function journalCards(){const query=s.journalSearch.trim().toLowerCase();const entries=journalEntries().filter(x=>(s.journalFilter==='All'||(s.journalFilter==='New cats'&&x.isFirst)||(s.journalFilter==='Reunions'&&!x.isFirst))&&(!query||[x.cat.name,x.cat.coat,x.entry.note||''].some(v=>String(v).toLowerCase().includes(query))));if(!entries.length)return `<div class="feature-empty"><div class="big">📖</div><h3>No matching memories</h3><p>Try another filter, or capture a cat to start your journal.</p><button class="secondary" data-journal-catch>📸 Catch a cat</button></div>`;let lastDay='';return entries.slice(0,100).map(({cat,entry,isFirst})=>{const day=dateKey(entry.at);const heading=day!==lastDay?`<h3 class="journal-day">${esc(dateDisplay(entry.at))}</h3>`:'';lastDay=day;return `${heading}<button class="journal-card" data-cat="${esc(cat.id)}"><img src="${entry.photo||cat.photo}" alt=""><span class="journal-card-body"><strong>${esc(cat.name)}</strong><small>${isFirst?'✨ First discovery':'🐾 Reunion'} · ${speciesIcon(speciesOf(cat))} ${esc(speciesOf(cat))}${cat.speciesDetail?" · "+esc(cat.speciesDetail):""}</small>${entry.note?`<span class="journal-note">${esc(entry.note)}</span>`:''}</span><span class="journal-arrow">›</span></button>`}).join('')+(entries.length>100?'<p class="footnote">Showing your 100 most recent matching sightings.</p>':'')}
 function updateJournalCards(){const target=$('journal-results');if(!target)return;target.innerHTML=journalCards();target.querySelectorAll('[data-cat]').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.cat)));const catchButton=target.querySelector('[data-journal-catch]');if(catchButton)catchButton.addEventListener('click',startCatch)}
 function renderJournal(){const entries=journalEntries();const uniqueDays=new Set(entries.map(x=>dateKey(x.entry.at))).size;return `<div class="page-head"><div class="eyebrow">YOUR REAL-WORLD CAT ADVENTURES</div><h1>Sighting journal 📖</h1><p class="subtitle">${entries.length} encounters across ${uniqueDays} day${uniqueDays===1?'':'s'}. Your photos and memories stay private.</p></div><button class="text-btn journal-back" data-go="profile">← Back to profile</button><input class="search-input" id="journal-search" aria-label="Search sightings" placeholder="⌕   Search cats and memories..."><div class="chips">${['All','New cats','Reunions'].map(v=>`<button class="chip ${s.journalFilter===v?'selected':''}" data-journal-filter="${v}">${v}</button>`).join('')}</div><div id="journal-results">${journalCards()}</div>`}
 function collectionInsights(){
- const entries=journalEntries(),coats=new Set(s.cats.map(c=>c.coat));
+ const entries=journalEntries(),coats=new Set(s.cats.filter(c=>!c.virtual&&(c.species||'Cat')==='Cat').map(c=>c.coat));
  const most=[...s.cats].sort((a,b)=>catches(b)-catches(a))[0];
  const latest=entries[0];const days=new Set(entries.map(x=>dateKey(x.entry.at))).size;
  const insight=(label,value,caption)=>`<div class="insight-card"><small>${label}</small><strong>${esc(value)}</strong><span>${esc(caption)}</span></div>`;
@@ -216,7 +216,7 @@ async function claimQuest(key){
  catch(e){s.profile.xp=previousXp;s.profile.claimed=previousClaimed;toast('Unable to save quest reward. Please retry.');render()}
  finally{s.busy=false}
 }
-function openModal(content,keepLive=false){if(!keepLive)stopLiveCamera();encounterResizeObserver?.disconnect();encounterResizeObserver=null;const layer=$('modal-layer');layer.classList.remove('hidden');layer.setAttribute('aria-hidden','false');layer.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="sheet-handle"></div><div class="whisker-build-stamp">Whisker Hunt v${WHISKER_BUILD} · build ${WHISKER_BUILD_NUMBER}</div>${content}</div>`;layer.onclick=modalBackdrop;const b=layer.querySelector('[data-close]');if(b)b.addEventListener('click',closeModal)}
+function openModal(content,keepLive=false){if(!keepLive)stopLiveCamera();encounterResizeObserver?.disconnect();encounterResizeObserver=null;const layer=$('modal-layer');layer.classList.remove('hidden');layer.setAttribute('aria-hidden','false');layer.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="sheet-handle"></div><div class="whisker-build-stamp">Hush Hunt v${WHISKER_BUILD} · build ${WHISKER_BUILD_NUMBER}</div>${content}</div>`;layer.onclick=modalBackdrop;const b=layer.querySelector('[data-close]');if(b)b.addEventListener('click',closeModal)}
 function modalBackdrop(e){if(e.target.id==='modal-layer')closeModal()}
 function closeModal(){captureShots=[];nativePhotoRequestToken=null;liveRequestEpoch++;stopLiveCamera();encounterEpoch++;encounterCropEpoch++;photoSelectionEpoch++;encounterResizeObserver?.disconnect();encounterResizeObserver=null;const l=$('modal-layer');l.classList.add('hidden');l.setAttribute('aria-hidden','true');l.innerHTML=''}
 function startCatch(catId=null){captureShots=[];nativePhotoRequestToken=null;photoSelectionEpoch++;if(s.busy)return toast('Please wait for the current save to finish.');if(s.storageBlocked)return toast('Restore your CatDex backup before adding cats.');s.image='';s.encounterLive=false;s.revisitId=typeof catId==='string'&&s.cats.some(c=>c.id===catId)?catId:'';s.catchMode=s.revisitId?'repeat':'new';s.selectedId='';s.captureSummary=null;openModal(`<div class="sheet-head"><h2>Catch a cat! 📸</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim" style="font-size:13px">Start with a respectful photo, then play the capture encounter with a Whisker Paw or the Dangle Lure.</p><div class="capture-choice"><button id="live-photo" class="choice"><span>🎥</span><strong>Live encounter</strong><small>Drag tools over the live camera · beta</small></button><button id="take-photo" class="choice"><span>📸</span><strong>Take a photo</strong><small>Reliable camera fallback</small></button><button id="pick-photo" class="choice"><span>🖼️</span><strong>Choose a photo</strong><small>From your gallery</small></button></div><p class="footnote center">Live mode keeps only recent still frames in memory; it does not record video. Real cats only, please.</p>`);$('live-photo').onclick=startLiveEncounter;$('take-photo').onclick=()=>startMultiPhotoCapture();$('pick-photo').onclick=()=>requestEncounterPhoto(false)}
@@ -538,7 +538,7 @@ async function startLiveEncounter(){
  nativePhotoRequestToken=null;photoSelectionEpoch++;
  s.encounterLive=true;
  const request=++liveRequestEpoch;stopLiveCamera();
- openModal(`<div class="sheet-head"><h2>Starting live camera…</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">Requesting camera access. No video is saved or uploaded.</p><div class="live-loading" aria-live="polite">🎥 Preparing preview…</div><div class="actions"><button id="live-fallback" class="secondary">Use normal camera instead</button></div>`);
+ openModal(`<div class="sheet-head"><h2>Starting live camera…</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">Requesting camera access. No video is saved or uploaded.</p><div class="live-loading" aria-live="polite">🎥 Preparing preview…</div><div class="actions"><button id="live-fallback" class="secondary">Cancel live camera</button></div>`);
  $('live-fallback').onclick=useNormalCameraFromLiveStartup;
  let stream=null;
  try{
@@ -691,14 +691,14 @@ function showEncounter(image,quality,options={}){
  s.encounterLive=liveMode;
  s.encounterFocus={x:.5,y:.40};
  s.captureSummary={quality,throwRating:null};
- openModal(`<div class="sheet-head"><h2>${liveMode?'Live encounter 🎥':'Encounter! 🐾'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="encounter-quick-help">① Tap the cat · ② Drag the paw · ③ Catch!</p><details class="encounter-help"><summary>How do the tools work?</summary><p>Tap the cat to place your target. Drag the Whisker Paw onto the target to catch it, or use the Dangle Lure first to make catching easier. Stay at a safe distance from real cats.</p></details><div id="encounter-aim-guide" class="encounter-aim-guide hidden" aria-hidden="true"></div><div id="encounter-stage" class="encounter-stage"><img id="encounter-photo" class="encounter-backdrop" src="${image}" alt="Your selected cat photo"><div class="encounter-vignette"></div><div id="encounter-cat" class="encounter-cat"><div class="encounter-cat-ring"></div><img id="encounter-cat-crop" src="${image}" alt="Selected cat photo crop"><span>Your cat target</span></div><div class="encounter-capture-tag">Capture preview</div><div class="encounter-tool-dock" aria-label="Capture tools"><button type="button" id="tool-ball" class="dock-tool selected" aria-pressed="true" title="Whisker Paw"><span>🐾</span><small>Paw</small></button><button type="button" id="tool-lure" class="dock-tool" aria-label="Switch to Lure" aria-pressed="false" title="Switch to Lure"><span>🪶</span><small>Lure</small></button><div id="throw-item" class="throw-item throw-ball" role="button" aria-label="Drag ${encounterToolLabel('ball')} to the cat" tabindex="0"><svg class="whisker-paw-svg" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg><span class="throw-stick">🎣</span><span class="throw-lure-body">🧶</span><span class="drag-prompt">DRAG</span></div></div><div id="encounter-orb" class="encounter-orb hidden"><svg class="whisker-paw-svg capture-paw" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine-captured" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg></div><div id="encounter-status" class="encounter-status" role="status" aria-live="polite">Tap the cat to move the target. Then drag an item from the tool dock on the right.</div><div id="encounter-meow" class="encounter-meow hidden" aria-hidden="true">Meow!</div></div><div id="encounter-quality" class="encounter-quality">${liveMode?'🎥 Live preview · <span id="live-frame-count">1 recent frame</span> · Whisker Hunt keeps a few recent stills and picks the clearest one near your target when you capture.':'Photo clarity estimate: <strong>'+esc(quality.label)+'</strong> · '+esc(quality.note)} <small>${liveMode?'No video recording or upload.':'Single-image heuristic; no cat recognition.'}</small></div><div id="encounter-shots" class="encounter-shots hidden" aria-label="Choose best frame"></div>${arMode?'':`<div class="encounter-photo-actions"><button type="button" id="encounter-retake" class="secondary">${liveMode?'🎥 Retake live capture':'📸 Retake photo'}</button><button type="button" id="encounter-replace" class="secondary">🖼️ Choose another</button></div>`}<div class="encounter-launch"><div class="encounter-instructions">Drag the paw from the right. A green ring means your throw is on target.</div></div><div class="actions">${arMode?'':`<button id="encounter-skip" class="secondary">Save photo without game</button>`}<button id="encounter-continue" class="primary hidden">${arMode?'Keep this cat 🐾':'Continue to CatDex →'}</button></div><p class="footnote">${liveMode?'Live camera is local to your device; only the selected still is saved. No cat recognition.':'Your target is a user-selected crop of your photo, not a live AI-generated cat.'} Stay a safe distance from real cats.</p>`,liveMode);
+ openModal(`<div class="sheet-head"><h2>${liveMode?'Live encounter 🎥':'Encounter! 🐾'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="encounter-quick-help">① Tap the cat · ② Drag the paw · ③ Catch!</p><details class="encounter-help"><summary>How do the tools work?</summary><p>Tap your subject to place the target. Drag the Whisker Paw onto the target to catch it, or use the Dangle Lure first to make catching easier. Stay at a safe distance from real cats.</p></details><div id="encounter-aim-guide" class="encounter-aim-guide hidden" aria-hidden="true"></div><div id="encounter-stage" class="encounter-stage"><img id="encounter-photo" class="encounter-backdrop" src="${image}" alt="Your selected wildlife photo"><div class="encounter-vignette"></div><div id="encounter-cat" class="encounter-cat"><div class="encounter-cat-ring"></div><img id="encounter-cat-crop" src="${image}" alt="Selected wildlife photo crop"><span>Your wildlife target</span></div><div class="encounter-capture-tag">Capture preview</div><div class="encounter-tool-dock" aria-label="Capture tools"><button type="button" id="tool-ball" class="dock-tool selected" aria-pressed="true" title="Whisker Paw"><span>🐾</span><small>Paw</small></button><button type="button" id="tool-lure" class="dock-tool" aria-label="Switch to Lure" aria-pressed="false" title="Switch to Lure"><span>🪶</span><small>Lure</small></button><div id="throw-item" class="throw-item throw-ball" role="button" aria-label="Drag ${encounterToolLabel('ball')} to the cat" tabindex="0"><svg class="whisker-paw-svg" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg><span class="throw-stick">🎣</span><span class="throw-lure-body">🧶</span><span class="drag-prompt">DRAG</span></div></div><div id="encounter-orb" class="encounter-orb hidden"><svg class="whisker-paw-svg capture-paw" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine-captured" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg></div><div id="encounter-status" class="encounter-status" role="status" aria-live="polite">Tap the animal to move the target. Then drag an item from the tool dock on the right.</div><div id="encounter-meow" class="encounter-meow hidden" aria-hidden="true">${arMode?'Meow!':'Nice shot!'}</div></div><div id="encounter-quality" class="encounter-quality">${liveMode?'🎥 Live preview · <span id="live-frame-count">1 recent frame</span> · Hush Hunt keeps a few recent stills and picks the clearest one near your target when you capture.':'Photo clarity estimate: <strong>'+esc(quality.label)+'</strong> · '+esc(quality.note)} <small>${liveMode?'No video recording or upload.':'Single-image heuristic; no cat recognition.'}</small></div><div id="encounter-shots" class="encounter-shots hidden" aria-label="Choose best frame"></div>${arMode?'':`<div class="encounter-photo-actions"><button type="button" id="encounter-retake" class="secondary">${liveMode?'🎥 Retake live capture':'📸 Retake photo'}</button><button type="button" id="encounter-replace" class="secondary">🖼️ Choose another</button></div>`}<div class="encounter-launch"><div class="encounter-instructions">Drag the paw from the right. A green ring means your throw is on target.</div></div><div class="actions">${arMode?'':`<button id="encounter-skip" class="secondary">Save photo without game</button>`}<button id="encounter-continue" class="primary hidden">${arMode?'Keep this cat 🐾':'Continue to CatDex →'}</button></div><p class="footnote">${liveMode?'Live camera is local to your device; only the selected still is saved. No cat recognition.':'Your target is a user-selected crop of your photo, not a live AI-generated cat.'} Stay a safe distance from real cats.</p>`,liveMode);
  if(liveMode&&liveCamera?.active){
   const stage=$('encounter-stage'),video=liveCamera.video;
   video.id='encounter-video';video.className='encounter-backdrop encounter-live-video';
   stage.prepend(video);stage.classList.add('live-encounter');
   const tag=stage.querySelector('.encounter-capture-tag');if(tag)tag.textContent='● LIVE · private';
   const crop=$('encounter-cat-crop');if(crop)crop.style.display='none';
-  const status=$('encounter-status');if(status)status.textContent='Tap the cat to place the target, then drag a tool from the right.';
+  const status=$('encounter-status');if(status)status.textContent='Tap your subject to place the target, then drag a tool from the right.';
   scheduleLiveSampling(liveCamera);
  }
  const selectTool=kind=>{
@@ -828,7 +828,7 @@ async function runEncounterCapture(){
  const stage=$('encounter-stage');
  setTimeout(()=>{if(stage?.isConnected&&status)status.textContent='Paw grab…';if(stage?.isConnected)orb?.classList.add('grab-1')},260);
  setTimeout(()=>{if(stage?.isConnected&&status)status.textContent='Holding on…';if(stage?.isConnected){orb?.classList.remove('grab-1');orb?.classList.add('grab-2');if(meow){meow.classList.remove('hidden');meow.classList.add('float')}}},650);
- setTimeout(()=>{if(!stage?.isConnected)return;orb?.classList.remove('grab-2');cat?.classList.remove('grabbed');if(meow)meow.classList.remove('float');if(status)status.textContent=`You captured this cat! ${s.captureSummary.throwRating}`;$('encounter-continue')?.classList.remove('hidden')},1180);
+ setTimeout(()=>{if(!stage?.isConnected)return;orb?.classList.remove('grab-2');cat?.classList.remove('grabbed');if(meow)meow.classList.remove('float');if(status)status.textContent=`Moment captured! ${s.captureSummary.throwRating}`;$('encounter-continue')?.classList.remove('hidden')},1180);
 }
 function showCatForm(image){s.image=image;const request=++matchRequest;openModal(`<div class="sheet-head"><h2>Nice spotting! 🐾</h2><button class="close-btn" data-close aria-label="Close">×</button></div><img class="photo-preview" src="${image}" alt="Your chosen cat photo">${s.captureSummary?`<div class="info-note"><strong>Encounter complete.</strong> Captured with ${esc(s.encounterLured?'the Dangle Lure + Whisker Paw combo':'a Whisker Paw')}. ${esc(s.captureSummary.throwRating||'Nice!')} Photo clarity: <strong>${esc(s.captureSummary.quality?.label||'Unrated')}</strong>.</div>`:''}<p class="dim" style="font-size:12px;margin-bottom:11px">Is this a new cat or one you've met before?</p><div class="chips" style="margin-top:0"><button id="mode-new" class="chip ${s.revisitId?'':'selected'}">✨ New cat</button><button id="mode-repeat" class="chip ${s.revisitId?'selected':''}">🐾 Seen before</button></div><div id="catch-extra"></div><div id="possible-matches" aria-live="polite"></div><label class="check-row"><input id="real-cat" type="checkbox"><span>I saw a real cat and took this picture without disturbing or approaching it unsafely.</span></label><label class="check-row"><input id="pin-check" type="checkbox"><span>Add an optional private location pin (never shared).</span></label><p id="pin-failure" class="pin-failure hidden" role="alert"></p><div id="pin-helper" class="location-helper hidden" aria-hidden="true"><p id="pin-helper-note">To add a private map pin, allow location on this device. Whisker Hunt stores only an approximate rounded area. Ask a parent or trusted adult if you are unsure.</p><div class="location-helper-actions"><button type="button" id="pin-allow" class="secondary">Allow location</button><button type="button" id="pin-settings" class="secondary">Open app settings</button><button type="button" id="pin-device-location" class="text-btn">Phone Location switch</button><button type="button" id="pin-retry" class="text-btn">Retry</button><button type="button" id="pin-status-check" class="text-btn">Check location status</button></div><p id="pin-diagnostics" class="location-diagnostics hidden" role="status"></p></div><div class="actions"><button id="save-catch" class="primary">Add to my CatDex →</button></div><p class="footnote">Only the selected still image is saved to your CatDex. Live mode compares recent frames locally when supported; no video is stored.</p>`);s.catchMode=s.revisitId?'repeat':'new';const drawExtra=()=>{const extra=$('catch-extra');if(s.catchMode==='new'){extra.innerHTML=`<div class="field-group"><label for="cat-name">Give your cat a name</label><input class="field" id="cat-name" maxlength="36" placeholder="e.g. Sir Pounce-a-lot" autocomplete="off"></div><div class="field-group"><label for="cat-coat">Coat / appearance</label><select class="select" id="cat-coat">${COATS.map(c=>`<option>${c}</option>`).join('')}</select></div><div class="field-group"><label for="cat-personality">Personality (your impression)</label><select class="select" id="cat-personality">${PERSONALITIES.map(t=>`<option>${t}</option>`).join('')}</select></div><div class="field-group"><label for="cat-note">Little memory (optional)</label><input class="field" id="cat-note" maxlength="140" placeholder="e.g. Sleeping in the café window"></div>`}else{extra.innerHTML=s.cats.length?`<div class="field-group"><label for="repeat-cat">Which cat did you see again?</label><select id="repeat-cat" class="select">${s.cats.filter(c=>!c.virtual).map(c=>`<option value="${esc(c.id)}" ${c.id===s.revisitId?'selected':''}>${esc(c.name)} (${esc(c.coat)})</option>`).join('')}</select></div><div class="field-group"><label for="repeat-note">Add a memory (optional)</label><input id="repeat-note" class="field" maxlength="140" placeholder="What was your friend up to?"></div>`:`<div class="info-note">No cats collected yet. Add your first new cat!</div>`}};drawExtra();$('mode-new').onclick=()=>{s.catchMode='new';$('mode-new').classList.add('selected');$('mode-repeat').classList.remove('selected');drawExtra();addDiceButton('cat-name','dice-name','name');addDiceButton('cat-note','dice-memory','memory')};$('mode-repeat').onclick=()=>{s.catchMode='repeat';$('mode-repeat').classList.add('selected');$('mode-new').classList.remove('selected');drawExtra();addDiceButton('repeat-note','dice-repeat-memory','memory')};$('save-catch').onclick=saveCatch;findPossibleMatches(image,request)}
 function isUsableLocation(loc){return !!loc && Number.isFinite(loc.lat) && Number.isFinite(loc.lng) && Math.abs(loc.lat)<=90 && Math.abs(loc.lng)<=180}
@@ -1011,7 +1011,7 @@ async function saveCatch(){
   const now=Date.now();
   const lastSeen=Math.max(0,...(cat.sightings||[]).map(v=>Date.parse(v.at)).filter(t=>Number.isFinite(t)&&t<=now));
   const cooldown=mode==='repeat'&&lastSeen>0&&(now-lastSeen<3600000);
-  const firstOfCoat=mode==='new'&&!s.cats.some(c=>c.coat===cat.coat);
+  const firstOfCoat=mode==='new'&&(cat.species||'Cat')==='Cat'&&!s.cats.some(c=>(c.species||'Cat')==='Cat'&&c.coat===cat.coat);
   earned=(mode==='new'?100:cooldown?0:30)+(firstOfCoat?25:0);
   cat.sightings.push({id:id(),visualHash:hash,at:new Date().toISOString(),note,photo:mode==='new'?null:s.image,signature:sig,lat:loc&&Number.isFinite(loc.lat)&&Math.abs(loc.lat)<=90?loc.lat:null,lng:loc&&Number.isFinite(loc.lng)&&Math.abs(loc.lng)<=180?loc.lng:null});appended=true;
   if(mode==='new'){s.cats.push(cat);added=true}
@@ -1096,7 +1096,7 @@ async function exportCatCard(cat){
  if(window.whiskerNativeReady){location.href='whiskerhunt://sticker'}else{const link=document.createElement('a');link.href=png;link.download='whisker-hunt-'+cat.name.toLowerCase().replace(/[^a-z0-9-]+/g,'-')+'-card.png';document.body.appendChild(link);link.click();link.remove();toast('Cat card downloaded!')}}catch(e){console.error(e);toast('Could not generate cat card.')}}
 async function editName(cat){openModal(`<div class="sheet-head"><h2>Rename your cat</h2><button class="close-btn" data-close>×</button></div><input id="new-name" maxlength="36" class="field" value="${esc(cat.name)}"><div class="actions"><button id="name-save" class="primary">Save name</button></div>`);$('name-save').onclick=async()=>{const name=$('new-name').value.trim();if(!name)return toast('Enter a name.');const previous=cat.name;cat.name=name;try{await saveCat(cat);closeModal();render();toast('Cat renamed!')}catch(e){cat.name=previous;toast('Could not save name. Please retry.')}}}
 async function deleteCat(cat){openModal(`<div class="sheet-head"><h2>Delete ${esc(cat.name)}?</h2><button class="close-btn" data-close>×</button></div><p class="dim">This permanently removes the cat, its photos and sighting journal from this device. XP already earned will remain.</p><div class="actions"><button class="secondary" id="cancel-delete">Cancel</button><button class="primary" id="confirm-delete">Delete forever</button></div>`);$('cancel-delete').onclick=closeModal;$('confirm-delete').onclick=async()=>{if(s.busy)return;s.busy=true;const previous=s.cats;s.cats=s.cats.filter(c=>c.id!==cat.id);try{await removeCat(cat);closeModal();render();toast('Cat removed from your CatDex.')}catch(e){s.cats=previous;toast('Could not delete cat. Your collection was kept.')}finally{s.busy=false}}}
-async function shareCat(cat){const message=`🐾 Meet ${cat.name}, a ${cat.coat.toLowerCase()} cat in my Whisker Hunt CatDex! ${catches(cat)} sighting${catches(cat)!==1?'s':''}. #WhiskerHunt`;if(window.whiskerNativeReady){location.href='whiskerhunt://share?text='+encodeURIComponent(message);return}try{if(navigator.share)await navigator.share({title:'Whisker Hunt',text:message});else if(navigator.clipboard){await navigator.clipboard.writeText(message);toast('Caption copied!')}}catch(e){if(e.name!=='AbortError')toast('Could not share on this browser.')}}
+async function shareCat(cat){const message=`🐾 Meet ${cat.name}, a ${cat.coat.toLowerCase()} cat in my Whisker Hunt CatDex! ${catches(cat)} sighting${catches(cat)!==1?'s':''}. #HushHunt`;if(window.whiskerNativeReady){location.href='whiskerhunt://share?text='+encodeURIComponent(message);return}try{if(navigator.share)await navigator.share({title:'Hush Hunt',text:message});else if(navigator.clipboard){await navigator.clipboard.writeText(message);toast('Caption copied!')}}catch(e){if(e.name!=='AbortError')toast('Could not share on this browser.')}}
 function action(kind){if(kind.startsWith('osm:')){const [lat,lng]=kind.slice(4).split(',').map(Number);askOpenStreetMap(lat,lng);return}if(kind==='privacy-tools')return openPrivacyTools();if(kind==='health-check')return openCollectionHealth();if(kind==='rename-profile')return editProfile();if(kind==='export')return exportBackup();if(kind==='import'){if(window.whiskerNativeReady){location.href='whiskerhunt://restore';return}return $('backup-input').click()}if(kind==='about')return openModal(`<div class="sheet-head"><h2>Privacy & cat safety 🐾</h2><button class="close-btn" data-close>×</button></div><p class="dim">Whisker Hunt v1.1 saves your photos, cat names, sightings and optional coordinates <strong>on this device only</strong>. We don't have a server, accounts, adverts or analytics.</p><p class="dim">Choose whether to attach a location to each encounter. Locations do not appear in shared text. You decide before opening an external map.</p><p class="dim">Keep a respectful distance. Do not trespass, lure cats into dangerous places, follow them into roads, or reveal somebody's home or garden.</p><p class="dim">Export backups before uninstalling or resetting app/browser storage. Photo resemblance hints run on-device, can be wrong, and never automatically identify or merge cats. The app cannot verify whether an image contains a cat.</p>`) }
 function editProfile(){openModal(`<div class="sheet-head"><h2>Your explorer name</h2><button class="close-btn" data-close>×</button></div><input id="new-profile-name" class="field" maxlength="30" value="${esc(s.profile.name)}"><div class="actions"><button id="profile-save" class="primary">Save</button></div>`);$('profile-save').onclick=async()=>{const name=$('new-profile-name').value.trim();if(!name)return toast('Enter a name');const previous=s.profile.name;s.profile.name=name;try{await saveProfile();closeModal();render();toast('Profile updated!')}catch(e){s.profile.name=previous;toast('Could not save your name. Please retry.')}}}
 // Restore is additive: a backup cannot erase local edits or sightings for an existing ID.
@@ -1164,7 +1164,7 @@ async function loadBackupText(jsonText){
   if(!c||!validId(c.id)||seenCatIds.has(c.id)||typeof c.name!=='string'||!validPhoto(c.photo)||!Array.isArray(c.sightings)||c.sightings.length>2000){skipped++;continue}seenCatIds.add(c.id);
   const seenSightingIds=new Set();const sightings=c.sightings.filter(v=>{if(!v||!validId(v.id)||seenSightingIds.has(v.id))return false;seenSightingIds.add(v.id);return typeof v.at==='string'&&Number.isFinite(Date.parse(v.at))&&(v.photo==null||validPhoto(v.photo))}).map(v=>({id:v.id.slice(0,100),at:v.at,note:String(v.note||'').slice(0,140),photo:v.photo||null,signature:String(v.signature||''),visualHash:/^[a-f0-9]{16}$/i.test(v.visualHash||'')?v.visualHash:null,lat:safePin(v.lat)&&v.lat!=null&&Number(v.lat)>=-90&&Number(v.lat)<=90?Number(v.lat):null,lng:safePin(v.lng)&&v.lng!=null?Number(v.lng):null,captureMode:['ar-virtual','ar-live','live','photo'].includes(v.captureMode)?v.captureMode:null,arModel:typeof v.arModel==='string'&&/^[a-z0-9-]{1,50}$/.test(v.arModel)?v.arModel:null,habitat:typeof v.habitat==='string'&&/^[a-z0-9-]{1,50}$/.test(v.habitat)?v.habitat:null}));
   if(!sightings.length){skipped++;continue}
-  accepted.push({id:c.id,name:c.name.slice(0,36),coat:COATS.includes(c.coat)?c.coat:'Other',personality:PERSONALITIES.includes(c.personality)?c.personality:'Unknown',note:String(c.note||'').slice(0,140),photo:c.photo,signature:String(c.signature||photoSignature(c.photo)),visualHash:/^[a-f0-9]{16}$/i.test(c.visualHash||'')?c.visualHash:null,createdAt:Number.isFinite(Date.parse(c.createdAt))?c.createdAt:sightings[0].at,fav:!!c.fav,virtual:c.virtual===true,arModelHint:typeof c.arModelHint==='string'&&/^[a-z0-9-]{1,50}$/.test(c.arModelHint)?c.arModelHint:null,arHabitatHint:typeof c.arHabitatHint==='string'&&/^[a-z0-9-]{1,50}$/.test(c.arHabitatHint)?c.arHabitatHint:null,sightings});
+  accepted.push({id:c.id,name:c.name.slice(0,36),species:SPECIES.includes(c.species)?c.species:'Cat',speciesDetail:typeof c.speciesDetail==='string'?c.speciesDetail.slice(0,50):'',coat:COATS.includes(c.coat)?c.coat:'Other',personality:PERSONALITIES.includes(c.personality)?c.personality:'Unknown',note:String(c.note||'').slice(0,140),photo:c.photo,signature:String(c.signature||photoSignature(c.photo)),visualHash:/^[a-f0-9]{16}$/i.test(c.visualHash||'')?c.visualHash:null,createdAt:Number.isFinite(Date.parse(c.createdAt))?c.createdAt:sightings[0].at,fav:!!c.fav,virtual:c.virtual===true,arModelHint:typeof c.arModelHint==='string'&&/^[a-z0-9-]{1,50}$/.test(c.arModelHint)?c.arModelHint:null,arHabitatHint:typeof c.arHabitatHint==='string'&&/^[a-z0-9-]{1,50}$/.test(c.arHabitatHint)?c.arHabitatHint:null,sightings});
  }
  if(data.cats.length&&!accepted.length)return toast('No valid cats were found in this backup.');
  if(!confirm('Merge '+accepted.length+' cats into your CatDex? Matching IDs will be updated, other cats stay, and XP will never decrease.'))return;
@@ -1306,7 +1306,7 @@ openModal=function(content,keepLive=false,modalClass=''){
  if(!keepLive)stopLiveCamera();
  encounterResizeObserver?.disconnect();encounterResizeObserver=null;
  const layer=$('modal-layer');layer.classList.remove('hidden');layer.setAttribute('aria-hidden','false');
- layer.innerHTML=`<div class="sheet ${modalClass||''}" role="dialog" aria-modal="true"><div class="sheet-handle"></div><div class="whisker-build-stamp">Whisker Hunt v${WHISKER_BUILD} · build ${WHISKER_BUILD_NUMBER}</div>${content}</div>`;
+ layer.innerHTML=`<div class="sheet ${modalClass||''}" role="dialog" aria-modal="true"><div class="sheet-handle"></div><div class="whisker-build-stamp">Hush Hunt v${WHISKER_BUILD} · build ${WHISKER_BUILD_NUMBER}</div>${content}</div>`;
  layer.onclick=modalBackdrop;const b=layer.querySelector('[data-close]');if(b)b.addEventListener('click',closeModal)
 };
 startCatch=function(catId=null){
@@ -1329,7 +1329,7 @@ async function startCameraEncounter(mode='live'){
  const request=++liveRequestEpoch;stopLiveCamera();
  const title=mode==='ar'?'Starting AR safari…':'Starting live camera…';
  const hint=mode==='ar'?'Preparing a full-screen live view for your virtual cat.':'Requesting camera access. No video is saved or uploaded.';
- openModal(`<div class="sheet-head"><h2>${title}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">${hint}</p><div class="live-loading" aria-live="polite">🎥 Preparing preview…</div><div class="actions"><button id="live-fallback" class="secondary">Use normal camera instead</button></div>`,false,mode==='ar'?'ar-sheet live-start-sheet':'');
+ openModal(`<div class="sheet-head"><h2>${title}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">${hint}</p><div class="live-loading" aria-live="polite">🎥 Preparing preview…</div><div class="actions"><button id="live-fallback" class="secondary">Cancel live camera</button></div>`,false,mode==='ar'?'ar-sheet live-start-sheet':'');
  $('live-fallback').onclick=useNormalCameraFromLiveStartup;
  let stream=null;
  try{
@@ -1349,9 +1349,8 @@ async function startCameraEncounter(mode='live'){
  }catch(error){
   if(request!==liveRequestEpoch)return;
   console.debug('Live camera unavailable',error);
-  openModal(`<div class="sheet-head"><h2>${mode==='ar'?'AR safari unavailable':'Live camera unavailable'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">${esc(error?.message||'Your camera could not be opened.')} Your CatDex is safe. You can still take a normal photo or choose one from your gallery.</p><div class="actions"><button id="live-normal-camera" class="primary">📸 Take a photo</button><button id="live-normal-gallery" class="secondary">🖼️ Gallery</button></div>`);
-  $('live-normal-camera').onclick=useNormalCameraFromLiveStartup;
-  $('live-normal-gallery').onclick=()=>{s.encounterLive=false;s.encounterAr=false;requestEncounterPhoto(false)};
+  openModal(`<div class="sheet-head"><h2>${mode==='ar'?'AR Safari unavailable':'Live camera unavailable'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">${esc(error?.message||'Your camera could not be opened.')} Your existing discoveries are safe. A live camera is required for new wildlife catches.</p><div class="actions"><button type="button" id="live-retry" class="primary">🎥 Try live camera again</button></div><p class="footnote">If your camera is unavailable, you can still browse FieldDex or restore backups. Imported pictures cannot become new catches.</p>`);
+  $('live-retry').onclick=()=>startCameraEncounter(mode);
  }finally{ if(stream)for(const track of stream.getTracks())track.stop(); }
 }
 startLiveEncounter=function(){return startCameraEncounter('live')};
@@ -1366,15 +1365,15 @@ showEncounter=function(image,quality,options={}){
  const liveMode=Boolean(options.live||s.encounterLive), arMode=Boolean(options.ar||s.encounterAr);
  s.encounterLive=liveMode; s.encounterAr=arMode; s.encounterFocus={x:.52,y:(arMode ? .69 : .40)}; s.captureSummary={quality,throwRating:null};
  const model=getArModel(s.arModelKey),habitat=getArHabitat(s.arHabitatKey); if(arMode&&habitat)s.encounterFocus={x:habitat.focus.x,y:habitat.focus.y};
- const help=arMode?'✨ Cat found! Drag the claw to catch it.':'① Tap the cat · ② Drag the paw · ③ Catch!';
+ const help=arMode?'✨ Cat found! Drag the claw to catch it.':'① Aim at wildlife · ② Drag the paw · ③ Capture!';
  const summary=arMode?`<div class="encounter-ar-tools"><div class="ar-model-badge" id="ar-model-badge">Wild encounter: ${esc(model.name)}</div><span class="rarity-label">${(model.rarity||'common').replace(/^./,m=>m.toUpperCase())} · ${s.cats.some(c=>c.virtual&&c.arModelHint===model.key)?'Seen before':'New discovery'}</span></div><p class="ar-smart-note">Collect over ${AR_CAT_MODELS.length} cat types across ${AR_HABITATS.length} habitats. Today's visitor is in <strong>${esc(habitat.name)}</strong> · ${esc(habitat.badge)}. Rarer cats appear less often.</p>`:'';
- openModal(`<div class="sheet-head"><h2>${arMode?'AR safari ✨':liveMode?'Live encounter 🎥':'Encounter! 🐾'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="encounter-quick-help">${help}</p><details class="encounter-help"><summary>${arMode?'How does AR safari work?':'How do the tools work?'}</summary><p>${arMode?'A virtual cat appears automatically. Drag the paw to catch it. The camera overlay does not yet detect floors or tables; true ARCore surface tracking is planned. No video is saved.':'Tap the cat to place your target. Drag the Whisker Paw onto the target to catch it, or use the Dangle Lure first to make catching easier. Stay at a safe distance from real cats.'}</p></details><div id="encounter-aim-guide" class="encounter-aim-guide hidden" aria-hidden="true"></div><div id="encounter-stage" class="encounter-stage ${arMode?'encounter-stage-ar':''}"><img id="encounter-photo" class="encounter-backdrop" src="${image}" alt="${arMode?'Live encounter backdrop':'Your selected cat photo'}"><div class="encounter-vignette"></div><div id="encounter-cat" class="encounter-cat ${arMode?'ar-model-target':''}"><div class="encounter-cat-ring"></div>${arMode?`<div id="encounter-ar-cat" class="encounter-ar-cat">${renderArCatSvg(model)}</div><span id="encounter-ar-label">${esc(model.name)}</span>`:`<img id="encounter-cat-crop" src="${image}" alt="Selected cat photo crop"><span>Your cat target</span>`}</div><div class="encounter-capture-tag">${arMode?'● VIRTUAL CAT · BETA':'Capture preview'}</div><div class="encounter-tool-dock" aria-label="Capture tools"><button type="button" id="tool-ball" class="dock-tool selected" aria-pressed="true" title="Whisker Paw"><span>🐾</span><small>Paw</small></button><button type="button" id="tool-lure" class="dock-tool" aria-label="Switch to Lure" aria-pressed="false" title="Switch to Lure"><span>🪶</span><small>Lure</small></button><div id="throw-item" class="throw-item throw-ball" role="button" aria-label="Drag ${encounterToolLabel('ball')} to the cat" tabindex="0"><svg class="whisker-paw-svg" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg><span class="throw-stick">🎣</span><span class="throw-lure-body">🧶</span><span class="drag-prompt">DRAG</span></div></div><div id="encounter-orb" class="encounter-orb hidden"><svg class="whisker-paw-svg capture-paw" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine-captured" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg></div><div id="encounter-status" class="encounter-status" role="status" aria-live="polite">${arMode?`A ${esc(model.name)} appeared in ${esc(habitat.name)}! Drag the paw onto it to catch it.`:'Tap the cat to move the target. Then drag an item from the tool dock on the right.'}</div><div id="encounter-meow" class="encounter-meow hidden" aria-hidden="true">Meow!</div></div><div id="encounter-quality" class="encounter-quality">${arMode?'⚡ Smooth AR mode · Lower-latency camera preview · No video saved or uploaded.':liveMode?'🎥 Live preview · <span id="live-frame-count">1 recent frame</span> · Whisker Hunt keeps a few recent stills and picks the clearest one near your target when you capture.':'Photo clarity estimate: <strong>'+esc(quality.label)+'</strong> · '+esc(quality.note)} <small>${arMode?'Auto habitat placement on screen. Native world-tracked AR is a future upgrade.':'No video recording or upload.'}</small></div>${summary}<div id="encounter-shots" class="encounter-shots hidden" aria-label="Choose best frame"></div>${arMode?'':`<div class="encounter-photo-actions"><button type="button" id="encounter-retake" class="secondary">${liveMode?'🎥 Retake live capture':'📸 Retake photo'}</button><button type="button" id="encounter-replace" class="secondary">🖼️ Choose another</button></div>`}<div class="encounter-launch"><div class="encounter-instructions">${arMode?`Look around gently. ${esc(model.name)} has appeared in ${esc(habitat.name)} — no tapping needed.`:'Drag the paw from the right. A green ring means your throw is on target.'}</div></div><div class="actions">${arMode?'':'<button id="encounter-skip" class="secondary">Save photo without game</button>'}<button id="encounter-continue" class="primary hidden">${arMode?'Keep this cat 🐾':'Continue to CatDex →'}</button></div><p class="footnote">${arMode?'Virtual cat preview: automatic placement in a themed habitat with lighter camera settings for smoother play. Full world tracking will need native ARCore later.':'Live camera is local to your device; only the selected still is saved. No cat recognition.'} Stay a safe distance from real cats.</p>`,liveMode,arMode?'ar-sheet':'');
+ openModal(`<div class="sheet-head"><h2>${arMode?'AR safari ✨':liveMode?'Live encounter 🎥':'Encounter! 🐾'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="encounter-quick-help">${help}</p><details class="encounter-help"><summary>${arMode?'How does AR safari work?':'How do the tools work?'}</summary><p>${arMode?'A virtual cat appears automatically. Drag the paw to catch it. The camera overlay does not yet detect floors or tables; true ARCore surface tracking is planned. No video is saved.':'Tap your subject to place the target. Drag the Whisker Paw onto the target to catch it, or use the Dangle Lure first to make catching easier. Stay at a safe distance from real cats.'}</p></details><div id="encounter-aim-guide" class="encounter-aim-guide hidden" aria-hidden="true"></div><div id="encounter-stage" class="encounter-stage ${arMode?'encounter-stage-ar':''}"><img id="encounter-photo" class="encounter-backdrop" src="${image}" alt="${arMode?'Live encounter backdrop':'Your selected wildlife photo'}"><div class="encounter-vignette"></div><div id="encounter-cat" class="encounter-cat ${arMode?'ar-model-target':''}"><div class="encounter-cat-ring"></div>${arMode?`<div id="encounter-ar-cat" class="encounter-ar-cat">${renderArCatSvg(model)}</div><span id="encounter-ar-label">${esc(model.name)}</span>`:`<img id="encounter-cat-crop" src="${image}" alt="Selected wildlife photo crop"><span>Your wildlife target</span>`}</div><div class="encounter-capture-tag">${arMode?'● VIRTUAL CAT · BETA':'Capture preview'}</div><div class="encounter-tool-dock" aria-label="Capture tools"><button type="button" id="tool-ball" class="dock-tool selected" aria-pressed="true" title="Whisker Paw"><span>🐾</span><small>Paw</small></button><button type="button" id="tool-lure" class="dock-tool" aria-label="Switch to Lure" aria-pressed="false" title="Switch to Lure"><span>🪶</span><small>Lure</small></button><div id="throw-item" class="throw-item throw-ball" role="button" aria-label="Drag ${encounterToolLabel('ball')} to the cat" tabindex="0"><svg class="whisker-paw-svg" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg><span class="throw-stick">🎣</span><span class="throw-lure-body">🧶</span><span class="drag-prompt">DRAG</span></div></div><div id="encounter-orb" class="encounter-orb hidden"><svg class="whisker-paw-svg capture-paw" viewBox="0 0 100 110" aria-hidden="true" focusable="false"><defs><linearGradient id="whisker-paw-shine-captured" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe5f3"/><stop offset=".4" stop-color="#fb80b7"/><stop offset="1" stop-color="#8553d8"/></linearGradient></defs><g class="paw-digits"><ellipse cx="19" cy="34" rx="11" ry="15" transform="rotate(-23 19 34)"/><ellipse cx="40" cy="20" rx="11" ry="16" transform="rotate(-9 40 20)"/><ellipse cx="62" cy="19" rx="11" ry="16" transform="rotate(9 62 19)"/><ellipse cx="82" cy="32" rx="10" ry="15" transform="rotate(24 82 32)"/></g><path class="paw-center" d="M51 47 C65 45 71 55 80 65 C90 78 84 94 71 98 C62 101 57 95 51 95 C43 95 37 102 27 98 C12 95 10 79 20 66 C29 53 35 46 51 47Z"/><path class="paw-detail" d="M33 77 Q42 69 50 75 Q58 69 68 77"/></svg></div><div id="encounter-status" class="encounter-status" role="status" aria-live="polite">${arMode?`A ${esc(model.name)} appeared in ${esc(habitat.name)}! Drag the paw onto it to catch it.`:'Tap the animal to move the target. Then drag an item from the tool dock on the right.'}</div><div id="encounter-meow" class="encounter-meow hidden" aria-hidden="true">${arMode?'Meow!':'Nice shot!'}</div></div><div id="encounter-quality" class="encounter-quality">${arMode?'⚡ Smooth AR mode · Lower-latency camera preview · No video saved or uploaded.':liveMode?'🎥 Live preview · <span id="live-frame-count">1 recent frame</span> · Hush Hunt keeps a few recent stills and picks the clearest one near your target when you capture.':'Photo clarity estimate: <strong>'+esc(quality.label)+'</strong> · '+esc(quality.note)} <small>${arMode?'Auto habitat placement on screen. Native world-tracked AR is a future upgrade.':'No video recording or upload.'}</small></div>${summary}<div id="encounter-shots" class="encounter-shots hidden" aria-label="Choose best frame"></div>${arMode?'':`<div class="encounter-photo-actions"><button type="button" id="encounter-retake" class="secondary">${liveMode?'🎥 Retake live capture':'📸 Retake photo'}</button><button type="button" id="encounter-replace" class="secondary">🖼️ Choose another</button></div>`}<div class="encounter-launch"><div class="encounter-instructions">${arMode?`Look around gently. ${esc(model.name)} has appeared in ${esc(habitat.name)} — no tapping needed.`:'Drag the paw from the right. A green ring means your throw is on target.'}</div></div><div class="actions">${arMode?'':'<button id="encounter-skip" class="secondary">Save photo without game</button>'}<button id="encounter-continue" class="primary hidden">${arMode?'Keep this cat 🐾':'Continue to CatDex →'}</button></div><p class="footnote">${arMode?'Virtual cat preview: automatic placement in a themed habitat with lighter camera settings for smoother play. Full world tracking will need native ARCore later.':'Live camera is local to your device; only the selected still is saved. No cat recognition.'} Stay a safe distance from real cats.</p>`,liveMode,arMode?'ar-sheet':'');
  if(liveMode&&liveCamera?.active){
   const stage=$('encounter-stage'),video=liveCamera.video;
   video.id='encounter-video';video.className='encounter-backdrop encounter-live-video'; stage.prepend(video);stage.classList.add('live-encounter');
   const tag=stage.querySelector('.encounter-capture-tag');if(tag)tag.textContent=arMode?'● LIVE · VIRTUAL PREVIEW':'● LIVE · private';
   const crop=$('encounter-cat-crop');if(crop)crop.style.display='none';
-  const status=$('encounter-status');if(status&& !arMode)status.textContent='Tap the cat to place the target, then drag a tool from the right.';
+  const status=$('encounter-status');if(status&& !arMode)status.textContent='Tap your subject to place the target, then drag a tool from the right.';
   if(!arMode)scheduleLiveSampling(liveCamera);
  }
  const selectTool=kind=>{if(s.encounterCaptured)return; s.encounterTool=kind; $('tool-ball').classList.toggle('selected',kind==='ball');$('tool-lure').classList.toggle('selected',kind==='lure'); $('tool-ball').setAttribute('aria-pressed',String(kind==='ball'));$('tool-lure').setAttribute('aria-pressed',String(kind==='lure')); const item=$('throw-item'); item.classList.toggle('throw-ball',kind==='ball');item.classList.toggle('throw-lure',kind==='lure'); item.setAttribute('aria-label','Drag '+encounterToolLabel(kind)+' to the cat'); $('encounter-status').textContent=kind==='lure'?'Aim the Dangle Lure at the cat to enlarge the target.':'Drag the Whisker Paw onto the target for a capture!';};
@@ -1414,7 +1413,7 @@ saveCatch=function(){return (async()=>{
   if(wantsPin&&!isUsableLocation(loc))throw new Error('PIN_NOT_SAVED');
   const note=mode==='new'?cat.note:$('repeat-note')?.value.trim();
   const now=Date.now(); const lastSeen=Math.max(0,...(cat.sightings||[]).map(v=>Date.parse(v.at)).filter(t=>Number.isFinite(t)&&t<=now));
-  const cooldown=mode==='repeat'&&lastSeen>0&&(now-lastSeen<3600000); const firstOfCoat=mode==='new'&&!s.cats.some(c=>c.coat===cat.coat); earned=(mode==='new'?100:cooldown?0:30)+(firstOfCoat?25:0);
+  const cooldown=mode==='repeat'&&lastSeen>0&&(now-lastSeen<3600000); const firstOfCoat=mode==='new'&&(cat.species||'Cat')==='Cat'&&!s.cats.some(c=>(c.species||'Cat')==='Cat'&&c.coat===cat.coat); earned=(mode==='new'?100:cooldown?0:30)+(firstOfCoat?25:0);
   cat.sightings.push({id:id(),visualHash:hash,at:new Date().toISOString(),note,photo:mode==='new'?null:s.image,signature:sig,lat:loc&&Number.isFinite(loc.lat)&&Math.abs(loc.lat)<=90?loc.lat:null,lng:loc&&Number.isFinite(loc.lng)&&Math.abs(loc.lng)<=180?loc.lng:null,captureMode:s.encounterAr?'ar-live':s.encounterLive?'live':'photo',arModel:s.encounterAr?s.arModelKey:null}); appended=true;
   if(mode==='new'){s.cats.push(cat);added=true}
   s.profile.xp+=earned; await persistCatchAtomic(cat);
@@ -1654,15 +1653,15 @@ showEncounter=function(image,quality,options={}){
  const liveMode=Boolean(options.live||s.encounterLive), arMode=Boolean(options.ar||s.encounterAr);
  s.encounterLive=liveMode; s.encounterAr=arMode; s.encounterFocus={x:.52,y:(arMode ? .69 : .40)}; s.captureSummary={quality,throwRating:null}; s.encounterTool='ball';
  const model=getArModel(s.arModelKey),habitat=getArHabitat(s.arHabitatKey); if(arMode&&habitat)s.encounterFocus={x:habitat.focus.x,y:habitat.focus.y};
- const help=arMode?'✨ Cat found! Drag the claw to catch it.':'① Tap the cat · ② Drag the paw · ③ Catch!';
+ const help=arMode?'✨ Cat found! Drag the claw to catch it.':'① Aim at wildlife · ② Drag the paw · ③ Capture!';
  const summary=arMode?`<div class="encounter-ar-tools"><div class="ar-model-badge" id="ar-model-badge">Wild encounter: ${esc(model.name)}</div><span class="rarity-label">${(model.rarity||'common').replace(/^./,m=>m.toUpperCase())} · ${s.cats.some(c=>c.virtual&&c.arModelHint===model.key)?'Seen before':'New discovery'}</span></div><p class="ar-smart-note">Collect over ${AR_CAT_MODELS.length} cat types across ${AR_HABITATS.length} habitats. Today's visitor is in <strong>${esc(habitat.name)}</strong> · ${esc(habitat.badge)}. Rarer cats appear less often.</p>`:'';
- openModal(`<div class="sheet-head"><h2>${arMode?'AR safari ✨':liveMode?'Live encounter 🎥':'Encounter! 🐾'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="encounter-quick-help">${help}</p><details class="encounter-help"><summary>${arMode?'How does AR safari work?':'How do the tools work?'}</summary><p>${arMode?'A virtual cat appears automatically. Drag the paw to catch it. The camera overlay does not yet detect floors or tables; true ARCore surface tracking is planned. No video is saved.':'Tap the cat to place your target. Drag the Whisker Paw onto the target to catch it, or use the Dangle Lure first to make catching easier. Stay at a safe distance from real cats.'}</p></details><div id="encounter-aim-guide" class="encounter-aim-guide hidden" aria-hidden="true"></div><div id="encounter-stage" class="encounter-stage ${arMode?'encounter-stage-ar':''}"><img id="encounter-photo" class="encounter-backdrop" src="${image}" alt="${arMode?'Live encounter backdrop':'Your selected cat photo'}"><div class="encounter-vignette"></div><div id="encounter-cat" class="encounter-cat ${arMode?'ar-model-target':''}"><div class="encounter-cat-ring"></div>${arMode?`<div id="encounter-ar-cat" class="encounter-ar-cat">${renderArCatSvg(model)}</div><span id="encounter-ar-label">${esc(model.name)}</span>`:`<img id="encounter-cat-crop" src="${image}" alt="Selected cat photo crop"><span>Your cat target</span>`}</div><div class="encounter-capture-tag">${arMode?'● VIRTUAL CAT · BETA':'Capture preview'}</div><div class="encounter-tool-dock" aria-label="Capture tools"><button type="button" id="tool-ball" class="dock-tool" aria-label="Switch to Paw" aria-pressed="true" title="Switch to Paw" hidden aria-hidden="true" tabindex="-1"><span>🐾</span><small>Paw</small></button><button type="button" id="tool-lure" class="dock-tool" aria-label="Switch to Lure" aria-pressed="false" title="Switch to Lure"><span>🪶</span><small>Lure</small></button><div id="throw-item" class="throw-item throw-ball" role="button" aria-label="Drag ${encounterToolLabel('ball')} to the cat" tabindex="0">${whiskerPawSvgMarkup()}<span class="throw-stick">🎣</span><span class="throw-lure-body">🧶</span><span class="drag-prompt">DRAG</span></div></div><div id="encounter-orb" class="encounter-orb hidden">${whiskerPawSvgMarkup('capture-paw')}</div><div id="encounter-status" class="encounter-status" role="status" aria-live="polite">${arMode?`A ${esc(model.name)} appeared in ${esc(habitat.name)}! Drag the paw onto it to catch it.`:'Tap the cat to move the target. Then drag the paw from the right.'}</div><div id="encounter-meow" class="encounter-meow hidden" aria-hidden="true">Meow!</div></div><div id="encounter-quality" class="encounter-quality">${arMode?'⚡ Smooth AR mode · Lower-latency camera preview · No video saved or uploaded.':liveMode?'🎥 Live preview · <span id="live-frame-count">1 recent frame</span> · Whisker Hunt keeps a few recent stills and picks the clearest one near your target when you capture.':'Photo clarity estimate: <strong>'+esc(quality.label)+'</strong> · '+esc(quality.note)} <small>${arMode?'Auto habitat placement on screen. Native world-tracked AR is a future upgrade.':'No video recording or upload.'}</small></div>${summary}<div id="encounter-shots" class="encounter-shots hidden" aria-label="Choose best frame"></div>${arMode?'':`<div class="encounter-photo-actions"><button type="button" id="encounter-retake" class="secondary">${liveMode?'🎥 Retake live capture':'📸 Retake photo'}</button><button type="button" id="encounter-replace" class="secondary">🖼️ Choose another</button></div>`}<div class="encounter-launch"><div class="encounter-instructions">${arMode?`Look around gently. ${esc(model.name)} has appeared in ${esc(habitat.name)} — no tapping needed.`:'Drag the paw from the right. Only the other tool is shown, so the view stays clean.'}</div></div><div class="actions">${arMode?'':'<button id="encounter-skip" class="secondary">Save photo without game</button>'}<button id="encounter-continue" class="primary hidden">${arMode?'Keep this cat 🐾':'Continue to CatDex →'}</button></div><p class="footnote">${arMode?'Virtual cat preview: automatic placement in a themed habitat with lighter camera settings for smoother play. Full world tracking will need native ARCore later.':'Live camera is local to your device; only the selected still is saved. No cat recognition.'} Stay a safe distance from real cats.</p>`,liveMode,arMode?'ar-sheet':'');
+ openModal(`<div class="sheet-head"><h2>${arMode?'AR safari ✨':liveMode?'Live encounter 🎥':'Encounter! 🐾'}</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="encounter-quick-help">${help}</p><details class="encounter-help"><summary>${arMode?'How does AR safari work?':'How do the tools work?'}</summary><p>${arMode?'A virtual cat appears automatically. Drag the paw to catch it. The camera overlay does not yet detect floors or tables; true ARCore surface tracking is planned. No video is saved.':'Tap your subject to place the target. Drag the Whisker Paw onto the target to catch it, or use the Dangle Lure first to make catching easier. Stay at a safe distance from real cats.'}</p></details><div id="encounter-aim-guide" class="encounter-aim-guide hidden" aria-hidden="true"></div><div id="encounter-stage" class="encounter-stage ${arMode?'encounter-stage-ar':''}"><img id="encounter-photo" class="encounter-backdrop" src="${image}" alt="${arMode?'Live encounter backdrop':'Your selected wildlife photo'}"><div class="encounter-vignette"></div><div id="encounter-cat" class="encounter-cat ${arMode?'ar-model-target':''}"><div class="encounter-cat-ring"></div>${arMode?`<div id="encounter-ar-cat" class="encounter-ar-cat">${renderArCatSvg(model)}</div><span id="encounter-ar-label">${esc(model.name)}</span>`:`<img id="encounter-cat-crop" src="${image}" alt="Selected wildlife photo crop"><span>Your wildlife target</span>`}</div><div class="encounter-capture-tag">${arMode?'● VIRTUAL CAT · BETA':'Capture preview'}</div><div class="encounter-tool-dock" aria-label="Capture tools"><button type="button" id="tool-ball" class="dock-tool" aria-label="Switch to Paw" aria-pressed="true" title="Switch to Paw" hidden aria-hidden="true" tabindex="-1"><span>🐾</span><small>Paw</small></button><button type="button" id="tool-lure" class="dock-tool" aria-label="Switch to Lure" aria-pressed="false" title="Switch to Lure"><span>🪶</span><small>Lure</small></button><div id="throw-item" class="throw-item throw-ball" role="button" aria-label="Drag ${encounterToolLabel('ball')} to the cat" tabindex="0">${whiskerPawSvgMarkup()}<span class="throw-stick">🎣</span><span class="throw-lure-body">🧶</span><span class="drag-prompt">DRAG</span></div></div><div id="encounter-orb" class="encounter-orb hidden">${whiskerPawSvgMarkup('capture-paw')}</div><div id="encounter-status" class="encounter-status" role="status" aria-live="polite">${arMode?`A ${esc(model.name)} appeared in ${esc(habitat.name)}! Drag the paw onto it to catch it.`:'Tap the animal to move the target. Then drag the paw from the right.'}</div><div id="encounter-meow" class="encounter-meow hidden" aria-hidden="true">${arMode?'Meow!':'Nice shot!'}</div></div><div id="encounter-quality" class="encounter-quality">${arMode?'⚡ Smooth AR mode · Lower-latency camera preview · No video saved or uploaded.':liveMode?'🎥 Live preview · <span id="live-frame-count">1 recent frame</span> · Hush Hunt keeps a few recent stills and picks the clearest one near your target when you capture.':'Photo clarity estimate: <strong>'+esc(quality.label)+'</strong> · '+esc(quality.note)} <small>${arMode?'Auto habitat placement on screen. Native world-tracked AR is a future upgrade.':'No video recording or upload.'}</small></div>${summary}<div id="encounter-shots" class="encounter-shots hidden" aria-label="Choose best frame"></div>${arMode?'':`<div class="encounter-photo-actions"><button type="button" id="encounter-retake" class="secondary">${liveMode?'🎥 Retake live capture':'📸 Retake photo'}</button><button type="button" id="encounter-replace" class="secondary">🖼️ Choose another</button></div>`}<div class="encounter-launch"><div class="encounter-instructions">${arMode?`Look around gently. ${esc(model.name)} has appeared in ${esc(habitat.name)} — no tapping needed.`:'Drag the paw from the right. Only the other tool is shown, so the view stays clean.'}</div></div><div class="actions">${arMode?'':'<button id="encounter-skip" class="secondary">Save photo without game</button>'}<button id="encounter-continue" class="primary hidden">${arMode?'Keep this cat 🐾':'Continue to CatDex →'}</button></div><p class="footnote">${arMode?'Virtual cat preview: automatic placement in a themed habitat with lighter camera settings for smoother play. Full world tracking will need native ARCore later.':'Live camera is local to your device; only the selected still is saved. No cat recognition.'} Stay a safe distance from real cats.</p>`,liveMode,arMode?'ar-sheet':'');
  if(liveMode&&liveCamera?.active){
   const stage=$('encounter-stage'),video=liveCamera.video;
   video.id='encounter-video';video.className='encounter-backdrop encounter-live-video'; stage.prepend(video);stage.classList.add('live-encounter');
   const tag=stage.querySelector('.encounter-capture-tag');if(tag)tag.textContent=arMode?'● LIVE · VIRTUAL PREVIEW':'● LIVE · private';
   const crop=$('encounter-cat-crop');if(crop)crop.style.display='none';
-  const status=$('encounter-status');if(status&& !arMode)status.textContent='Tap the cat to place the target, then drag the paw from the right.';
+  const status=$('encounter-status');if(status&& !arMode)status.textContent='Tap your subject to place the target, then drag the paw from the right.';
   if(!arMode)scheduleLiveSampling(liveCamera);
  }
  const selectTool=kind=>{if(s.encounterCaptured)return; s.encounterTool=kind; syncEncounterToolDock(kind);
@@ -1732,3 +1731,472 @@ window.whiskerRecoveryImport=function(json){
  // Existing loadBackupText asks for confirmation and merges by ID rather than replacing.
  return loadBackupText(json);
 };
+
+
+/* v3.8: real-world FieldDex (species added without migrating existing CatDex records). */
+const SPECIES=['Cat','Dog','Snail','Butterfly','Moth','Bee','Ladybird','Beetle','Dragonfly','Ant','Spider','Bird','Squirrel','Rabbit','Hedgehog','Frog','Other'];
+const SPECIES_EMOJI={Cat:'🐈',Dog:'🐕',Snail:'🐌',Butterfly:'🦋',Moth:'🦋',Bee:'🐝',Ladybird:'🐞',Beetle:'🪲',Dragonfly:'🪰',Ant:'🐜',Spider:'🕷️',Bird:'🐦',Squirrel:'🐿️',Rabbit:'🐇',Hedgehog:'🦔',Frog:'🐸',Other:'🔎'};
+function speciesOf(entry){return SPECIES.includes(entry?.species)?entry.species:'Cat'}
+function speciesIcon(value){return SPECIES_EMOJI[value]||'🐾'}
+function visibleWildlife(){return s.cats.filter(c=>!c.virtual)}
+function speciesOptions(active){return SPECIES.map(key=>`<option value="${esc(key)}" ${active===key?'selected':''}>${speciesIcon(key)} ${esc(key)}</option>`).join('')}
+const previousStartCatchWildlife=startCatch;
+startCatch=function(catId=null){
+ const actual=typeof catId==='string'&&s.cats.some(c=>c.id===catId)?catId:null;
+ s.spottedSpecies=actual?speciesOf(s.cats.find(c=>c.id===actual)):'Cat';
+ previousStartCatchWildlife(actual);
+ const title=document.querySelector('.sheet-head h2');if(title&&title.textContent.includes('Catch a cat'))title.textContent='Spot wildlife! 📸';
+ const intro=document.querySelector('.capture-choice-v28')?.previousElementSibling;
+ if(intro)intro.textContent='Snails, insects, dogs, birds or cats — photograph wildlife kindly, then choose the species before saving.';
+};
+const previousShowCatFormWildlife=showCatForm;
+showCatForm=function(photo){
+ previousShowCatFormWildlife(photo);
+ const prior=s.revisitId?s.cats.find(c=>c.id===s.revisitId):null;
+ s.spottedSpecies=prior?speciesOf(prior):(SPECIES.includes(s.spottedSpecies)?s.spottedSpecies:'Cat');
+ s.spottedDetail=''; s.fieldGroupExpanded=!prior&&s.wildTarget==='Unknown';
+ const region=$('catch-extra');if(!region)return;
+ const chooser=document.createElement('div');chooser.className='field-group species-picker';
+ chooser.innerHTML=`<div class="visual-field-heading"><div><span class="visual-step">STEP 1 · WHO DID YOU FIND?</span><h3>Pick an animal</h3></div><button type="button" class="visual-change" id="change-species">Change animal ↗</button></div><select id="wildlife-species" class="select field-guide-native-select" aria-label="Choose the animal or insect">${speciesOptions(s.spottedSpecies)}</select><div id="field-guide-species" class="field-guide-species" aria-label="Animal groups"></div><div id="field-guide-selected" class="field-guide-selected"></div><small class="field-help">Pictures are little guides, not automatic identification. If you're unsure, that's okay!</small>`;
+ region.parentElement.insertBefore(chooser,region);
+ const advice=document.createElement('p');advice.className='field-help wildlife-safety';
+ advice.textContent='Observe without touching, feeding or disturbing wildlife; never trespass. Take a photo from a safe distance.';
+ chooser.after(advice);
+ const update=()=>{
+  const species=s.spottedSpecies,isCat=species==='Cat';
+  const newMode=$('mode-new');if(newMode)newMode.textContent=isCat?'✨ New cat':'✨ New discovery';
+  const modeIntro=$('mode-new')?.closest('.chips')?.previousElementSibling;if(modeIntro&&modeIntro.tagName==='P')modeIntro.textContent='Is this a new discovery or one you have spotted before?';
+  const confirmation=$('real-cat')?.closest('label')?.querySelector('span');if(confirmation)confirmation.textContent=`I photographed this ${species.toLowerCase()==='other'?'animal':species.toLowerCase()} without disturbing it or approaching unsafely.`;
+  const newLabel=$('cat-name')?.closest('.field-group')?.querySelector('label');if(newLabel)newLabel.textContent=`Name your ${isCat?'cat':'discovery'}`;
+  const coat=$('cat-coat');if(coat){if(!isCat)coat.value='Other';coat.closest('.field-group').classList.add('hidden')}
+  const personality=$('cat-personality');if(personality){if(!isCat)personality.value='Unknown';personality.closest('.field-group').classList.toggle('hidden',!isCat)}
+  const extra=$('species-details');if(extra)extra.remove();
+  if(s.catchMode==='new'){
+    const details=document.createElement('div');details.className='field-group visual-field-types';details.id='species-details';
+    details.innerHTML=`<div class="visual-field-heading"><div><span class="visual-step">STEP 2 · WHAT KIND?</span><h3>${esc(species)} varieties</h3></div><span class="visual-tap-hint">Tap a picture</span></div><div id="field-guide-types" class="field-guide-types" role="group" aria-label="${esc(species)} appearance or variety"></div><input class="field hidden" id="wildlife-detail" maxlength="50" autocomplete="off" placeholder="Write the type you saw (optional)"><small class="field-help">Not sure? Choose the question mark. There's no penalty for not knowing.</small>`;
+    region.prepend(details);
+    renderFieldGuideVarieties();
+  }
+  renderFieldGuideSpecies();
+  const repeat=$('repeat-cat');if(repeat){
+   const previous=repeat.value;
+   const matches=visibleWildlife().filter(c=>speciesOf(c)===species);
+   repeat.innerHTML=matches.length?matches.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}${c.speciesDetail?' · '+esc(c.speciesDetail):''}</option>`).join(''):'<option value="">No saved sightings of this species yet</option>';
+   if(matches.some(c=>c.id===previous))repeat.value=previous;
+   else if(s.revisitId&&matches.some(c=>c.id===s.revisitId))repeat.value=s.revisitId;
+  }
+  const matches=$('possible-matches');if(matches&&!isCat){matches.classList.add('hidden');matches.innerHTML=''}else if(matches)matches.classList.remove('hidden');
+  const save=$('save-catch');if(save)save.textContent=s.catchMode==='repeat'?'Save another sighting →':'Add to FieldDex →';
+ };
+ $('wildlife-species').addEventListener('change',e=>{s.spottedSpecies=e.target.value;s.spottedDetail='';s.coatChoice='';update()});
+ for(const mode of ['mode-new','mode-repeat'])$(mode)?.addEventListener('click',update);
+ update();
+};
+// Species-safe save path. Old CatDex records keep their IDs, photos, locations, XP and quests.
+saveCatch=function(){return (async()=>{
+ if(s.busy)return;
+ if(!$('real-cat')?.checked)return toast('Please confirm that the animal was photographed safely.');
+ if(!s.db)return toast('Device storage is not ready.');
+ const mode=s.catchMode,species=SPECIES.includes(s.spottedSpecies)?s.spottedSpecies:'Cat',sig=photoSignature(s.image);
+ if(s.cats.some(c=>c.signature===sig||(c.sightings||[]).some(v=>v.signature===sig)))return toast('This photo is already collected. Choose a different image for a new sighting.');
+ let animal;
+ if(mode==='new'){
+  const name=$('cat-name')?.value.trim();if(!name)return toast('Give your discovery a name.');
+  animal={id:id(),name:name.slice(0,36),species,speciesDetail:species==='Cat'?'':($('wildlife-detail')?.value.trim()||'').slice(0,50),coat:species==='Cat'?$('cat-coat').value:'Other',personality:species==='Cat'?$('cat-personality').value:'Unknown',note:$('cat-note')?.value.trim()||'',photo:s.image,signature:sig,visualHash:null,createdAt:new Date().toISOString(),fav:false,arModelHint:null,sightings:[]};
+ }else{
+  animal=s.cats.find(c=>!c.virtual&&c.id===$('repeat-cat')?.value&&speciesOf(c)===species);
+  if(!animal)return toast(`Choose an existing ${species.toLowerCase()} or select New discovery.`);
+ }
+ const btn=$('save-catch');s.busy=true;btn.disabled=true;btn.textContent='Saving your discovery…';
+ let appended=false,added=false,earned=0;
+ try{
+  const hash=await visualFingerprint(s.image).catch(()=>null);if(mode==='new')animal.visualHash=hash;
+  const wantsPin=!!$('pin-check')?.checked;
+  const loc=wantsPin?(hasFreshApproxLocation()?s.pendingApproxLocation:await ensureApproxLocation('pin')):null;
+  if(wantsPin&&!isUsableLocation(loc))throw new Error('PIN_NOT_SAVED');
+  const note=mode==='new'?animal.note:($('repeat-note')?.value.trim()||'');
+  const now=Date.now(),lastSeen=Math.max(0,...animal.sightings.map(v=>Date.parse(v.at)).filter(t=>Number.isFinite(t)&&t<=now));
+  const cooldown=mode==='repeat'&&lastSeen>0&&(now-lastSeen<3600000);
+  const firstCatCoat=mode==='new'&&species==='Cat'&&!s.cats.some(c=>!c.virtual&&speciesOf(c)==='Cat'&&c.coat===animal.coat);
+  earned=(mode==='new'?100:cooldown?0:30)+(firstCatCoat?25:0);
+  animal.sightings.push({id:id(),visualHash:hash,at:new Date().toISOString(),note,photo:mode==='new'?null:s.image,signature:sig,lat:isUsableLocation(loc)?loc.lat:null,lng:isUsableLocation(loc)?loc.lng:null,captureMode:s.encounterLive?'live':'photo',arModel:null});appended=true;
+  if(mode==='new'){s.cats.push(animal);added=true}
+  s.profile.xp+=earned;
+  await persistCatchAtomic(animal);
+  setPendingApproxLocation(null);closeModal();navigate('dex');
+  toast(`${speciesIcon(species)} ${mode==='new'?'New discovery saved!':'Another sighting saved!'} +${earned} XP${wantsPin?' · 📍 Private pin saved':''}`);
+ }catch(error){
+  console.error(error);s.profile.xp-=earned;if(appended)animal.sightings.pop();if(added)s.cats=s.cats.filter(c=>c.id!==animal.id);
+  if(error?.message==='PIN_NOT_SAVED')showPinFailure('pin');else toast('Save failed. Your photo is still here — please retry.');
+  btn.disabled=false;btn.textContent='Try saving again';
+ }finally{s.busy=false}
+})()};
+// FieldDex UI, with Cat Bingo retained for existing cat players.
+const previousRenderDexWildlife=renderDex;
+renderDex=function(){
+ const real=visibleWildlife(),counts=SPECIES.map(type=>({type,n:real.filter(c=>speciesOf(c)===type).length})).filter(v=>v.n);
+ let html=previousRenderDexWildlife();
+ html=html.replace('<h1>The CatDex 🐈</h1>', '<h1>FieldDex 🌿</h1>');
+ html=html.replace(/<p class="subtitle">[^<]*real cats · [^<]*virtual friends<\/p>/,`<p class="subtitle">${real.length} real-world discoveries · ${s.cats.filter(c=>c.virtual).length} virtual cats</p>`);
+ const panel=`<section class="wildlife-collection"><div class="eyebrow">WILDLIFE COLLECTION</div><h3>Explore more than cats</h3><p class="dim">Snails, butterflies, birds, dogs and other discoveries belong here too.</p><div class="wildlife-stat-grid">${counts.length?counts.map(v=>`<span class="wildlife-stat">${speciesIcon(v.type)} ${esc(v.type)} <strong>${v.n}</strong></span>`).join(''):'<span class="dim">Your first discovery is waiting.</span>'}</div><div class="chips wildlife-filter">${SPECIES.map(v=>`<button class="chip ${s.filter==='Species:'+v?'selected':''}" data-filter="Species:${v}">${speciesIcon(v)} ${v}</button>`).join('')}</div></section>`;
+ html=html.replace('<section class="virtual-gallery">',panel+'<section class="virtual-gallery">');
+ html=html.replace('Search your feline friends...', 'Search wildlife, snails, dogs and memories...');
+ // Cat Bingo remains visible but is explicitly cat-only; remove its duplicate coat filter row from other species.
+ return html;
+};
+dexGrid=function(){
+ const q=s.search.toLowerCase();const records=visibleWildlife().filter(c=>{
+  const species=speciesOf(c),filter=s.filter;
+  const matching=filter==='All'||(filter==='Favourites'&&c.fav)||(filter.startsWith('Species:')&&species===filter.slice(8))||(species==='Cat'&&c.coat===filter);
+  return matching&&[c.name,species,c.speciesDetail||'',c.coat,c.note||''].some(v=>String(v).toLowerCase().includes(q));
+ }).sort((a,b)=>{const last=c=>Math.max(0,...(c.sightings||[]).map(v=>Date.parse(v.at)||0));switch(s.dexSort){case 'name':return a.name.localeCompare(b.name);case 'last':return last(b)-last(a);case 'visits':return catches(b)-catches(a)||a.name.localeCompare(b.name);case 'favourites':return Number(b.fav)-Number(a.fav)||last(b)-last(a);default:return b.createdAt.localeCompare(a.createdAt)}});
+ return records.length?`<div class="cat-grid">${records.map(c=>`<button class="cat-tile" data-cat="${esc(c.id)}"><img class="cat-img" src="${c.photo}" alt="${esc(c.name)}"><div class="cat-info"><strong>${esc(c.name)}</strong><small>${speciesIcon(speciesOf(c))} ${esc(speciesOf(c))}${c.speciesDetail?' · '+esc(c.speciesDetail):speciesOf(c)==='Cat'?' · '+esc(c.coat):''} · ${catches(c)} sighting${catches(c)!==1?'s':''}</small><div class="tagline"><span class="tag">${rank(c)}</span><span class="badge-heart">${c.fav?'♥':'♡'}</span></div></div></button>`).join('')}</div>`:`<div class="feature-empty empty-dex"><div class="big">🔎</div><h3>No matching wildlife found</h3><p>Try another species filter, or add a new discovery.</p><button class="primary" id="dex-catch">📸 Spot wildlife</button></div>`;
+};
+const previousOpenDetailWildlife=openDetail;
+openDetail=function(animalId){
+ previousOpenDetailWildlife(animalId);
+ const animal=s.cats.find(c=>c.id===animalId);if(!animal||animal.virtual)return;
+ const species=speciesOf(animal);if(species==='Cat')return;
+ const eyebrow=document.querySelector('.sheet .eyebrow');if(eyebrow)eyebrow.textContent=`FIELDDEX · ${species.toUpperCase()} DISCOVERY`;
+ const tags=document.querySelector('.detail-tags');if(tags){const first=tags.querySelector('.detail-tag');if(first)first.textContent=`${speciesIcon(species)} ${species}${animal.speciesDetail?' · '+animal.speciesDetail:''}`;}
+ const spot=$('more-sighting');if(spot)spot.textContent='📷 Spot again';
+ const del=$('delete-cat');if(del)del.textContent='Delete this discovery & sightings';
+};
+editCat=async function(animal){
+ const species=speciesOf(animal);
+ openModal(`<div class="sheet-head"><h2>Edit discovery ✎</h2><button class="close-btn" data-close aria-label="Close">×</button></div><div class="field-group"><label for="edit-name">Name</label><input id="edit-name" maxlength="36" class="field" value="${esc(animal.name)}"></div><div class="field-group"><label for="edit-species">Species</label><select id="edit-species" class="select">${speciesOptions(species)}</select></div><div class="field-group"><label for="edit-species-detail">Type / breed (optional)</label><input id="edit-species-detail" class="field" maxlength="50" value="${esc(animal.speciesDetail||'')}" placeholder="e.g. Garden snail"></div><div class="field-group" id="edit-coat-group"><label for="edit-coat">Coat / appearance</label><select id="edit-coat" class="select">${COATS.map(c=>`<option ${animal.coat===c?'selected':''}>${c}</option>`).join('')}</select></div><div class="field-group" id="edit-personality-group"><label for="edit-personality">Personality</label><select id="edit-personality" class="select">${PERSONALITIES.map(c=>`<option ${animal.personality===c?'selected':''}>${c}</option>`).join('')}</select></div><div class="field-group"><label for="edit-note">Your memory</label><textarea id="edit-note" class="field" maxlength="140" rows="3">${esc(animal.note||'')}</textarea></div><p class="footnote">Descriptions are yours, not automatic AI identifications. Changes won't erase photographs or sightings.</p><div class="actions"><button class="primary" id="edit-save">Save changes</button></div>`);
+ initEditFieldGuide(animal);
+ const sync=()=>{const show=$('edit-species').value==='Cat';$('edit-coat-group').classList.toggle('hidden',!show);$('edit-personality-group').classList.toggle('hidden',!show);renderEditFieldGuide()};
+ $('edit-species').onchange=()=>{s.editVisualDetail='';sync()};sync();
+ $('edit-save').onclick=async()=>{
+  if(s.busy)return;const name=$('edit-name').value.trim();if(!name)return toast('Please enter a name.');
+  const prior={name:animal.name,species:animal.species,speciesDetail:animal.speciesDetail,coat:animal.coat,personality:animal.personality,note:animal.note};
+  const nextSpecies=$('edit-species').value;
+  const next={name:name.slice(0,36),species:nextSpecies,speciesDetail:$('edit-species-detail').value.trim().slice(0,50),coat:nextSpecies==='Cat'?$('edit-coat').value:animal.coat,personality:nextSpecies==='Cat'?$('edit-personality').value:animal.personality,note:$('edit-note').value.trim().slice(0,140)};
+  Object.assign(animal,next);s.busy=true;
+  try{await saveCat(animal);closeModal();openDetail(animal.id);render();toast('Discovery updated!')}
+  catch(error){console.error(error);Object.assign(animal,prior);toast('Could not update discovery; original data kept.')}
+  finally{s.busy=false}
+ };
+};
+const previousShareWildlife=shareCat;
+shareCat=function(animal){if(speciesOf(animal)==='Cat')return previousShareWildlife(animal);
+ const message=`${speciesIcon(speciesOf(animal))} I discovered ${animal.name}, a ${animal.speciesDetail||speciesOf(animal)} in Hush Hunt! #HushHunt`;
+ if(window.whiskerNativeReady){location.href='whiskerhunt://share?text='+encodeURIComponent(message);return}
+ if(navigator.share)navigator.share({title:'Hush Hunt',text:message}).catch(()=>{});
+ else if(navigator.clipboard)navigator.clipboard.writeText(message).then(()=>toast('Caption copied!')).catch(()=>{});
+};
+const previousJournalWildlife=renderJournal;
+renderJournal=function(){return previousJournalWildlife().replace('YOUR REAL-WORLD CAT ADVENTURES','YOUR REAL-WORLD WILDLIFE ADVENTURES').replace('Search cats and memories','Search wildlife and memories')};
+const previousJournalCardsWildlife=journalCards;
+journalCards=function(){return previousJournalCardsWildlife().replace(/ · (Tabby|Ginger|Black|White|Tuxedo|Calico|Grey|Other)<\/small>/g,' · Discovery</small>')};
+const previousRenderHomeWildlife=renderHome;
+renderHome=function(){return previousRenderHomeWildlife().replace('YOUR CAT-CHASING ADVENTURE','YOUR WILDLIFE ADVENTURE').replace('See a cat?<br>Catch the moment.','Spot wildlife?<br>Capture the moment.').replace('Meet real cats, level up and build your own legendary collection.','Discover real animals, snails and insects — safely and at your own pace.').replace('📸 Catch a cat →','📸 Spot wildlife →').replace('Unique cats','Discoveries').replace('Your cat collection','Your FieldDex').replace('Found a friendly-looking feline? Snap your first cat and bring your CatDex to life.','Found a snail, butterfly or a friendly-looking animal? Photograph it safely to begin your FieldDex.');};
+const previousRenderProfileWildlife=renderProfile;
+renderProfile=function(){return previousRenderProfileWildlife().replace('<span>Cats</span>','<span>Discoveries</span>').replace('Keep your CatDex safe','Keep your FieldDex safe');};
+
+/* New optional wildlife quests; older cat-only quests keep their existing meaning. */
+const priorDailyWildlife=dailyQuests;
+dailyQuests=function(){const real=visibleWildlife(),todayEntries=real.flatMap(c=>c.sightings||[]).filter(v=>dateKey(v.at)===today());return [{id:'wildlife-first',icon:'🌿',title:'Wildlife explorer',description:'Photograph one animal or insect today',progress:todayEntries.length,target:1,xp:35},...priorDailyWildlife()]};
+const priorWeeklyWildlife=weeklyQuests;
+weeklyQuests=function(){const species=new Set(visibleWildlife().filter(c=>dateKey(c.createdAt)>=weekKey()).map(speciesOf));return [{id:'wildlife-variety',weekly:true,icon:'🦋',title:'Species explorer',description:'Find two different species this week',progress:species.size,target:2,xp:150},...priorWeeklyWildlife()]};
+
+/* v3.8.1 — Live-only wildlife discoveries.
+ * Local UX provenance check, not cryptographic authentication or species AI.
+ * Stored photos, old imports, and JSON restore remain read-only/compatible.
+ */
+s.realLiveProof=null;
+function realLivePhotoReady(image=s.image){
+ const proof=s.realLiveProof;
+ return !!proof?.ready && proof.images instanceof Set && typeof image==='string' && proof.images.has(image);
+}
+function showLiveOnlyCameraChoice(message='Only animals spotted through the live camera count as new FieldDex discoveries.'){
+ s.encounterLive=false;s.encounterAr=false;s.realLiveProof=null;
+ openModal(`<div class="sheet-head"><h2>Live wildlife camera 🎥</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">${esc(message)}</p><div class="capture-choice"><button type="button" class="choice" id="live-only-retry"><span>🎥</span><strong>Open live camera</strong><small>Spot wildlife now and save your best live frame</small></button><button type="button" id="live-only-collection" class="choice"><span>📚</span><strong>My FieldDex</strong><small>View older discoveries and photos</small></button></div><p class="footnote center">No gallery upload or normal-camera import for new discoveries. Your existing photos, CatDex and FieldDex backups are unaffected.</p>`);
+ $('live-only-retry').onclick=startLiveEncounter;
+ $('live-only-collection').onclick=()=>navigate('dex');
+}
+const v44StartCatch=startCatch;
+startCatch=function(animalId=null){
+ s.realLiveProof=null;
+ v44StartCatch(animalId);
+ const picker=document.querySelector('.capture-choice-v28');
+ if(!picker)return;
+ picker.innerHTML=`<button id="live-photo" type="button" class="choice choice-live-only"><span>🎥</span><strong>Spot real wildlife</strong><small>Live camera only · cats, snails, dogs, insects and more</small></button><button id="ar-photo" type="button" class="choice"><span>✨</span><strong>AR Safari</strong><small>Find virtual cats · separate collection</small></button>`;
+ $('live-photo').onclick=startLiveEncounter;
+ $('ar-photo').onclick=startArEncounter;
+ const intro=picker.previousElementSibling;
+ if(intro)intro.textContent='Every new real-world discovery starts in the live camera. Point at a safely observed animal, catch the moment, then choose its species.';
+ const foot=picker.nextElementSibling;
+ if(foot)foot.textContent='No imported photos for new catches. You can still view old photos and restore backups. Never disturb or chase wildlife.';
+};
+// Old native-photo, phone-camera and gallery callbacks cannot introduce a new
+// record: they no longer open a collectible encounter.
+requestEncounterPhoto=async function(){toast('New wildlife catches must use the live camera.');showLiveOnlyCameraChoice()};
+startMultiPhotoCapture=function(){showLiveOnlyCameraChoice()};
+showSafeCameraChooser=function(){showLiveOnlyCameraChoice('Live camera stopped. Try again when you are ready. No photo was imported.')};
+useNormalCameraFromLiveStartup=function(){liveRequestEpoch++;stopLiveCamera();showLiveOnlyCameraChoice()};
+const v44BeginEncounter=beginEncounter;
+beginEncounter=function(image,options={}){
+ if(options.ar===true)return v44BeginEncounter(image,options); // AR virtual cats remain their own game.
+ if(options.live!==true||!liveCamera?.active){
+  s.realLiveProof=null;
+  toast('Use the live camera to collect a new real animal.');
+  return showLiveOnlyCameraChoice();
+ }
+ s.realLiveProof={source:'camera-stream',images:new Set([image]),ready:false};
+ return v44BeginEncounter(image,options);
+};
+const v44FinishLiveEncounter=finishLiveEncounter;
+finishLiveEncounter=async function(session){
+ const proof=!s.encounterAr&&liveCamera===session?s.realLiveProof:null;
+ await v44FinishLiveEncounter(session);
+ if(!proof||proof!==s.realLiveProof)return;
+ // Source images are exclusively frames collected from this camera session.
+ if(liveCamera!==null||session?.active||!captureShots.length)return;
+ for(const f of captureShots){if(typeof f?.image==='string')proof.images.add(f.image)}
+ proof.ready=proof.images.has(s.image) && !!$('encounter-stage')?.isConnected;
+};
+const v44ShowCatForm=showCatForm;
+showCatForm=function(image){
+ if(!realLivePhotoReady(image)){
+  toast('Take a live wildlife capture before saving.');
+  return showLiveOnlyCameraChoice('Your camera has not captured a live wildlife frame yet. Open the live camera to try again.');
+ }
+ v44ShowCatForm(image);
+ const info=document.createElement('p');info.className='live-only-verified';info.textContent='✓ Live camera discovery · Pick the species you actually observed.';
+ const species=$('wildlife-species')?.closest('.field-group');if(species)species.before(info);
+};
+const v44SaveCatch=saveCatch;
+saveCatch=function(){
+ if(!realLivePhotoReady()){
+  toast('Cannot save an imported photo as a new wildlife discovery.');
+  return;
+ }
+ return v44SaveCatch();
+};
+const v44ShowEncounter=showEncounter;
+showEncounter=function(image,quality,options={}){
+ const virtual=Boolean(options.ar||s.encounterAr);
+ if(!virtual && (!options.live||!s.realLiveProof))return showLiveOnlyCameraChoice();
+ v44ShowEncounter(image,quality,options);
+ if(virtual)return;
+ // Keep the ephemeral frame-choice tray, which contains only recent live video frames.
+ $('encounter-replace')?.remove();
+ const retake=$('encounter-retake');if(retake){retake.textContent='🎥 Retake live';retake.onclick=startLiveEncounter}
+ const qualityLabel=$('encounter-quality');if(qualityLabel)qualityLabel.dataset.captureSource='live';
+};
+const v44CloseModal=closeModal;
+closeModal=function(){s.realLiveProof=null;return v44CloseModal()};
+
+const v44RenderHomeLiveOnly=renderHome;
+renderHome=function(){return v44RenderHomeLiveOnly().replace('Photograph it safely to begin your FieldDex.','Capture it with the live camera to begin your FieldDex.').replace('Photograph one animal or insect today','Spot one animal or insect live today').replace('Catch your first cat','Spot your first animal').replace('View CatDex','View FieldDex')};
+
+
+
+/* v3.8.2: Earlier provisional identity and gentle species-specific discovery tools.
+   These tools are virtual camera overlays, never instructions to touch wildlife.
+   Existing state/backup identifiers are intentionally unchanged. */
+const HUSH_HUNT_BRAND='Hush Hunt';
+const FIELD_TOOLS={
+ Cat:{icon:'🐈',primary:'Whisker Claw',altIcon:'🪶',secondary:'Dangle Lure',status:'Catch the cat with your virtual claw.'},
+ Dog:{icon:'🐕',primary:'Paw Tag',altIcon:'🔎',secondary:'Focus Lens'},
+ Snail:{icon:'🍃',primary:'Leaf Stamp',altIcon:'🔎',secondary:'Macro Lens'},
+ Butterfly:{icon:'🦋',primary:'Wing Emblem',altIcon:'🔎',secondary:'Macro Lens'},
+ Moth:{icon:'🦋',primary:'Wing Emblem',altIcon:'🔎',secondary:'Macro Lens'},
+ Bee:{icon:'🌼',primary:'Flower Token',altIcon:'🔎',secondary:'Macro Lens'},
+ Ladybird:{icon:'🐞',primary:'Spot Token',altIcon:'🔎',secondary:'Macro Lens'},
+ Beetle:{icon:'🪲',primary:'Beetle Badge',altIcon:'🔎',secondary:'Macro Lens'},
+ Ant:{icon:'🐜',primary:'Trail Token',altIcon:'🔎',secondary:'Macro Lens'},
+ Spider:{icon:'🕸️',primary:'Web Emblem',altIcon:'🔎',secondary:'Macro Lens'},
+ Dragonfly:{icon:'🪷',primary:'Pond Token',altIcon:'🔎',secondary:'Macro Lens'},
+ Bird:{icon:'🪶',primary:'Feather Badge',altIcon:'🔭',secondary:'Binoculars'},
+ Squirrel:{icon:'🌰',primary:'Acorn Stamp',altIcon:'🔭',secondary:'Binoculars'},
+ Rabbit:{icon:'🌿',primary:'Meadow Token',altIcon:'🔭',secondary:'Binoculars'},
+ Hedgehog:{icon:'🍂',primary:'Leaf Badge',altIcon:'🔭',secondary:'Binoculars'},
+ Frog:{icon:'🍀',primary:'Pond Badge',altIcon:'🔎',secondary:'Focus Lens'},
+ Other:{icon:'🧭',primary:'Explorer Token',altIcon:'🔎',secondary:'Focus Lens'},
+ Unknown:{icon:'🧭',primary:'Discovery Token',altIcon:'🔎',secondary:'Focus Lens'}
+};
+s.wildTarget='Unknown';
+function discoveryTool(){return FIELD_TOOLS[s.encounterAr?'Cat':s.wildTarget]||FIELD_TOOLS.Unknown}
+function renderWildlifeTargetPicker(){
+ return `<div class="wildlife-preselect"><label for="wild-target">What are you spotting?</label><select class="select" id="wild-target" aria-label="Animal you want to observe"><option value="Unknown">🧭 Surprise me / not sure</option>${SPECIES.map(v=>`<option value="${esc(v)}">${speciesIcon(v)} ${esc(v)}</option>`).join('')}</select><small>Choose an animal for its discovery tool. You can correct the species after the photo.</small></div>`;
+}
+function wireWildlifeTarget(){
+ const field=$('wild-target');if(!field)return;
+ field.value=s.wildTarget;
+ field.onchange=()=>{s.wildTarget=FIELD_TOOLS[field.value]?field.value:'Unknown';if(s.wildTarget!=='Unknown')s.spottedSpecies=s.wildTarget;};
+}
+const zOldStartCatch=startCatch;
+startCatch=function(animalId=null){
+ s.wildTarget='Unknown';zOldStartCatch(animalId);
+ const picker=document.querySelector('.capture-choice-v28');
+ if(picker){picker.insertAdjacentHTML('beforebegin',renderWildlifeTargetPicker());wireWildlifeTarget();}
+ const title=document.querySelector('.sheet-head h2');if(title)title.textContent='Spot wildlife 🎥';
+};
+const zOldLiveChoice=showLiveOnlyCameraChoice;
+showLiveOnlyCameraChoice=function(message){
+ zOldLiveChoice(message);
+ const picker=$('live-only-retry');
+ if(picker){picker.insertAdjacentHTML('beforebegin',renderWildlifeTargetPicker());wireWildlifeTarget();}
+};
+const zOldSyncDock=syncEncounterToolDock;
+syncEncounterToolDock=function(kind){
+ zOldSyncDock(kind);
+ if(!s.encounterAr){
+   const t=discoveryTool();
+   const btnA=$('tool-ball'),btnB=$('tool-lure');
+   if(btnA){btnA.querySelector('span').textContent=t.icon;btnA.setAttribute('aria-label','Switch to '+t.primary);btnA.title='Switch to '+t.primary;btnA.querySelector('small').textContent=t.primary==='Whisker Claw'?'Paw':'Token';}
+   if(btnB){btnB.querySelector('span').textContent=t.altIcon;btnB.setAttribute('aria-label','Switch to '+t.secondary);btnB.title='Switch to '+t.secondary;btnB.querySelector('small').textContent=t.secondary==='Dangle Lure'?'Lure':t.secondary==='Binoculars'?'Binoculars':'Lens';}
+   const item=$('throw-item');
+   if(item){
+     const prompt='<span class="drag-prompt">DRAG</span>';
+     item.innerHTML=kind==='ball'&&s.wildTarget==='Cat'?whiskerPawSvgMarkup():`<span class="wild-tool-art" aria-hidden="true">${kind==='ball'?t.icon:t.altIcon}</span>`;
+     item.insertAdjacentHTML('beforeend',prompt);
+     item.classList.toggle('wild-token',s.wildTarget!=='Cat'||kind==='lure');
+     item.setAttribute('aria-label',`Drag ${kind==='ball'?t.primary:t.secondary} to the animal`);
+   }
+   const status=$('encounter-status');
+   if(status&&!s.encounterCaptured)status.textContent=kind==='ball'?`Drag the ${t.primary} onto the glowing ring.`:`Use the ${t.secondary} to focus the encounter first.`;
+ }
+};
+const zOldShowEncounter=showEncounter;
+showEncounter=function(image,quality,options={}){
+ zOldShowEncounter(image,quality,options);
+ if(options.ar||s.encounterAr||!$('encounter-stage'))return;
+ const t=discoveryTool();
+ const help=document.querySelector('.encounter-quick-help');if(help)help.textContent=`① Aim at the animal · ② Drag the ${t.primary} · ③ Discover!`;
+ const guidance=document.querySelector('.encounter-instructions');if(guidance)guidance.textContent=`Drag the ${t.primary} onto the ring. The other tool is on the right.`;
+ const h=document.querySelector('.encounter-help p');if(h)h.textContent=`These tools are virtual stamps and camera focus aids only. Never touch, bait, chase, collect or disturb wild animals.`;
+ const orb=$('encounter-orb');if(orb){orb.innerHTML=s.wildTarget==='Cat'?whiskerPawSvgMarkup('capture-paw'):`<span class="wild-orb-art" aria-hidden="true">${t.icon}</span>`;orb.classList.toggle('wild-token',s.wildTarget!=='Cat');}
+ syncEncounterToolDock(s.encounterTool||'ball');
+};
+const zOldHandleHit=handleEncounterHit;
+handleEncounterHit=function(kind,accuracy=.45){
+ if(s.encounterAr||s.wildTarget==='Cat')return zOldHandleHit(kind,accuracy);
+ if(s.encounterCaptured||!$('encounter-status'))return;
+ if(kind==='lure'){
+   s.encounterLured=true;
+   $('encounter-cat')?.classList.add('curious');
+   s.encounterTool='ball';syncEncounterToolDock('ball');
+   const status=$('encounter-status');if(status)status.textContent='Focused! Now use your '+discoveryTool().primary+'.';
+   return;
+ }
+ if(s.captureSummary)s.captureSummary.throwRating=accuracy<=.23?'Wonderful!':accuracy<=.55?'Great!':'Nice!';
+ runEncounterCapture();
+};
+const zOldShowCatForm=showCatForm;
+showCatForm=function(image){
+ zOldShowCatForm(image);
+ if(!s.encounterAr&&$('wildlife-species')&&s.wildTarget!=='Unknown'){
+   const select=$('wildlife-species');select.value=s.wildTarget;
+   select.dispatchEvent(new Event('change',{bubbles:true}));
+ }
+};
+const zOldRenderHome=renderHome;
+renderHome=function(){
+ return zOldRenderHome().replace(/YOUR CAT-CHASING ADVENTURE/g,'YOUR WILDLIFE ADVENTURE').replace(/Every whisker has a story\. Find yours\./g,'Every species has a story. Find yours.').replace(/THE WORLD IS YOUR CATDEX/g,'THE WORLD IS YOUR FIELDDEX').replace(/See a cat\?/g,'Spot wildlife?').replace(/Meet real cats, level up and build your own legendary collection\./g,'Find real animals, discover new species and grow your FieldDex.').replace(/📸 Catch a cat →/g,'🎥 Spot wildlife →').replace(/Unique cats/g,'Discoveries').replace(/Your cat collection/g,'Your wildlife collection');
+};
+
+
+
+/* v3.8.3 — Hush Hunt visual Field Guide: all 17 species groups have illustrations
+ * and tappable varieties. Offline bundled image assets; no model/remote calls.
+ * Data keys, existing cat 'coat', and speciesDetail remain unchanged. */
+const FIELD_GUIDE_VARIETIES={"Cat":["Tabby","Ginger","Brown","Black","White","Cream","Tuxedo","Calico","Tortoiseshell","Grey","Colourpoint","Other"],"Dog":["Labrador","Golden Retriever","Poodle","Terrier","Spaniel","Bulldog","Dachshund","Husky","Mixed Breed"],"Snail":["Garden Snail","Grove Snail","Roman Snail","Glass Snail","Amber Snail","Pond Snail","Other Snail"],"Butterfly":["Peacock","Red Admiral","Small Tortoiseshell","Painted Lady","Comma","Large White","Common Blue","Brimstone"],"Moth":["Emperor Moth","Elephant Hawk-moth","Hummingbird Hawk-moth","Garden Tiger","Jersey Tiger","Six-spot Burnet","Silver Y"],"Bee":["Honeybee","Buff-tailed Bumblebee","Red-tailed Bumblebee","White-tailed Bumblebee","Common Carder Bee","Leafcutter Bee","Mining Bee"],"Ladybird":["Seven-spot","Two-spot","Harlequin","Fourteen-spot","Pine Ladybird","Twenty-two-spot"],"Beetle":["Stag Beetle","Rose Chafer","Ground Beetle","Weevil","Soldier Beetle","Click Beetle","Longhorn Beetle","Dung Beetle"],"Dragonfly":["Emperor Dragonfly","Broad-bodied Chaser","Southern Hawker","Common Darter","Four-spotted Chaser","Golden-ringed Dragonfly"],"Ant":["Black Garden Ant","Red Ant","Wood Ant","Yellow Meadow Ant","Pavement Ant","Other Ant"],"Spider":["Garden Spider","House Spider","Jumping Spider","Zebra Spider","Wolf Spider","Crab Spider","Cellar Spider"],"Bird":["Robin","Blackbird","House Sparrow","Blue Tit","Great Tit","Magpie","Wood Pigeon","Starling","Crow","Seagull","Parakeet","Duck","Swan","Owl"],"Squirrel":["Grey Squirrel","Red Squirrel","Flying Squirrel","Ground Squirrel","Other Squirrel"],"Rabbit":["Wild Rabbit","Lop-eared","Dutch Rabbit","Lionhead","Netherland Dwarf","Flemish Giant"],"Hedgehog":["European Hedgehog","African Pygmy Hedgehog","Long-eared Hedgehog","Other Hedgehog"],"Frog":["Common Frog","Pool Frog","Marsh Frog","Tree Frog","Bullfrog","Other Frog"],"Other":["Fox","Deer","Mouse","Bat","Lizard","Worm","Slug","Fish","Tortoise","Other Animal"]};
+const FIELD_GUIDE_EMOJI={"Cat": "🐱", "Dog": "🐶", "Snail": "🐌", "Butterfly": "🦋", "Moth": "🦋", "Bee": "🐝", "Ladybird": "🐞", "Beetle": "🪲", "Dragonfly": "🪰", "Ant": "🐜", "Spider": "🕷️", "Bird": "🐦", "Squirrel": "🐿️", "Rabbit": "🐰", "Hedgehog": "🦔", "Frog": "🐸", "Other": "🦊"};
+s.spottedDetail=''; s.coatChoice=''; s.fieldGroupExpanded=false;
+function fieldGuideArt(group,type=null){
+ const name=v=>String(v).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+ return 'field_art/'+name(group)+'-'+(type?name(type):'group')+'.webp';
+}
+function fieldGuideTile(name, group, opts={}){
+ const isSelected=opts.selected===true,kind=opts.kind||'type';
+ const img=opts.image||fieldGuideArt(group,name),action=kind==='group'?'data-guide-group':'data-guide-type';
+ return `<button type="button" class="field-guide-tile ${kind==='group'?'field-guide-tile-group':''} ${isSelected?'chosen':''}" ${action}="${esc(name)}" aria-pressed="${isSelected?'true':'false'}" aria-label="${esc(name)}"><img src="${esc(img)}" loading="lazy" alt="" width="84" height="84"><span>${esc(name)}</span>${isSelected?'<span class="visual-tile-check" aria-hidden="true">✓</span>':''}</button>`;
+}
+function renderFieldGuideSpecies(){
+ const grid=$('field-guide-species'),chosen=$('field-guide-selected');if(!grid||!chosen)return;
+ const group=SPECIES.includes(s.spottedSpecies)?s.spottedSpecies:'Cat';
+ grid.classList.toggle('hidden',!s.fieldGroupExpanded);
+ chosen.innerHTML=`<img src="${fieldGuideArt(group)}" alt="" width="64" height="64"><span><strong>${esc(group)}</strong><small>Tap Change animal to choose another</small></span><span class="field-guide-check">✓</span>`;
+ grid.innerHTML=SPECIES.map(x=>fieldGuideTile(x,x,{selected:x===group,kind:'group',image:fieldGuideArt(x)})).join('');
+ grid.querySelectorAll('[data-guide-group]').forEach(btn=>btn.onclick=()=>{
+  s.fieldGroupExpanded=false;const selected=$('wildlife-species');selected.value=btn.dataset.guideGroup;
+  selected.dispatchEvent(new Event('change',{bubbles:true}));
+ });
+ $('change-species').onclick=()=>{s.fieldGroupExpanded=!s.fieldGroupExpanded;renderFieldGuideSpecies()};
+}
+function renderFieldGuideVarieties(){
+ const grid=$('field-guide-types');if(!grid)return;
+ const group=s.spottedSpecies,options=FIELD_GUIDE_VARIETIES[group]||FIELD_GUIDE_VARIETIES.Other;
+ const selected=group==='Cat'?($('cat-coat')?.value||'Other'):s.spottedDetail;
+ const uncertainty=group==='Cat'?'Other':'Not sure';
+ grid.innerHTML=options.map(x=>fieldGuideTile(x,group,{selected:selected===x})).join('')+
+ (group==='Cat'?'':fieldGuideTile('Not sure',group,{selected:!selected, image:fieldGuideArt('Other','Not sure')}))+
+ `<button type="button" class="field-guide-custom ${s.spottedDetail==='__custom'?'chosen':''}" id="field-guide-custom"><span>✏️</span> My own description</button>`;
+ grid.querySelectorAll('[data-guide-type]').forEach(btn=>btn.onclick=()=>{
+  const value=btn.dataset.guideType;
+  if(group==='Cat'){$('cat-coat').value=value;s.coatChoice=value;}
+  else{s.spottedDetail=value==='Not sure'?'':value;$('wildlife-detail').value=s.spottedDetail;}
+  grid.querySelectorAll('[data-guide-type]').forEach(x=>{const on=x===btn;x.classList.toggle('chosen',on);x.setAttribute('aria-pressed',String(on));});
+  grid.querySelector('#field-guide-custom')?.classList.remove('chosen');
+  const custom=$('wildlife-detail');if(custom)custom.classList.add('hidden');
+ });
+ const custom=grid.querySelector('#field-guide-custom');if(custom)custom.onclick=()=>{
+  const input=$('wildlife-detail');if(!input)return;
+  if(group==='Cat'){
+   toast('For cats, choose the closest coat above. You can add notes below.');return;
+  }
+  s.spottedDetail='__custom';input.value='';input.classList.remove('hidden');input.focus();
+  grid.querySelectorAll('[data-guide-type]').forEach(x=>{x.classList.remove('chosen');x.setAttribute('aria-pressed','false')});custom.classList.add('chosen');
+ };
+ // Display uncertain choice initially, never guess a subtype for a real photo.
+ if(group!=='Cat'&&selected===''){
+  const unsure=[...grid.querySelectorAll('[data-guide-type]')].find(x=>x.dataset.guideType==='Not sure');
+  unsure?.classList.add('chosen');unsure?.setAttribute('aria-pressed','true');
+ }
+}
+function initEditFieldGuide(animal){
+ s.editVisualDetail=speciesOf(animal)==='Cat'?animal.coat||'Other':animal.speciesDetail||'';
+ const anchor=$('edit-species-detail');if(!anchor)return;
+ const wrap=document.createElement('div');wrap.id='edit-field-guide';wrap.className='edit-field-guide';
+ wrap.innerHTML='<div class="visual-field-heading"><div><span class="visual-step">EASY IDENTIFICATION</span><h3>Tap a picture to change the type</h3></div></div><div id="edit-visual-types" class="field-guide-types"></div>';
+ anchor.closest('.field-group').before(wrap);
+}
+function renderEditFieldGuide(){
+ const grid=$('edit-visual-types');if(!grid)return;
+ const group=$('edit-species')?.value||'Cat';const types=FIELD_GUIDE_VARIETIES[group]||FIELD_GUIDE_VARIETIES.Other;
+ const detail=$('edit-species-detail');const coat=$('edit-coat');
+ const active=group==='Cat'?coat?.value:detail?.value;
+ grid.innerHTML=types.map(t=>fieldGuideTile(t,group,{selected:active===t})).join('')+
+ (group==='Cat'?'':fieldGuideTile('Not sure',group,{selected:!active,image:fieldGuideArt('Other','Not sure')}))+
+ (group==='Cat'?'':'<button type="button" class="field-guide-custom" id="edit-type-custom">✏️ Other / write my own</button>');
+ grid.querySelectorAll('[data-guide-type]').forEach(btn=>btn.onclick=()=>{
+  const v=btn.dataset.guideType;
+  if(group==='Cat'){if(coat)coat.value=v;}
+  else if(detail)detail.value=v==='Not sure'?'':v;
+  renderEditFieldGuide();
+ });
+ const custom=grid.querySelector('#edit-type-custom');if(custom)custom.onclick=()=>{detail?.focus();toast('Write your own description in the box below.')};
+ // Older custom values remain visible/editable; never overwrite on edit open.
+}
+
+
+// Little album of wildlife varieties; old cat coat Bingo remains unchanged.
+const hushOldDex=renderDex;
+renderDex=function(){
+ let html=hushOldDex();
+ const kind=s.filter.startsWith('Species:')?s.filter.slice(8):null;
+ if(!kind||!FIELD_GUIDE_VARIETIES[kind]||kind==='Cat')return html;
+ const items=FIELD_GUIDE_VARIETIES[kind];
+ const spotted=new Set(visibleWildlife().filter(c=>speciesOf(c)===kind).map(c=>String(c.speciesDetail||'').trim().toLowerCase()).filter(Boolean));
+ const num=items.filter(x=>spotted.has(x.toLowerCase())).length;
+ const tiles=items.map(x=>`<div class="variant-album-tile ${spotted.has(x.toLowerCase())?'unlocked':''}"><img src="${fieldGuideArt(kind,x)}" alt="" loading="lazy" width="80" height="80"><span>${esc(x)}</span><small>${spotted.has(x.toLowerCase())?'✓ DISCOVERED':'○ TO DISCOVER'}</small></div>`).join('');
+ const album=`<section class="variant-album"><div class="visual-field-heading"><div><span class="visual-step">YOUR WILDLIFE ALBUM</span><h3>${esc(kind)} varieties</h3></div><strong class="variant-progress">${num} / ${items.length}</strong></div><div class="variant-album-grid">${tiles}</div><p class="field-help">Discover types through live sightings. Not sure of the exact type? You can still save the animal.</p></section>`;
+ return html.replace('<div id="dex-grid">',album+'<div id="dex-grid">');
+};
+// Reuse the established home layout, with wildlife rather than one cat as its hero.
+const hushOldHome=renderHome;
+renderHome=function(){return hushOldHome().replace('<span class="hero-cat" aria-hidden="true">🐈</span>','<span class="hero-cat hush-hero-animal" aria-hidden="true">🦋<span>🐌</span></span>')};

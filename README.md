@@ -1,23 +1,25 @@
-# Whisker Hunt 3.7.4 · Build 43
+# Hush Hunt — Android .NET MAUI / WebView
 
-Complete Android .NET MAUI project and browser preview.
+**Version 3.8.3 · build 47** · Live-only wildlife discovery, illustrated visual Field Guide.
 
-## Install safely
-1. Back up the existing CatDex first from **Your data → Save full backup**.
-2. Extract this ZIP into a fresh folder and open `WhiskerHunt.sln` in Visual Studio.
-3. Keep the current Whisker Hunt app **installed** on the phone. Never uninstall or clear app storage, because that may erase your collection.
-4. Select Android **Debug** and your OnePlus device. Confirm Build and Deploy are enabled in Configuration Manager.
-5. Clean, rebuild, and deploy over the installed app.
-6. Verify the in-app version stamp reads **Whisker Hunt v3.7.4 · build 43**.
+## Open and deploy
 
-## Test the map
-- Go to **Map → Saved locations**. A cat with a saved pin (e.g. Socks) should now have a large labelled marker and cat photo card.
-- Tap **Show pin** to highlight it on the private plot.
-- Tap **Street map → Open street map**. Android should offer/open an external browser showing the saved approximate area in OpenStreetMap.
-- Tapping **Stay private** should remain in Whisker Hunt and contact no map website.
+Use **WhiskerHunt.sln** (the internal legacy project name is retained for save compatibility) in Visual Studio with the .NET 10 Android MAUI workload, and build/deploy to your OnePlus device **without uninstalling the old app**. Export a full backup first.
 
-## Privacy
-The in-app coordinate plot works fully offline and does not show street tiles. An external street map can be viewed only with explicit user consent; then only the selected approximate saved location is shared with OpenStreetMap. Never use the app to follow cats into unsafe/private areas.
+## Discover wildlife
 
-## Build note
-The Android APK has **not** been compiled in this environment. The native external-browser handoff still needs your physical-device test.
+1. Tap the large + button and start the real-wildlife live camera. Imported photos cannot earn new sightings.
+2. Complete the virtual capture tool, pick the animal group, tap a variety picture, and optionally add a memory/private approximate map pin.
+3. If unsure of a variety select **Not sure**. The illustrated tiles do **not** provide automatic identification.
+4. In **FieldDex** choose an animal filter to see your discovered varieties. Cat Bingo and AR Safari virtual cats remain separately supported.
+
+## Privacy, local storage, upgrading
+
+- Android package ID: `uk.whiskerhunt.mobile` (not renamed).
+- Browser database: `whiskerhunt_local_v1`; existing native JSON backup signature also retains its Whisker Hunt name.
+- Personal photographs and private pins remain on-device; opening an external OpenStreetMap requires explicit consent.
+- Export and verify a backup before installing; do not clear storage or uninstall. No account is required.
+
+## Testing and limitations
+
+See `HushHunt_v3.8.3_TEST_RESULTS.md` and `tests/test_v47_*` for source/browser regression checks. There is no generated Android APK in this package, and Android-device camera operation must be verified after deployment.

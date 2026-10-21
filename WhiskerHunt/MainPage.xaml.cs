@@ -183,7 +183,7 @@ public partial class MainPage : ContentPage
                     if (!string.IsNullOrWhiteSpace(text))
                         await Share.Default.RequestAsync(new ShareTextRequest
                         {
-                            Title = "Whisker Hunt discovery",
+                            Title = "Hush Hunt discovery",
                             Text = text
                         });
                     break;
@@ -690,7 +690,7 @@ public partial class MainPage : ContentPage
         await File.WriteAllBytesAsync(path, bytes);
         await Share.Default.RequestAsync(new ShareFileRequest
         {
-            Title = "Share your Whisker Hunt collectible card",
+            Title = "Share your Hush Hunt collectible card",
             File = new ShareFile(path, "image/png")
         });
     }
@@ -709,7 +709,7 @@ public partial class MainPage : ContentPage
         File.Copy(StatePath, destination, overwrite: true);
         await Share.Default.RequestAsync(new ShareFileRequest
         {
-            Title = "Save your Whisker Hunt backup",
+            Title = "Save your Hush Hunt backup",
             File = new ShareFile(destination)
         });
     }
@@ -767,7 +767,7 @@ public partial class MainPage : ContentPage
         await File.WriteAllBytesAsync(destination, bytes);
         await Share.Default.RequestAsync(new ShareFileRequest
         {
-            Title = "Save your GPS-free Whisker Hunt backup",
+            Title = "Save your GPS-free Hush Hunt backup",
             File = new ShareFile(destination, "application/json")
         });
     }
@@ -776,7 +776,7 @@ public partial class MainPage : ContentPage
     {
         var file = await FilePicker.Default.PickAsync(new PickOptions
         {
-            PickerTitle = "Select your Whisker Hunt JSON backup"
+            PickerTitle = "Select your Hush Hunt JSON backup"
         });
         if (file is null) return;
         await using var stream = await file.OpenReadAsync();

@@ -438,3 +438,71 @@
 .map-entry-selected{border-color:#7bd9cf;box-shadow:inset 0 0 0 1px #7bd9cf33}
 @media(min-width:410px){.map-entry-v43{grid-template-columns:52px minmax(0,1fr) auto auto}.map-entry-v43 .map-street-btn{grid-column:auto}}
 @media(prefers-reduced-motion:reduce){.map-pin-v43{transition:none!important}}
+
+/* v3.8: child-friendly FieldDex species selector and new wildlife collection. */
+.species-picker{border:1px solid rgba(134,230,203,.4);background:rgba(46,125,108,.12);border-radius:16px;padding:12px;margin:14px 0}.species-picker label{color:#a8ffe0;font-weight:800}.species-picker .select{margin-top:8px}.field-help{display:block;color:#b8c2d8;font-size:12px;line-height:1.45;margin-top:6px}.wildlife-safety{margin:0 0 12px}.wildlife-collection{margin:16px 0 22px;border:1px solid rgba(139,234,202,.27);background:rgba(71,130,117,.10);padding:16px;border-radius:20px}.wildlife-collection h3{margin:5px 0 8px}.wildlife-stat-grid{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.wildlife-stat{padding:7px 10px;background:rgba(21,32,55,.85);border-radius:18px;font-size:12px}.wildlife-stat strong{color:#b0ffe3;margin-left:4px}.wildlife-filter{display:flex;flex-wrap:wrap;gap:6px}.wildlife-filter .chip{font-size:11px;padding:8px 10px}.field-label-secondary{display:block;margin:13px 0 7px}.species-picker .field-help{color:#c5f8e8}
+
+/* v3.8.1 — live-only wildlife collection */
+.capture-choice .choice-live-only{grid-column:1/-1;border-color:rgba(108,238,198,.65);background:linear-gradient(135deg,rgba(53,108,108,.42),rgba(70,64,113,.46))}
+.live-only-verified{font-size:12px;font-weight:750;color:#95f5dc;margin:6px 0 12px}
+
+.capture-choice-v28 #ar-photo{grid-column:1/-1;min-height:94px}
+
+/* v3.8.2 species-specific capture items and brand-friendly controls */
+.wildlife-preselect{padding:13px;margin:10px 0 16px;border:1px solid #73d5b165;border-radius:17px;background:linear-gradient(125deg,#172a36,#1f2843);display:flex;flex-direction:column;gap:6px}
+.wildlife-preselect label{font-size:14px;color:#bdfde8;font-weight:800}
+.wildlife-preselect .select{width:100%;min-height:46px}
+.wildlife-preselect small{font-size:12px;color:#c7cfe4;line-height:1.35}
+#throw-item.wild-token{background:radial-gradient(circle at 35% 25%,#baffee4f,#88a6ff30 70%)!important;border:2px solid #a6fae6ae!important;border-radius:50%!important;box-shadow:0 5px 21px #0005!important;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0}
+.wild-tool-art{font-size:46px;line-height:1;filter:drop-shadow(0 5px 8px #06131a9e);pointer-events:none;user-select:none;transform:translateZ(0)}
+#encounter-orb.wild-token{display:flex;align-items:center;justify-content:center;border-radius:50%;background:radial-gradient(circle,#b6ffee,#8bb7f4)}
+#encounter-orb.wild-token.hidden{display:none}
+.wild-orb-art{font-size:65px;pointer-events:none;filter:drop-shadow(0 3px 7px #0008);transform-origin:center center;transition:transform .19s ease-out}
+#encounter-orb.grab-1 .wild-orb-art{transform:scale(1.12) rotate(-13deg)}
+#encounter-orb.grab-2 .wild-orb-art{transform:scale(.78) rotate(14deg)}
+.dock-tool small{overflow-wrap:anywhere}
+@media (prefers-reduced-motion:reduce){.wild-orb-art{transition:none!important}}
+
+/* v3.8.3 visual discovery guide — touch-first, offline, and accessible */
+.visual-field-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 12px}
+.visual-field-heading h3{margin:3px 0 0;font-size:17px;line-height:1.2;color:#fff}
+.visual-step{font-size:10px;font-weight:900;letter-spacing:1px;color:#91f0d8}
+.visual-tap-hint{font-size:11px;color:#c9c5df;white-space:nowrap}
+.visual-change{border:1px solid #98f5db70;background:#27443f;color:#aef8e5;border-radius:999px;font-weight:800;font-size:11px;padding:10px 12px;min-height:42px}
+.field-guide-native-select{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;opacity:0!important;pointer-events:none!important}
+.field-guide-species{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-height:320px;overflow-y:auto;overscroll-behavior:contain;padding:3px 3px 12px;margin:10px 0 9px}
+.field-guide-types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0 12px}
+.field-guide-tile{min-width:0;position:relative;background:linear-gradient(145deg,#222e45,#20233d);border:2px solid #ffffff27;border-radius:18px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;padding:8px 6px 11px;min-height:128px;cursor:pointer;font-size:12px;font-weight:800;line-height:1.25;text-align:center;word-break:normal;overflow:hidden}
+.field-guide-tile img{width:100%;max-width:126px;height:92px;object-fit:cover;border-radius:12px;background:#435467;display:block}
+.field-guide-tile>span:not(.visual-tile-check){padding:0 2px}
+.field-guide-tile.chosen{border-color:#8bf1d7;background:linear-gradient(145deg,#234941,#2a3550);box-shadow:0 0 0 1px #8bf1d75e,inset 0 0 25px #87e8cd10}
+.field-guide-tile:focus-visible,.field-guide-custom:focus-visible,.visual-change:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.visual-tile-check{position:absolute;right:5px;top:5px;display:grid;place-items:center;background:#16775d;color:white;border-radius:50%;width:26px;height:26px;border:2px solid white;font-size:15px}
+.field-guide-tile-group{min-height:100px;font-size:11px;padding:6px 4px 9px}
+.field-guide-tile-group img{height:65px;max-width:88px}
+.field-guide-selected{display:flex;align-items:center;gap:12px;border-radius:16px;background:#2e374b;border:1px solid #83edd244;padding:8px;margin-bottom:9px}
+.field-guide-selected>img{width:56px;height:56px;border-radius:12px;object-fit:cover}
+.field-guide-selected>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:4px}
+.field-guide-selected strong{font-size:16px}
+.field-guide-selected small{font-size:11px;color:#cfdbdf}
+.field-guide-check{font-size:17px;color:#80f3c8}
+.visual-field-types{border-top:1px solid #ffffff20;padding-top:16px;margin-top:17px}
+.field-guide-custom{border:1px dashed #95e6d27a;border-radius:16px;min-height:56px;background:#263b41;color:#d5faf0;font-weight:800;font-size:13px;padding:10px}
+.field-guide-custom.chosen{border:2px solid #a3f2d8}
+.edit-field-guide{margin:15px 0}
+@media(max-width:350px){.field-guide-species{grid-template-columns:repeat(2,minmax(0,1fr))}.field-guide-types{gap:7px}.field-guide-tile{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.field-guide-tile{transition:none}}
+
+.hush-hero-animal{font-size:72px!important;white-space:nowrap;right:12px!important;top:53px!important;filter:drop-shadow(0 10px 5px #10162970)}
+.hush-hero-animal span{display:block;font-size:56px;position:absolute;left:35px;top:72px;transform:rotate(-11deg)}
+.variant-album{background:#202b39;border:1px solid #446a64;border-radius:20px;padding:14px;margin:14px 0 18px}
+.variant-album-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.variant-album-tile{min-width:0;position:relative;border:1px solid #48495a;border-radius:13px;padding:6px 5px 8px;background:#272a41;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;opacity:.72}
+.variant-album-tile.unlocked{opacity:1;border-color:#76e4cb;background:#1e4746}
+.variant-album-tile img{width:100%;max-width:98px;aspect-ratio:1;object-fit:cover;border-radius:9px;filter:grayscale(.8)}
+.variant-album-tile.unlocked img{filter:none}
+.variant-album-tile span{font-weight:800;font-size:10px;color:#fff;line-height:1.3}
+.variant-album-tile small{font-size:8px;letter-spacing:.3px;color:#b6b6cc;font-weight:800}
+.variant-album-tile.unlocked small{color:#85f4d8}
+.variant-progress{background:#31504b;color:#a2ffdf;border-radius:99px;padding:8px 11px;font-size:12px;white-space:nowrap}
+@media(max-width:350px){.variant-album-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
