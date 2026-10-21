@@ -506,3 +506,52 @@
 .variant-album-tile.unlocked small{color:#85f4d8}
 .variant-progress{background:#31504b;color:#a2ffdf;border-radius:99px;padding:8px 11px;font-size:12px;white-space:nowrap}
 @media(max-width:350px){.variant-album-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* v3.8.4 — field game: safe, friendly animation, wider Safari and opt-in maps. */
+.hush-live-species{display:grid;gap:7px;margin:0 0 14px;padding:13px;border:1px solid #71cdbb66;border-radius:17px;background:linear-gradient(120deg,#17464644,#29213fbb)}
+.hush-live-species label{font-weight:800;font-size:14px;color:#abffdf;letter-spacing:.02em}
+.hush-live-species select{font-size:17px;background:#171d30;color:#fff;min-height:52px;max-width:100%}
+.hush-live-species small{color:#d9c9f7;font-size:12px}
+.wild-tool-art,.wild-orb-art{display:inline-flex;align-items:center;justify-content:center;font-size:clamp(35px,10vw,55px);line-height:1;filter:drop-shadow(0 4px 4px #10132266);animation:hushToolPulse 2.6s ease-in-out infinite}
+.dock-tool:not([hidden])>span:first-child{display:inline-block;animation:hushToolBob 2.9s ease-in-out infinite}
+.throw-item:not(.dragging),.throw-ball:not(.dragging){animation:hushToolBob 3s ease-in-out infinite}
+.encounter-orb .wild-orb-art{font-size:55px}
+.ar-wildlife-art{display:block;object-fit:contain;width:100%;height:100%;border-radius:25%;filter:drop-shadow(0 7px 6px #050b17a0);animation:hushToolBob 3.4s ease-in-out infinite}
+.ar-wildlife-svg{filter:drop-shadow(0 7px 4px #0c102655)}
+@keyframes hushToolBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+@keyframes hushToolPulse{0%,100%{transform:scale(.97) rotate(-3deg)}50%{transform:scale(1.08) rotate(3deg)}}
+.hush-challenge{padding:19px 15px;margin:18px 0 22px;background:linear-gradient(142deg,#26354b,#302746);border:1px solid #7ccbbb72;border-radius:24px}
+.hush-challenge h3{margin:4px 0;font-size:23px}
+.hush-challenge-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:17px 0 0}
+.hush-challenge-tile{position:relative;min-width:0;border:1.5px dashed #77788d;background:#171d31;color:#d4d5de;border-radius:15px;padding:10px 6px 11px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.hush-challenge-tile.found{background:#343150;border:2px solid #77dfbd;color:#fff}
+.hush-challenge-tile img{width:70px;height:70px;object-fit:cover;border-radius:13px;filter:grayscale(1);opacity:.48}
+.hush-challenge-tile.found img{filter:none;opacity:1}
+.hush-challenge-tile strong{font-size:13px;overflow-wrap:anywhere}
+.hush-challenge-tile small{font-size:10px;color:#bdcbd4;text-align:center}
+.hush-tick{position:absolute;right:6px;top:5px;font-weight:900;color:#86edc7}
+.hush-street-section{padding:18px 14px;margin:22px 0;border-radius:22px;background:#1c2337;border:1px solid #7c92ae66}
+.hush-street-section .flex{gap:14px;align-items:center}
+.hush-street-section h3{margin:5px 0 0;font-size:19px}
+.hush-street-section p.dim{margin:10px 0 14px;font-size:13px}
+.hush-street-section button.primary,.hush-street-section button.secondary{font-size:12px;padding:10px 12px;white-space:nowrap}
+.hush-street-map{height:350px;position:relative;overflow:hidden;background:#c6d0cb;border-radius:17px;touch-action:none;user-select:none;border:2px solid #9dcaee;cursor:grab;isolation:isolate}
+.hush-street-map:active{cursor:grabbing}
+.hush-tile-canvas,#hush-street-pins{position:absolute;inset:0;pointer-events:none}
+.hush-map-tile{position:absolute;width:256px;height:256px;max-width:none;pointer-events:none;-webkit-user-drag:none}
+#hush-street-pins{z-index:3}
+.hush-street-pin{position:absolute;transform:translate(-50%,-100%);display:grid;justify-items:center;gap:1px;background:#282340ed;color:#fff;border:2px solid #fff;border-radius:16px;padding:4px 6px;min-width:48px;pointer-events:auto;z-index:3;box-shadow:0 3px 8px #090e2199}
+.hush-street-pin span{font-size:23px}.hush-street-pin small{font-size:11px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hush-street-pin.chosen{border:3px solid #4ceabf;background:#5c315d;z-index:4;transform:translate(-50%,-100%) scale(1.1)}
+.hush-map-controls{position:absolute;right:9px;top:10px;z-index:5;display:grid;gap:5px}
+.hush-map-controls button{min-width:38px;min-height:38px;border:1px solid #91abbd;background:#fff;color:#172137;border-radius:9px;font-size:24px;font-weight:800;box-shadow:0 2px 6px #44556655}
+.hush-osm-credit{position:absolute;bottom:2px;right:4px;z-index:5;background:#ffffffda;color:#222;padding:2px 5px;border-radius:4px;font-size:9px}
+.hush-osm-credit a{color:#1b508b;text-decoration:underline}
+.hush-map-distances{margin-top:11px;padding:15px;background:#131a2c;border:1px solid #536478;border-radius:16px}
+.hush-map-distances>strong{color:#b9f3e5}.hush-map-distances p.dim{margin:5px 0}
+.hush-distance-row{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #ffffff24;padding:9px 0;font-size:13px}
+.hush-distance-row b{color:#c7e8f6;text-align:right}
+@media(min-width:520px){.hush-challenge-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.wild-tool-art,.wild-orb-art,.dock-tool>span:first-child,.throw-item,.throw-ball,.ar-wildlife-art{animation:none!important}}
+
+.hush-photo-net-svg{width:74%;height:76%;object-fit:contain;filter:drop-shadow(0 5px 5px #07112380);animation:hushToolBob 3s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.hush-photo-net-svg{animation:none!important}}

@@ -1,3 +1,11 @@
+# Hush Hunt v3.8.4 — Build 48
+
+Open `WhiskerHunt.sln` in Visual Studio with .NET MAUI Android workload. Do **not** uninstall a previous Whisker Hunt app. Export a full collection backup before deploying.
+
+This release adds live wildlife species switching, themed animated capture items, expanded virtual Safari, 17-group Bingo, coloured ant illustrations and consent-gated street maps with approximate straight-line distances. The Android app ID remains `uk.whiskerhunt.mobile`; saved collection data uses the same schema and private storage location. New street maps need Internet and the user’s explicit consent. Offline private plot is still available.
+
+Read `HushHunt_v3.8.4_CHANGELOG.md` and `HushHunt_v3.8.4_TEST_RESULTS.md` for more details and limitations.
+
 # Hush Hunt — Android .NET MAUI / WebView
 
 **Version 3.8.3 · build 47** · Live-only wildlife discovery, illustrated visual Field Guide.
