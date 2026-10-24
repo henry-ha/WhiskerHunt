@@ -83,7 +83,44 @@ public partial class MainPage : ContentPage
         return null;
     }
 
-    public MainPage() => InitializeComponent();
+    public MainPage()
+    {
+        InitializeComponent();
+#if ANDROID
+        HushArCoreActivity.Completed += OnArCoreCompleted;
+        HushWideCameraActivity.Completed += OnWideCameraCompleted;
+#endif
+    }
+
+#if ANDROID
+    private void OnArCoreCompleted(HushArCoreActivity.ArOutcome result)
+    {
+        Microsoft.Maui.ApplicationModel.MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(result);
+                await GameWebView.EvaluateJavaScriptAsync($"window.hushNativeArCoreResult?.({json});");
+            }
+            catch (Exception ex) { Debug.WriteLine($"ARCore handoff failed: {ex}"); }
+        });
+    }
+#endif
+
+    #if ANDROID
+    private void OnWideCameraCompleted(HushWideCameraActivity.WideOutcome result)
+    {
+        Microsoft.Maui.ApplicationModel.MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(result);
+                await GameWebView.EvaluateJavaScriptAsync($"window.hushNativeWideResult?.({json});");
+            }
+            catch (Exception ex) { Debug.WriteLine($"Wide-camera handoff failed: {ex}"); }
+        });
+    }
+    #endif
 
     // The JavaScript shell requests its snapshot only after its DOM and handlers
     // are ready. This avoids a race between WebNavigated and IndexedDB boot.
@@ -102,6 +139,18 @@ public partial class MainPage : ContentPage
         var data = JsonSerializer.Serialize(previous);
         await GameWebView.EvaluateJavaScriptAsync(
             $"window.whiskerUseNativeStorage({data});");
+    }
+
+    // In the installed MAUI WebView, signal native AR actions independently
+    // of the legacy collection storage mode. Never toggle native storage flags.
+    private async void OnWebNavigated(object sender, WebNavigatedEventArgs e)
+    {
+        if (e.Result != WebNavigationResult.Success) return;
+        try
+        {
+            await GameWebView.EvaluateJavaScriptAsync("window.whiskerNativeBridge=true;");
+        }
+        catch (Exception ex) { Debug.WriteLine($"Native AR bridge initialization failed: {ex}"); }
     }
 
     private void OnWebNavigating(object sender, WebNavigatingEventArgs e)
@@ -124,12 +173,79 @@ public partial class MainPage : ContentPage
                 case "recovery-preview": await PreviewRecoveryCopyAsync(); break;
                 case "recovery-merge": await OfferRecoveryMergeAsync(); break;
                 case "recovery-export": await ExportCurrentWithoutSavingAsync(); break;
+                case "arcore":
+#if ANDROID
+                    // A separate Activity owns ARCore's camera, avoiding collisions with WebView getUserMedia.
+                    // No camera frames are retained until the player explicitly taps Collect.
+                    var modelKey = GetQuery(request, "model") ?? string.Empty;
+                    var species = GetQuery(request, "species") ?? string.Empty;
+                    var name = GetQuery(request, "name") ?? string.Empty;
+                    if (modelKey.Length > 140 || species.Length > 40 || name.Length > 90 ||
+                        !System.Text.RegularExpressions.Regex.IsMatch(modelKey, @"^[a-zA-Z0-9_-]+$"))
+                    {
+                        await GameWebView.EvaluateJavaScriptAsync(
+                            "window.hushNativeArCoreResult?.({status:'error',message:'Invalid ARCore model identifier.'});");
+                        break;
+                    }
+                    try
+                    {
+                        var currentActivity = Platform.CurrentActivity;
+                        if (currentActivity is null)
+                            throw new InvalidOperationException("Android Activity is not available yet. Close and reopen AR Safari.");
+                        var arIntent = new Android.Content.Intent(currentActivity, typeof(HushArCoreActivity));
+                        arIntent.PutExtra("model", modelKey);
+                        arIntent.PutExtra("species", species);
+                        arIntent.PutExtra("name", name);
+                        currentActivity.StartActivity(arIntent);
+                    }
+                    catch (Exception arEx)
+                    {
+                        // Send AR-specific launch failures back to the Safari screen instead
+                        // of leaving players with an unresponsive button.
+                        var resultJson = JsonSerializer.Serialize(new
+                        {
+                            status = "unavailable",
+                            message = "Could not open ARCore Safari: " + arEx.Message
+                        });
+                        await GameWebView.EvaluateJavaScriptAsync(
+                            $"window.hushNativeArCoreResult?.({resultJson});");
+                    }
+#else
+                    await GameWebView.EvaluateJavaScriptAsync(
+                        "window.hushNativeArCoreResult?.({status:'unavailable',message:'ARCore only runs on Android.'});");
+#endif
+                    break;
                 case "camera-permission":
                     var cameraStatus = await Permissions.CheckStatusAsync<Permissions.Camera>();
                     if (cameraStatus != PermissionStatus.Granted)
                         cameraStatus = await Permissions.RequestAsync<Permissions.Camera>();
                     await GameWebView.EvaluateJavaScriptAsync(
                         $"window.whiskerNativeCameraPermission?.({(cameraStatus == PermissionStatus.Granted ? "true" : "false")});");
+                    break;
+                case "wide-camera":
+#if ANDROID
+                    var wideToken = GetQuery(request, "request") ?? "";
+                    if (!System.Text.RegularExpressions.Regex.IsMatch(wideToken, @"^[0-9]{1,15}$"))
+                    {
+                        await GameWebView.EvaluateJavaScriptAsync("window.hushNativeWideResult?.({status:'error',message:'Invalid wide-camera request.'});");
+                        break;
+                    }
+                    try
+                    {
+                        var wideActivity = Platform.CurrentActivity ??
+                            throw new InvalidOperationException("Android activity unavailable.");
+                        var wideIntent = new Android.Content.Intent(wideActivity, typeof(HushWideCameraActivity));
+                        wideIntent.PutExtra("request", wideToken);
+                        wideActivity.StartActivity(wideIntent);
+                    }
+                    catch (Exception ex)
+                    {
+                        var failure = JsonSerializer.Serialize(new {status="error",request=wideToken,message=ex.Message});
+                        await GameWebView.EvaluateJavaScriptAsync($"window.hushNativeWideResult?.({failure});");
+                    }
+#else
+                    await GameWebView.EvaluateJavaScriptAsync("window.hushNativeWideResult?.({status:'unavailable',message:'Android only.'});");
+#endif
                     break;
                 case "capture": await GetPhotoAsync(true, GetQuery(request, "request")); break;
                 case "import": await GetPhotoAsync(false, GetQuery(request, "request")); break;

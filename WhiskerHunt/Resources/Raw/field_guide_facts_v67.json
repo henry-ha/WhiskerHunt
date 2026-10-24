@@ -1,0 +1,185 @@
+{
+  "groups": {
+    "Cat": "Look at fur colour, markings, ear shape and tail. Coat patterns are not the same as breeds.",
+    "Dog": "Look at size, ear shape, coat and muzzle. Many dogs are mixes and cannot be identified by looks alone.",
+    "Snail": "Check the shell shape, colour, bands and habitat. Never pull a snail off a surface.",
+    "Butterfly": "Notice wing colour and patterns on both sides. Photograph butterflies without catching them.",
+    "Moth": "Moths vary widely in shape and colour. Some fly by day; look at wing patterns and antennae.",
+    "Bee": "Notice body shape, hairiness and markings. Watch bees from a distance and leave flowers undisturbed.",
+    "Ladybird": "Count spots only as one clue. Pattern, size and head markings can matter more.",
+    "Beetle": "Beetles have hard wing cases. Look at body shape, antennae and colours.",
+    "Dragonfly": "Dragonflies have four long wings and large eyes. Check abdomen shape, colour and habitat.",
+    "Ant": "Ants have elbowed antennae and narrow waists. Colours vary; many look alike.",
+    "Spider": "Spiders have eight legs and no antennae. Look at their web, markings and body shape.",
+    "Bird": "Look at beak, size, wing bars and tail as well as colour. Listen for calls without approaching nests.",
+    "Squirrel": "Look at ears, tail, size and coat colour. Coat colours can vary within a species.",
+    "Rabbit": "Wild rabbits and pet rabbit breeds can look different. Look at ear shape, size and setting.",
+    "Hedgehog": "Look for a rounded body, pointed snout and spines. Observe without touching or disturbing it.",
+    "Frog": "Look at skin, colour, leg length and habitat. Patterns vary and some species are hard to distinguish.",
+    "Other": "For an unfamiliar animal, photograph it safely and record where you saw it. It is fine to say “Not sure”."
+  },
+  "types": {
+    "Cat": {
+      "Tabby": "Often has stripes, swirls or spots; look for the M-shaped mark on the forehead.",
+      "Ginger": "Orange or reddish coat; many ginger cats also show faint or bold tabby stripes.",
+      "Brown": "A brown coat can be solid or patterned; check whether stripes are visible.",
+      "Black": "Looks mostly black, though sunlight may reveal faint markings.",
+      "White": "Mostly white fur; eye colour can be blue, green, amber or mixed.",
+      "Cream": "Pale warm beige colouring; compare with the deeper orange of ginger.",
+      "Tuxedo": "Usually black with white on the chest, paws or face, like a little suit.",
+      "Calico": "Distinct areas of white, orange and dark fur; a coat pattern, not a breed.",
+      "Tortoiseshell": "Mottled black and orange or brown patches, usually with very little white.",
+      "Grey": "Cool grey or blue-looking coat; may be solid or tabby-patterned.",
+      "Colourpoint": "Paler body with darker ears, face, paws and tail.",
+      "Other": "If the markings do not fit, describe the colours and pattern in your notes."
+    },
+    "Dog": {
+      "Labrador": "Sturdy body, short dense coat and broad head; black, yellow or chocolate are common.",
+      "Golden Retriever": "Medium-large dog with a feathered golden coat and hanging ears.",
+      "Poodle": "Curly coat, narrow muzzle and long legs; sizes vary widely.",
+      "Terrier": "Often lively-looking with a wiry or smooth coat; many different terrier breeds exist.",
+      "Spaniel": "Usually has soft floppy ears and a silky or wavy coat.",
+      "Bulldog": "Stocky build, broad head, short muzzle and skin folds.",
+      "Dachshund": "Long body, short legs and drooping ears.",
+      "Husky": "Thick double coat, upright ears and bushy tail; eyes may be blue or brown.",
+      "Mixed Breed": "A mixed-breed dog may combine features of several breeds; looks alone cannot confirm ancestry."
+    },
+    "Snail": {
+      "Garden Snail": "Rounded brown shell often with flecks or mottling; typically found in damp gardens.",
+      "Grove Snail": "Smooth shell may be yellow, pinkish or brown, sometimes with dark spiral bands.",
+      "Roman Snail": "A relatively large, rounded, pale shell with many visible growth lines.",
+      "Glass Snail": "Thin, glossy, often translucent shell; the body may be visible through it.",
+      "Amber Snail": "Small amber-coloured shell with a large opening, often near damp plants.",
+      "Pond Snail": "Aquatic snail with a taller pointed shell, typically in fresh water.",
+      "Other Snail": "Check shell shape and location; different species can look very similar."
+    },
+    "Butterfly": {
+      "Peacock": "A large eye-shaped spot on each reddish-brown wing is the key clue.",
+      "Red Admiral": "Dark wings with bright red-orange bands and white markings near the tips.",
+      "Small Tortoiseshell": "Orange wings with black and yellow patches and blue crescents at the edges.",
+      "Painted Lady": "Orange and brown wings with black tips and small white spots.",
+      "Comma": "Orange-brown wings with deeply scalloped edges; the underside has a tiny white C mark.",
+      "Large White": "Mainly white wings with dark tips and sometimes black spots.",
+      "Common Blue": "Males often look bright blue above; females are usually brown with orange edge spots.",
+      "Brimstone": "Leaf-shaped, pale yellow-green wings; females are often paler."
+    },
+    "Moth": {
+      "Emperor Moth": "Large furry moth with bold round eye-spots on each wing.",
+      "Elephant Hawk-moth": "Often pink and olive green, with a streamlined body.",
+      "Hummingbird Hawk-moth": "Hovers in front of flowers and has orange hindwings.",
+      "Garden Tiger": "Bold cream-and-brown forewings, often with bright orange hindwings.",
+      "Jersey Tiger": "Dark forewings with creamy stripes and bright orange or red hindwings.",
+      "Six-spot Burnet": "Dark iridescent wings with pairs of red spots; often found on flowers.",
+      "Silver Y": "Mottled grey-brown forewings with a small silver Y-shaped marking."
+    },
+    "Bee": {
+      "Honeybee": "Brown-and-gold banded abdomen and slimmer shape than many bumblebees.",
+      "Buff-tailed Bumblebee": "Rounded, furry bee with yellow bands and a pale buff or off-white tail.",
+      "Red-tailed Bumblebee": "Black fuzzy body with a rusty red or orange tail.",
+      "White-tailed Bumblebee": "Black-and-yellow bands with a clean-looking white tail.",
+      "Common Carder Bee": "Ginger or brown furry thorax; banding can be subtle.",
+      "Leafcutter Bee": "Often carries pollen on hairs under the abdomen and cuts neat circles from leaves.",
+      "Mining Bee": "Many species nest in soil; often furry, small to medium, and hard to distinguish."
+    },
+    "Ladybird": {
+      "Seven-spot": "Typically red with seven black spots; three on each wing case and one by the centre.",
+      "Two-spot": "Often red with two black spots, but darker forms also exist.",
+      "Harlequin": "Highly variable colours; often a pale W-shaped marking behind the head.",
+      "Fourteen-spot": "Usually yellow with rectangular black markings that can merge into a checkerboard.",
+      "Pine Ladybird": "Mostly dark with red spots shaped a little like commas.",
+      "Twenty-two-spot": "Bright yellow with many small black spots; usually found near mildew."
+    },
+    "Beetle": {
+      "Stag Beetle": "Large beetle; males have antler-like jaws, while females have smaller jaws.",
+      "Rose Chafer": "Shiny metallic green beetle, often seen feeding on flowers.",
+      "Ground Beetle": "Often dark, fast-running and found beneath stones or logs.",
+      "Weevil": "Many have a long snout with antennae set partway along it.",
+      "Soldier Beetle": "Soft-looking, elongated body; often red or orange on summer flowers.",
+      "Click Beetle": "Long narrow body; can make a click to spring itself upright.",
+      "Longhorn Beetle": "Often has antennae as long as, or longer than, its body.",
+      "Dung Beetle": "Often rounded, sturdy and found around animal dung."
+    },
+    "Dragonfly": {
+      "Emperor Dragonfly": "Large dragonfly with vivid blue abdomen and green thorax, especially in males.",
+      "Broad-bodied Chaser": "A broad, flattened abdomen; mature males often look powdery blue.",
+      "Southern Hawker": "Large patterned dragonfly; males show blue and green markings.",
+      "Common Darter": "Small dragonfly that often perches; mature males are frequently reddish.",
+      "Four-spotted Chaser": "Look for four distinct dark spots near the middle of the wings.",
+      "Golden-ringed Dragonfly": "Very long black-and-yellow ringed body and green eyes."
+    },
+    "Ant": {
+      "Black Garden Ant": "Small, dark brown or black ant commonly seen on paths and in gardens.",
+      "Red Ant": "Often reddish with a darker abdomen; several different species share this name.",
+      "Wood Ant": "Usually reddish-brown and dark, often near large mound nests in woodland.",
+      "Yellow Meadow Ant": "Small yellowish ant that spends much of its life underground.",
+      "Pavement Ant": "Tiny dark ants often nesting in cracks between stones.",
+      "Other Ant": "Look at size, colour and nesting place; close-up details may be needed."
+    },
+    "Spider": {
+      "Garden Spider": "Rounded abdomen with a pale cross-shaped pattern; often in circular webs.",
+      "House Spider": "Long-legged brown spider; many species occur inside buildings.",
+      "Jumping Spider": "Compact body and very large front-facing eyes; moves in short jumps.",
+      "Zebra Spider": "Tiny jumping spider with clear black-and-white stripes.",
+      "Wolf Spider": "Fast ground hunter with a robust body, often seen without a web.",
+      "Crab Spider": "Front legs held sideways like a crab; often waits on flowers.",
+      "Cellar Spider": "Very long thin legs and a small body; often hangs upside down indoors."
+    },
+    "Bird": {
+      "Robin": "Orange-red face and chest, with a brown back; often hops near gardens.",
+      "Blackbird": "Adult males are black with a yellow-orange bill; females are browner.",
+      "House Sparrow": "Small, chunky brown bird; adult males have a grey crown and black throat.",
+      "Blue Tit": "Blue cap, yellow underside and white cheeks with a dark eye stripe.",
+      "Great Tit": "Black head with white cheeks and a central black stripe on a yellow belly.",
+      "Magpie": "Long tail and bold black-and-white body with an iridescent sheen.",
+      "Wood Pigeon": "Large plump grey pigeon with white neck patches.",
+      "Starling": "Dark, glossy bird that can sparkle green-purple and show pale speckles.",
+      "Crow": "Large black bird with a strong dark bill; several crow species look similar.",
+      "Seagull": "Gulls vary with age; look at size, beak and wing markings.",
+      "Parakeet": "Bright green body, long pointed tail and red beak in a ring-necked parakeet.",
+      "Duck": "Broad flat bill and webbed feet; plumage depends on species and sex.",
+      "Swan": "Very large waterbird with a long neck; British mute swans usually have orange bills.",
+      "Owl": "Rounded or heart-shaped face, forward-facing eyes and often silent flight."
+    },
+    "Squirrel": {
+      "Grey Squirrel": "Usually grey-brown with a white belly and broad bushy tail.",
+      "Red Squirrel": "Often russet red with a paler belly; some have ear tufts, especially in winter.",
+      "Flying Squirrel": "Has a skin membrane between front and back legs for gliding; not native to Britain.",
+      "Ground Squirrel": "Typically lives in burrows and spends more time on the ground.",
+      "Other Squirrel": "Squirrels can be black, grey or reddish; colour alone does not prove species."
+    },
+    "Rabbit": {
+      "Wild Rabbit": "Brown-grey coat, short fluffy tail and upright ears; lives in warrens.",
+      "Lop-eared": "Domestic rabbit with ears that hang beside its face.",
+      "Dutch Rabbit": "Domestic breed with clear patches of contrasting coat colour.",
+      "Lionhead": "Domestic rabbit with a distinctive mane of longer fur around the head.",
+      "Netherland Dwarf": "Small, compact pet rabbit with short ears.",
+      "Flemish Giant": "Very large domestic rabbit with a long, sturdy body."
+    },
+    "Hedgehog": {
+      "European Hedgehog": "Brown-and-cream spines, pointed face and small ears; native to Britain.",
+      "African Pygmy Hedgehog": "Smaller, often pale-faced pet hedgehog; not native to Britain.",
+      "Long-eared Hedgehog": "Has noticeably larger ears; native to parts of Asia and the Middle East.",
+      "Other Hedgehog": "Check face, ears and where it was seen before choosing a type."
+    },
+    "Frog": {
+      "Common Frog": "Variable brown or olive skin with a dark patch behind the eye; found near ponds.",
+      "Pool Frog": "Usually greenish-brown with spots; close identification can be difficult.",
+      "Marsh Frog": "Large greenish frog with dark spots, often near water.",
+      "Tree Frog": "Many have toe pads for climbing and bright green skin.",
+      "Bullfrog": "Large frog with a broad head; not native to Britain.",
+      "Other Frog": "Patterns vary a lot; a photo and the habitat are useful clues."
+    },
+    "Other": {
+      "Fox": "Pointed muzzle, triangular ears and a long bushy tail.",
+      "Deer": "Hoofed mammal; size, antlers and rump pattern vary among deer species.",
+      "Mouse": "Small rodent with a pointed muzzle, whiskers and long thin tail.",
+      "Bat": "The only mammals capable of sustained powered flight; wings are skin membranes.",
+      "Lizard": "Scaly skin, long tail and usually four legs; some look snake-like.",
+      "Worm": "Long, soft segmented body; earthworms help mix and aerate soil.",
+      "Slug": "Soft shell-less-looking mollusc; often active in damp conditions.",
+      "Fish": "Fins and gills are key clues; look at body shape and fin placement.",
+      "Tortoise": "Land-dwelling reptile with a protective shell and stout legs.",
+      "Other Animal": "If it does not fit the groups, take a clear photo and add a description."
+    }
+  }
+}

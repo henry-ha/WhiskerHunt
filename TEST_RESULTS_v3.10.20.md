@@ -1,0 +1,69 @@
+# Static release checks
+
+63/63 passed.
+
+- [x] Android v3.10.20
+- [x] Build 83
+- [x] Actual MainPage entry point
+- [x] Browser JS startup
+- [x] Browser CSS startup
+- [x] Browser service worker
+- [x] Browser active registry 20 wallpapers
+- [x] Browser 20 images
+- [x] Browser 20 previews
+- [x] Browser 40 action images
+- [x] Browser no legacy entry files
+- [x] Browser no blur overlay in v83
+- [x] Browser arctic-fox-snowfall 2160x3840
+- [x] Browser forest-owl 2160x3840
+- [x] Browser red-squirrel-glade 2160x3840
+- [x] Browser wildflower-bee-meadow 2160x3840
+- [x] Browser twilight-fox 2160x3840
+- [x] Browser river-otter 2160x3840
+- [x] Browser butterfly-garden 2160x3840
+- [x] Browser moonlit-badger 2160x3840
+- [x] Browser robin-dawn 2160x3840
+- [x] Browser red-panda-bamboo 2160x3840
+- [x] Browser lakeside-swan 2160x3840
+- [x] Browser meadow-rabbit 2160x3840
+- [x] Browser woodland-frog 2160x3840
+- [x] Browser mountain-deer 2160x3840
+- [x] Browser waterfall-kingfisher 2160x3840
+- [x] Browser puffin-cliffs 2160x3840
+- [x] Browser autumn-hare 2160x3840
+- [x] Browser highland-stag 2160x3840
+- [x] Browser woodland-hedgehog 2160x3840
+- [x] Browser golden-eagle-peaks 2160x3840
+- [x] Android JS startup
+- [x] Android CSS startup
+- [x] Android service worker
+- [x] Android active registry 20 wallpapers
+- [x] Android 20 images
+- [x] Android 20 previews
+- [x] Android 40 action images
+- [x] Android no legacy entry files
+- [x] Android no blur overlay in v83
+- [x] Android arctic-fox-snowfall 2160x3840
+- [x] Android forest-owl 2160x3840
+- [x] Android red-squirrel-glade 2160x3840
+- [x] Android wildflower-bee-meadow 2160x3840
+- [x] Android twilight-fox 2160x3840
+- [x] Android river-otter 2160x3840
+- [x] Android butterfly-garden 2160x3840
+- [x] Android moonlit-badger 2160x3840
+- [x] Android robin-dawn 2160x3840
+- [x] Android red-panda-bamboo 2160x3840
+- [x] Android lakeside-swan 2160x3840
+- [x] Android meadow-rabbit 2160x3840
+- [x] Android woodland-frog 2160x3840
+- [x] Android mountain-deer 2160x3840
+- [x] Android waterfall-kingfisher 2160x3840
+- [x] Android puffin-cliffs 2160x3840
+- [x] Android autumn-hare 2160x3840
+- [x] Android highland-stag 2160x3840
+- [x] Android woodland-hedgehog 2160x3840
+- [x] Android golden-eagle-peaks 2160x3840
+- [x] browser/android JS same
+- [x] browser/android CSS same
+
+Browser automation could not load the local file in this environment (navigation blocked); Android compilation and physical device verification were not performed.

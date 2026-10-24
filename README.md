@@ -1,33 +1,36 @@
-# Hush Hunt v3.8.4 — Build 48
+# Hush Hunt v3.8.7 — ARCore compile-fix release (Android .NET MAUI)
 
-Open `WhiskerHunt.sln` in Visual Studio with .NET MAUI Android workload. Do **not** uninstall a previous Whisker Hunt app. Export a full collection backup before deploying.
+**Visual Studio solution:** `WhiskerHunt.sln`  
+**App ID:** `uk.whiskerhunt.mobile` (unchanged)  
+**Display version/build:** `3.8.7 / 51`
 
-This release adds live wildlife species switching, themed animated capture items, expanded virtual Safari, 17-group Bingo, coloured ant illustrations and consent-gated street maps with approximate straight-line distances. The Android app ID remains `uk.whiskerhunt.mobile`; saved collection data uses the same schema and private storage location. New street maps need Internet and the user’s explicit consent. Offline private plot is still available.
+This release fixes the 19 ARCore-related C# errors shown by Visual Studio on the v3.8.6 source. It does not add gameplay changes. Your existing collection, photos, sighting locations, user preferences and legacy backups remain untouched.
 
-Read `HushHunt_v3.8.4_CHANGELOG.md` and `HushHunt_v3.8.4_TEST_RESULTS.md` for more details and limitations.
+### What was corrected
 
-# Hush Hunt — Android .NET MAUI / WebView
+In `WhiskerHunt/Platforms/Android/HushArCoreActivity.cs`:
+- Explicitly use `Android.Widget.Button` in the native activity, avoiding ambiguity with MAUI `Button`. This also fixes the `AddView` and `.Click`/`.Enabled` cascading errors.
+- Removed unsupported `GLSurfaceView.SetPreserveEGLContextOnPause(true)` call. GL resources are reinitialised in `OnSurfaceCreated` on context recreation.
+- Qualify `System.Environment.TickCount64` to avoid a collision with Android `Environment`.
+- Removed unused `Frame` field that collided with MAUI `Frame`.
+- Split a prohibited `var` multi-declarator into separate statements.
+- Explicitly use `Android.Graphics.Rect` and `Android.Graphics.Paint` when composing the AR photo.
 
-**Version 3.8.3 · build 47** · Live-only wildlife discovery, illustrated visual Field Guide.
+### Build/install instructions
 
-## Open and deploy
+1. **Export a complete FieldDex/collection backup** from the installed version.
+2. Extract the v3.8.7 complete project into a *new* directory and open `WhiskerHunt.sln`.
+3. In Visual Studio, restore NuGet packages and **Build → Clean Solution**, then **Build → Rebuild Solution** with `Debug`, your OnePlus Android device as the target.
+4. **Do not uninstall the existing app.** Deploy over it with the same signing identity to preserve private data. If Visual Studio requests uninstalling for a signing mismatch, stop and preserve the collection rather than agreeing.
+5. Test AR Safari → ARCore. `XPACE.Google.ARCore` still needs to restore, Google Play Services for AR must be supported/installed, and actual world-tracking needs validation on device.
 
-Use **WhiskerHunt.sln** (the internal legacy project name is retained for save compatibility) in Visual Studio with the .NET 10 Android MAUI workload, and build/deploy to your OnePlus device **without uninstalling the old app**. Export a full backup first.
+**Optional one-file patch:** replace `WhiskerHunt/Platforms/Android/HushArCoreActivity.cs` with the included `HushArCoreActivity_fixed.cs` file if you prefer not to switch projects. For manual file replacement the app will still show your current version/build unless you update the project version separately.
 
-## Discover wildlife
+### Verification
 
-1. Tap the large + button and start the real-wildlife live camera. Imported photos cannot earn new sightings.
-2. Complete the virtual capture tool, pick the animal group, tap a variety picture, and optionally add a memory/private approximate map pin.
-3. If unsure of a variety select **Not sure**. The illustrated tiles do **not** provide automatic identification.
-4. In **FieldDex** choose an animal filter to see your discovered varieties. Cat Bingo and AR Safari virtual cats remain separately supported.
+- Static checks for all 19 screenshot errors and source integrity passed.
+- Three browser regression suites passed (profile units, saved map choice, wildlife Safari, live-only real-animal capture and existing virtual cats).
+- JavaScript syntax and Android/bundled web-asset checks passed.
+- **An Android build or APK and physical ARCore runtime could NOT be verified here because no .NET Android SDK / attached phone is available.** Additional errors may be exposed by an actual build; send the updated Visual Studio Error List if needed.
 
-## Privacy, local storage, upgrading
-
-- Android package ID: `uk.whiskerhunt.mobile` (not renamed).
-- Browser database: `whiskerhunt_local_v1`; existing native JSON backup signature also retains its Whisker Hunt name.
-- Personal photographs and private pins remain on-device; opening an external OpenStreetMap requires explicit consent.
-- Export and verify a backup before installing; do not clear storage or uninstall. No account is required.
-
-## Testing and limitations
-
-See `HushHunt_v3.8.3_TEST_RESULTS.md` and `tests/test_v47_*` for source/browser regression checks. There is no generated Android APK in this package, and Android-device camera operation must be verified after deployment.
+See `HushHunt_v3.8.7_TEST_RESULTS.md` for more detail.

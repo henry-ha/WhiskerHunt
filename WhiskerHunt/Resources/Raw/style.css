@@ -473,13 +473,16 @@
 .field-guide-species{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-height:320px;overflow-y:auto;overscroll-behavior:contain;padding:3px 3px 12px;margin:10px 0 9px}
 .field-guide-types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0 12px}
 .field-guide-tile{min-width:0;position:relative;background:linear-gradient(145deg,#222e45,#20233d);border:2px solid #ffffff27;border-radius:18px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;padding:8px 6px 11px;min-height:128px;cursor:pointer;font-size:12px;font-weight:800;line-height:1.25;text-align:center;word-break:normal;overflow:hidden}
-.field-guide-tile img{width:100%;max-width:126px;height:92px;object-fit:cover;border-radius:12px;background:#435467;display:block}
+.field-guide-figure{position:relative;display:block;width:100%;max-width:126px}
+.field-guide-tile img{width:100%;max-width:126px;height:112px;object-fit:contain;border-radius:12px;background:#435467;display:block;position:relative;z-index:1}
+.field-guide-art-tint{position:absolute;inset:8px 8px 12px 8px;border-radius:999px;z-index:2;pointer-events:none;mix-blend-mode:multiply}
+.field-guide-art-badge{position:absolute;left:8px;top:8px;min-width:34px;height:34px;padding:0 7px;border-radius:11px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:14px;letter-spacing:.03em;z-index:3;box-shadow:0 6px 16px #00000033;border:2px solid rgba(255,255,255,.78)}
 .field-guide-tile>span:not(.visual-tile-check){padding:0 2px}
 .field-guide-tile.chosen{border-color:#8bf1d7;background:linear-gradient(145deg,#234941,#2a3550);box-shadow:0 0 0 1px #8bf1d75e,inset 0 0 25px #87e8cd10}
 .field-guide-tile:focus-visible,.field-guide-custom:focus-visible,.visual-change:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .visual-tile-check{position:absolute;right:5px;top:5px;display:grid;place-items:center;background:#16775d;color:white;border-radius:50%;width:26px;height:26px;border:2px solid white;font-size:15px}
 .field-guide-tile-group{min-height:100px;font-size:11px;padding:6px 4px 9px}
-.field-guide-tile-group img{height:65px;max-width:88px}
+.field-guide-tile-group img{height:75px;max-width:88px}
 .field-guide-selected{display:flex;align-items:center;gap:12px;border-radius:16px;background:#2e374b;border:1px solid #83edd244;padding:8px;margin-bottom:9px}
 .field-guide-selected>img{width:56px;height:56px;border-radius:12px;object-fit:cover}
 .field-guide-selected>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:4px}
@@ -555,3 +558,493 @@
 
 .hush-photo-net-svg{width:74%;height:76%;object-fit:contain;filter:drop-shadow(0 5px 5px #07112380);animation:hushToolBob 3s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.hush-photo-net-svg{animation:none!important}}
+
+.hush-ar-choice{display:grid;gap:13px;margin:20px 0}.hush-ar-choice .choice{width:100%;text-align:left}.hush-ar-choice .choice:disabled{opacity:.45}
+
+/* v3.8.6: profile distance and street-map controls */
+.hush-view-prefs{display:flex;flex-direction:column;gap:11px;margin:20px 0;padding:18px;border:1px solid #536478;border-radius:20px}
+.hush-view-prefs h3{margin:0 0 2px;font-size:20px}
+.hush-view-prefs p.dim{margin:0 0 3px}
+.hush-view-prefs label[for="hush-unit-setting"]{font-size:14px;color:#e1e8f1}
+.hush-view-prefs .select{width:100%;min-height:50px;margin-bottom:8px}
+.hush-view-prefs .hush-street-preference{align-items:flex-start;margin:5px 0 0;padding:12px;background:#ffffff0b;border-radius:13px}
+.hush-view-prefs .hush-street-preference input{flex:none;margin-top:5px}
+.hush-view-prefs .hush-street-preference span{display:block}
+.hush-view-prefs .hush-street-preference small{display:block;margin-top:7px;color:#bec6da;line-height:1.45;font-size:12px}
+.hush-view-prefs .footnote{margin:0}
+
+/* v3.8.6 Android full-screen Safari: keep title and build stamp below system status icons.
+   Android WebView implementations can report safe-area-inset-top as 0 despite a visible status bar. */
+@media(max-width:600px){
+  .sheet.ar-sheet{padding-top:max(54px,env(safe-area-inset-top));}
+  .sheet.ar-sheet .sheet-head{margin-top:8px;}
+}
+
+/* v3.8.8: swipeable five-shot burst comparison on narrow phones. */
+.shots-row{justify-content:flex-start;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;padding-bottom:4px}
+.shot-option{flex:0 0 min(27%,112px);scroll-snap-align:start}
+.shot-option img{height:74px}
+@media(max-width:400px){.shot-option{flex-basis:29%}.shot-option img{height:60px}}
+
+/* v3.8.8: swipeable five-shot burst comparison on narrow phones. */
+.shots-row{justify-content:flex-start;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;padding-bottom:4px}
+.shot-option{flex:0 0 min(27%,112px);scroll-snap-align:start}
+.shot-option img{height:74px}
+@media(max-width:400px){.shot-option{flex-basis:29%}.shot-option img{height:60px}}
+
+/* v3.9.0 illustrations: preserve individual animal silhouettes, not badge overlays */
+.field-guide-figure{display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:12px}
+.field-guide-art-badge,.field-guide-art-tint{display:none!important}
+.field-guide-tile img{height:112px;object-fit:contain;max-width:130px}
+.field-guide-tile-group img{height:75px;max-width:88px}
+.brand-icon img{display:block;width:42px;height:42px;object-fit:cover;border-radius:12px}
+
+/* Hush Hunt art diagnostic: only visible within the species picker. */
+.visual-tap-hint .artwork-release{display:block;font-size:10px;letter-spacing:.06em;font-weight:800;color:#84e5c5;margin-top:5px;white-space:nowrap}
+
+/* v3.10.0: genuine alpha sprites in Safari; the Collection keeps its card illustrations. */
+.ar-sheet .ar-wildlife-art{border-radius:0!important;background:transparent!important;object-fit:contain;filter:drop-shadow(0 8px 7px rgba(0,0,0,.28))}
+.ar-sheet .encounter-ar-cat{background:transparent!important}
+.brand-icon{background:#0868E1!important;box-shadow:0 5px 16px #0868E14a!important}
+
+
+/* v3.10.1 · direct camera shortcuts and accurate uncropped live previews */
+.hush-direct-capture{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:13px 0 14px}
+.hush-direct-btn{color:#fff;text-align:left;min-height:108px;border-radius:19px;border:1px solid #5e6283;padding:15px 13px;background:linear-gradient(145deg,#2e4357,#1f2c46);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;box-shadow:0 6px 18px #0002}
+.hush-direct-ar{background:linear-gradient(140deg,#46325f,#282846);border-color:#8069a7}
+.hush-direct-btn strong{font-size:15px}.hush-direct-btn small{font-size:11px;color:#d3dfef;line-height:1.35}.hush-direct-icon{font-size:25px;margin-bottom:2px}
+.hush-hero-direct-label{font-weight:800;font-size:12px;color:#b5ffe7;position:relative;z-index:1;padding:7px 0 0}
+.encounter-stage.live-encounter:not(.encounter-stage-ar) .encounter-live-video{object-fit:contain!important;filter:none!important}
+.sheet.ar-sheet .encounter-live-video{object-fit:contain!important}
+.hush-quick-stage{min-height:350px}
+.hush-live-zoom{position:absolute;top:14px;left:12px;display:flex;gap:5px;z-index:7;background:#10192bcb;border:1px solid #ffffff30;border-radius:25px;padding:4px;backdrop-filter:blur(8px)}
+.hush-zoom-option{border:0;background:transparent;color:white;font-weight:800;font-size:12px;border-radius:18px;padding:8px 11px;min-width:39px;min-height:34px}
+.hush-zoom-option.selected{background:#b5ffe8;color:#182a38}
+.hush-zoom-info{padding:7px;color:#fff;font-size:12px}
+.hush-quick-shutter{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:9;border:0;background:#101a2adf;box-shadow:0 6px 22px #0009;color:#fff;border-radius:22px;padding:7px 16px 6px;display:flex;gap:8px;align-items:center;font-size:12px;font-weight:800;min-height:50px}
+.hush-quick-shutter span{font-size:26px;line-height:1;color:#fff;text-shadow:0 0 0 #fff}
+.hush-quick-shutter:disabled{opacity:.58}
+.hush-quick-stage .encounter-tool-dock{right:7px}
+@media(max-width:365px){.hush-direct-btn{padding:12px 9px}.hush-direct-btn strong{font-size:13px}.hush-live-zoom{top:9px;left:8px}.hush-quick-shutter{bottom:8px}}
+
+
+/* v3.10.3 full-screen educational wildlife guide */
+.hush-guide-cta{margin:12px 0 20px;padding:12px 14px;border-radius:18px;background:#213a3c;border:1px solid #81e4bf55;display:grid;gap:4px}
+.hush-guide-cta small{font-size:11px;color:#d1eae0}
+.hush-guide-entry{display:block;width:100%;border:1px solid #86ead4;border-radius:13px;background:#1e534e;color:#f1fff8;text-align:center;font-size:13px;font-weight:800;padding:14px 9px;cursor:pointer}
+.hush-guide-entry:focus-visible,.hush-fullscreen-guide button:focus-visible{outline:3px solid #f8e69f;outline-offset:2px}
+.hush-inline-tip{background:#203b38;border-left:3px solid #89eed0;padding:10px 12px;border-radius:8px;color:#ddf8ec;font-size:12px;line-height:1.45;margin:5px 0 12px}
+.hush-fullscreen-guide{position:fixed;z-index:75;inset:0;background:#101f24;color:#f7f8ed;display:flex;flex-direction:column;overflow:hidden;font-family:inherit;padding-top:env(safe-area-inset-top)}
+.hush-guide-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:20px max(16px,calc((100vw - 1040px)/2)) 14px;background:linear-gradient(130deg,#143831,#123840 63%,#172b32);border-bottom:1px solid #8ac9b533}
+.hush-guide-kicker{font-size:10px;text-transform:uppercase;font-weight:900;letter-spacing:1.1px;color:#a7ecce}
+.hush-guide-top h2{font-size:25px;margin:4px 0}.hush-guide-top p{font-size:12px;margin:0;color:#d2e7db}
+.hush-guide-close{border:1px solid #d2e6da44;color:#fff;background:#30534d;border-radius:14px;padding:10px 15px;font-size:20px;cursor:pointer}
+.hush-guide-scroll{overflow-y:auto;overscroll-behavior:contain;padding:17px max(16px,calc((100vw - 1040px)/2)) calc(30px + env(safe-area-inset-bottom));height:100%}
+.hush-guide-chips{display:flex;overflow-x:auto;gap:8px;scroll-snap-type:x proximity;padding:0 2px 14px}
+.hush-guide-chip{flex:0 0 auto;scroll-snap-align:start;padding:10px 12px;border:1px solid #81a9a35c;border-radius:999px;background:#1b3b3e;color:#e5f4f0;font-weight:750;font-size:12px}
+.hush-guide-chip.active{background:#d6f3d6;color:#16372e;border-color:#d6f3d6}
+.hush-guide-feature{display:grid;grid-template-columns:minmax(112px,220px) 1fr;gap:16px;align-items:center;padding:14px;background:#1d3435;border:1px solid #528e7f6b;border-radius:22px;margin:3px 0 20px}
+.hush-guide-feature img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:14px;background:#efe9d8}
+.hush-guide-feature h3{font-size:23px;margin:7px 0}.hush-guide-feature p{line-height:1.5;font-size:14px;margin:7px 0}.hush-guide-small{color:#b8d5c8;font-size:12px!important}
+.hush-guide-use{border:0;border-radius:12px;background:#b6f2cb;color:#12372d;padding:13px;font-weight:850;cursor:pointer;margin:6px 0 0}
+.hush-guide-subtitle{display:flex;align-items:center;gap:12px;justify-content:space-between;margin:18px 2px 14px;font-size:17px}.hush-guide-subtitle span{font-size:11px;color:#b4d5c7}
+.hush-guide-references{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.hush-guide-reference{border:1px solid #7daa9959;background:#234044;border-radius:15px;overflow:hidden;display:flex;flex-direction:column;text-align:left;padding:0 0 13px;color:#f3f9ee;cursor:pointer}
+.hush-guide-reference.active{outline:3px solid #baf0c3;outline-offset:-3px;background:#31544a}
+.hush-guide-reference img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#e4dfd2}
+.hush-guide-reference strong{padding:10px 11px 0;font-size:14px}.hush-guide-reference small{padding:6px 11px 0;font-size:11px;line-height:1.45;color:#d1e5dd}
+.hush-guide-disclaimer{color:#b3d1c4;font-size:11px;line-height:1.5;margin:20px 0}
+@media(max-width:480px){.hush-guide-top h2{font-size:21px}.hush-guide-feature{grid-template-columns:110px minmax(0,1fr);gap:12px}.hush-guide-feature h3{font-size:17px}.hush-guide-feature p{font-size:12px}.hush-guide-kicker{font-size:9px}.hush-guide-references{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.hush-guide-feature img{align-self:start}}
+@media(prefers-reduced-motion:reduce){.hush-guide-chips{scroll-snap-type:none}}
+
+
+/* v3.10.4 – UI refinement pass: larger wildlife tiles, centered home actions, full-screen live camera */
+.field-guide-tile{padding:10px 8px 12px;min-height:164px;gap:9px}
+.field-guide-figure{width:100%;max-width:146px;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:14px;background:#455366}
+.field-guide-tile img{width:100%;height:100%;max-width:none;object-fit:contain;display:block;border-radius:14px;background:transparent}
+.field-guide-tile-group{min-height:118px}
+.field-guide-tile-group .field-guide-figure{max-width:96px}
+.field-guide-tile-group img{width:100%;height:100%;max-width:none}
+.hush-direct-btn{text-align:center;align-items:center;justify-content:center;padding:16px 14px}
+.hush-direct-btn strong,.hush-direct-btn small{width:100%;text-align:center}
+.hush-direct-btn small{max-width:180px}
+.sheet.live-sheet{width:min(100%,520px);height:100dvh;max-height:100dvh;border-radius:0;border:0;padding:0 0 calc(14px + env(safe-area-inset-bottom));background:#09101d;overflow:hidden}
+.sheet.live-sheet .sheet-handle{display:none}
+.sheet.live-sheet .whisker-build-stamp{position:absolute;left:14px;right:14px;top:68px;z-index:9;margin:0 auto;max-width:max-content;background:rgba(9,16,29,.5);backdrop-filter:blur(8px);border:1px solid #ffffff20;padding:5px 10px;border-radius:999px}
+.sheet.live-sheet .sheet-head{position:absolute;left:12px;right:12px;top:12px;z-index:10;margin:0;padding:10px 12px;border-radius:18px;background:rgba(9,16,29,.55);backdrop-filter:blur(10px);border:1px solid #ffffff22}
+.sheet.live-sheet .sheet-head h2{font-size:20px}
+.sheet.live-sheet .encounter-quick-help,.sheet.live-sheet .encounter-help,.sheet.live-sheet .encounter-launch,.sheet.live-sheet .encounter-quality,.sheet.live-sheet .footnote{display:none}
+.sheet.live-sheet .encounter-stage{height:100dvh;min-height:100dvh;border:0;border-radius:0;margin:0;background:#09101d}
+.sheet.live-sheet .encounter-backdrop,.sheet.live-sheet .encounter-live-video{height:100dvh!important;min-height:100dvh!important;object-fit:cover!important}
+.sheet.live-sheet .encounter-stage.live-encounter:not(.encounter-stage-ar) .encounter-live-video{object-fit:cover!important}
+.sheet.live-sheet .encounter-capture-tag{top:112px}
+.sheet.live-sheet .encounter-tool-dock{bottom:134px;z-index:8}
+.sheet.live-sheet .hush-live-zoom{top:114px;left:12px;z-index:8}
+.sheet.live-sheet .encounter-status{position:absolute;left:12px;right:12px;bottom:86px;z-index:8;background:rgba(8,14,25,.58);border:1px solid #ffffff1f;border-radius:16px;padding:10px 12px;backdrop-filter:blur(10px)}
+.sheet.live-sheet .hush-quick-shutter{bottom:22px;z-index:8}
+.sheet.live-sheet .encounter-photo-actions,.sheet.live-sheet .actions{position:absolute;left:12px;right:12px;z-index:8;display:flex;gap:8px}
+.sheet.live-sheet .encounter-photo-actions{bottom:20px}
+.sheet.live-sheet .actions{bottom:20px}
+.sheet.live-sheet .actions .secondary,.sheet.live-sheet .actions .primary,.sheet.live-sheet .encounter-photo-actions .secondary{backdrop-filter:blur(8px);background:rgba(16,25,43,.8);border:1px solid #ffffff24}
+.sheet.live-sheet .actions .primary{background:linear-gradient(110deg,#29c78f,#18a767)}
+@media(max-width:365px){.field-guide-tile{min-height:152px}.field-guide-figure{max-width:132px}.sheet.live-sheet .encounter-status{bottom:92px}.sheet.live-sheet .encounter-tool-dock{bottom:136px}.sheet.live-sheet .hush-quick-shutter{bottom:24px}}
+
+
+/* v3.10.5 — storyboard-inspired UI */
+.hush-story-home{display:grid;gap:14px}
+.hush-story-hero{position:relative;min-height:660px;border-radius:28px;overflow:hidden;padding:18px;background:linear-gradient(180deg,rgba(4,13,20,.2),rgba(4,13,20,.88)), radial-gradient(circle at 50% -10%,rgba(102,176,255,.45),transparent 40%), linear-gradient(135deg,#24465d,#102130 62%,#0a1620);box-shadow:0 18px 50px rgba(0,0,0,.28)}
+.hush-story-hero::before{content:'';position:absolute;inset:0;background-image:var(--hero-art);background-repeat:no-repeat;background-position:center 70%;background-size:42%;filter:drop-shadow(0 14px 24px rgba(0,0,0,.35));opacity:.95;pointer-events:none}
+.hush-story-hero::after{content:'';position:absolute;left:0;right:0;bottom:0;height:44%;background:linear-gradient(180deg,rgba(12,26,35,0),rgba(12,26,35,.76) 34%,rgba(12,26,35,.96));pointer-events:none}
+.hush-story-topbar,.hush-story-brand,.hush-story-copy,.hush-story-main-actions,.hush-story-mini-actions{position:relative;z-index:1}
+.hush-story-topbar{display:flex;justify-content:space-between;align-items:center}
+.hush-story-icon{width:42px;height:42px;border-radius:999px;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.14);color:#fff;font-size:20px;backdrop-filter:blur(10px)}
+.hush-story-brand{margin-top:14px;text-align:center;color:#fff}
+.hush-story-paw{font-size:56px;line-height:1}
+.hush-story-brand h1{margin:6px 0 0;font-size:48px;letter-spacing:-.03em;color:#fff}
+.hush-story-brand p{margin:8px 0 0;font-size:14px;font-weight:700;letter-spacing:.11em;color:#eff7ff}
+.hush-story-copy{margin-top:310px;text-align:center;color:#eef6ff}
+.hush-story-copy h2{font-size:28px;margin:0 0 8px;color:#fff}
+.hush-story-copy p{margin:0 auto;max-width:320px;font-size:15px;line-height:1.45;color:#d6e6f5}
+.hush-story-main-actions{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hush-story-main{border-radius:28px;border:1px solid rgba(255,255,255,.24);padding:26px 18px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;color:#fff;min-height:180px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 14px 28px rgba(0,0,0,.18)}
+.hush-story-main .emoji{font-size:42px;line-height:1}
+.hush-story-main strong{font-size:19px;color:#fff}
+.hush-story-main small{font-size:14px;line-height:1.35;color:#edf7ff;max-width:180px;text-align:center}
+.hush-story-main-live{background:linear-gradient(180deg,#3c9d37,#1c6720)}
+.hush-story-main-ar{background:linear-gradient(180deg,#1d8eff,#0c58b3)}
+.hush-story-mini-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.hush-story-mini{border-radius:22px;border:1px solid rgba(255,255,255,.16);background:rgba(97,67,20,.54);padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:10px;color:#fff;backdrop-filter:blur(10px);min-height:104px}
+.hush-story-mini:nth-child(2){background:rgba(106,82,26,.54)}
+.hush-story-mini:nth-child(3){background:rgba(124,92,22,.54)}
+.hush-story-mini span{font-size:28px;line-height:1}
+.hush-story-mini strong{font-size:16px;color:#fff;text-align:center}
+.hush-story-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.hush-story-stats>div{background:#12212f;border:1px solid #ffffff14;border-radius:18px;padding:14px 12px;text-align:center}
+.hush-story-stats strong{display:block;font-size:24px;color:#fff}
+.hush-story-stats span{font-size:12px;color:#b9d0e4}
+@media (max-width:420px){.hush-story-hero{min-height:620px;padding:16px}.hush-story-hero::before{background-size:48%}.hush-story-copy{margin-top:284px}.hush-story-brand h1{font-size:42px}.hush-story-main{min-height:164px;padding:22px 14px}.hush-story-mini{min-height:96px}}
+
+.sheet.live-sheet .sheet-head{justify-content:center}
+.sheet.live-sheet .sheet-head .close-btn{position:absolute;left:10px;top:10px}
+.sheet.live-sheet .sheet-head h2{font-size:22px;text-align:center;width:100%}
+.sheet.live-sheet .encounter-capture-tag{right:14px;left:auto;padding:8px 12px;border-radius:999px;background:rgba(14,25,40,.72);border:1px solid rgba(255,255,255,.16)}
+.sheet.live-sheet .hush-live-zoom{display:flex;gap:8px;justify-content:center;left:50%;transform:translateX(-50%);top:auto;bottom:140px;background:rgba(13,24,33,.72);padding:8px;border-radius:999px;border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px)}
+.sheet.live-sheet .hush-live-zoom button{min-width:56px;border-radius:999px;padding:10px 14px;background:transparent;border:0;color:#fff;font-weight:700}
+.sheet.live-sheet .hush-live-zoom button.active,.sheet.live-sheet .hush-live-zoom button[aria-pressed="true"]{background:#fff;color:#152232}
+.sheet.live-sheet .hush-quick-shutter{left:50%;right:auto;transform:translateX(-50%);width:92px;height:92px;border-radius:50%;padding:0;background:#fff;color:#123;border:6px solid rgba(255,255,255,.25);box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.sheet.live-sheet .hush-quick-shutter span{display:block;font-size:38px;line-height:1;color:#fff;background:#213;padding:0;border-radius:50%;width:68px;height:68px;display:flex;align-items:center;justify-content:center;margin:0 auto}
+.sheet.live-sheet .hush-quick-shutter small{display:none}
+.sheet.live-sheet .encounter-status{left:16px;right:16px;bottom:250px;text-align:center;font-size:14px}
+.sheet.live-sheet .encounter-tool-dock{left:50%;right:auto;transform:translateX(-50%);bottom:194px;background:rgba(15,24,37,.75);padding:8px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.14)}
+.sheet.live-sheet .encounter-photo-actions{top:80px;right:16px;left:auto;bottom:auto;display:flex;flex-direction:column;width:auto}
+.sheet.live-sheet .encounter-photo-actions .secondary{padding:10px 12px;font-size:12px}
+
+.sheet.identified-sheet{width:min(100%,560px);background:linear-gradient(180deg,#10321f,#0d1f12 14%,#0f1721 14%,#0f1721 100%);padding-bottom:16px}
+.sheet.identified-sheet .sheet-head{background:transparent;border:0;padding:10px 8px 2px;color:#fff}
+.sheet.identified-sheet .sheet-head h2{color:#fff}
+.sheet.identified-sheet .sheet-handle{background:rgba(255,255,255,.32)}
+.sheet.identified-sheet .whisker-build-stamp{background:rgba(255,255,255,.08);color:#d9e9de}
+.sheet.identified-sheet .chips,.sheet.identified-sheet #possible-matches,.sheet.identified-sheet .info-note{margin-left:12px;margin-right:12px}
+.hush-identified-panel{margin:8px 12px 14px}
+.hush-identified-hero{position:relative;border-radius:24px 24px 0 0;overflow:hidden;background:#1f3922;min-height:268px}
+.hush-identified-hero img{width:100%;height:268px;object-fit:cover;display:block}
+.hush-id-pill{position:absolute;right:14px;top:14px;border-radius:999px;background:#2fa348;color:#fff;padding:8px 12px;font-weight:700;font-size:12px;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.hush-identified-card{background:#fff;color:#111;border-radius:22px;padding:18px 18px 16px;margin-top:-14px;position:relative;box-shadow:0 18px 28px rgba(0,0,0,.18)}
+.hush-identified-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.hush-identified-header h3{margin:0;font-size:30px;line-height:1.05;color:#111}
+.hush-identified-header p{margin:4px 0 0;color:#5d6873;font-size:14px}
+.hush-id-audio{width:42px;height:42px;border-radius:50%;border:1px solid #dfe6eb;background:#fff;font-size:20px}
+.hush-id-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.hush-id-tags span{display:inline-flex;align-items:center;padding:6px 11px;border-radius:999px;font-size:13px;font-weight:700;background:#edf4fb;color:#29557b}
+.hush-id-tags span:nth-child(2){background:#fef1e4;color:#965b12}
+.hush-id-tags span:nth-child(3){background:#e7f6e8;color:#2d7a37}
+.hush-id-features strong,.hush-id-features>strong{display:block;font-size:19px;margin-top:14px;margin-bottom:10px;color:#17202a}
+.hush-id-features ul{margin:0;padding-left:18px;color:#28323b;display:grid;gap:8px;font-size:15px;line-height:1.35}
+.sheet.identified-sheet .species-picker,.sheet.identified-sheet .wildlife-safety,.sheet.identified-sheet .live-only-verified,.sheet.identified-sheet .field-group,.sheet.identified-sheet .check-row,.sheet.identified-sheet .location-helper,.sheet.identified-sheet .pin-failure{margin-left:12px;margin-right:12px}
+.sheet.identified-sheet .species-picker{background:#12202e;border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:14px;margin-top:4px}
+.sheet.identified-sheet .species-picker .visual-field-heading h3,.sheet.identified-sheet .visual-field-types .visual-field-heading h3{color:#fff}
+.sheet.identified-sheet .species-picker .visual-step,.sheet.identified-sheet .visual-field-types .visual-step{color:#8ec2ff}
+.sheet.identified-sheet .species-picker .field-help,.sheet.identified-sheet .visual-field-types .field-help,.sheet.identified-sheet .wildlife-safety{color:#adc3d8}
+.sheet.identified-sheet .visual-field-types{background:#12202e;border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:14px;margin:12px}
+.sheet.identified-sheet .actions{padding:0 12px 4px}
+.sheet.identified-sheet .actions .primary{background:linear-gradient(180deg,#2fa348,#237b35);font-size:19px;border-radius:18px;padding:16px 18px}
+.sheet.identified-sheet .actions .secondary{border-radius:16px}
+.sheet.identified-sheet .footnote{color:#adc3d8;padding:0 12px 6px}
+
+
+/* v3.10.7 — layout refinement pass: tighter home spacing, safe areas, live UI cleanup, smaller guide tiles */
+.hush-story-hero{min-height:560px;padding:calc(18px + env(safe-area-inset-top)) 18px 18px;display:flex;flex-direction:column;justify-content:flex-start}
+.hush-story-hero::before{background-position:center 60%;background-size:min(68vw,280px);opacity:.98}
+.hush-story-hero::after{height:54%;background:linear-gradient(180deg,rgba(12,26,35,0),rgba(12,26,35,.55) 25%,rgba(12,26,35,.92) 62%,rgba(12,26,35,.98))}
+.hush-story-topbar{margin-bottom:8px}
+.hush-story-brand{margin-top:2px}
+.hush-story-paw{font-size:44px}
+.hush-story-brand h1{font-size:40px}
+.hush-story-brand p{margin-top:6px;font-size:13px}
+.hush-story-copy{margin-top:210px}
+.hush-story-copy h2{font-size:24px;line-height:1.1}
+.hush-story-copy p{max-width:300px;font-size:14px}
+.hush-story-main-actions{margin-top:14px;gap:12px}
+.hush-story-main{min-height:150px;padding:20px 14px;border-radius:24px}
+.hush-story-main .emoji{font-size:36px}
+.hush-story-main strong{font-size:17px}
+.hush-story-main small{font-size:13px}
+.hush-story-mini-actions{gap:10px;margin-top:12px}
+.hush-story-mini{min-height:88px;padding:14px 8px;border-radius:18px;gap:8px}
+.hush-story-mini span{font-size:24px}
+.hush-story-mini strong{font-size:14px}
+.hush-story-stats{gap:8px}
+.hush-story-stats>div{padding:12px 10px}
+.hush-story-stats strong{font-size:20px}
+@media (max-width:420px){.hush-story-hero{min-height:520px;padding:calc(16px + env(safe-area-inset-top)) 16px 16px}.hush-story-hero::before{background-size:min(72vw,250px);background-position:center 60%}.hush-story-copy{margin-top:188px}.hush-story-main{min-height:138px;padding:18px 12px}.hush-story-mini{min-height:82px}.hush-story-brand h1{font-size:36px}}
+
+.field-guide-tile{min-height:124px;padding:8px 6px 10px;gap:6px;border-radius:16px}
+.field-guide-figure{max-width:118px}
+.field-guide-tile img{max-width:118px;height:96px}
+.field-guide-tile-group{min-height:90px;padding:6px 5px 8px}
+.field-guide-tile-group .field-guide-figure{max-width:84px}
+.field-guide-tile-group img{height:68px;max-width:84px}
+@media(max-width:365px){.field-guide-tile{min-height:116px}.field-guide-figure{max-width:108px}.field-guide-tile img{height:90px}.field-guide-tile-group{min-height:84px}}
+
+.sheet.live-sheet{padding:0 0 calc(88px + env(safe-area-inset-bottom));overflow:hidden}
+.sheet.live-sheet .sheet-head{top:calc(8px + env(safe-area-inset-top));left:10px;right:10px;padding:12px 46px 12px 46px;border-radius:16px}
+.sheet.live-sheet .sheet-head .close-btn{left:8px;top:8px}
+.sheet.live-sheet .sheet-head h2{font-size:18px;line-height:1.2}
+.sheet.live-sheet .whisker-build-stamp{top:calc(54px + env(safe-area-inset-top));font-size:12px;padding:5px 10px}
+.sheet.live-sheet .encounter-capture-tag{top:calc(98px + env(safe-area-inset-top));right:12px}
+.sheet.live-sheet .encounter-photo-actions{top:calc(98px + env(safe-area-inset-top));right:12px;left:auto;bottom:auto;display:flex;flex-direction:column;width:auto;max-width:132px}
+.sheet.live-sheet .encounter-photo-actions .secondary{padding:9px 10px;font-size:12px;line-height:1.2}
+.sheet.live-sheet .encounter-tool-dock{top:auto!important;bottom:calc(150px + env(safe-area-inset-bottom));left:50%;right:auto;transform:translateX(-50%);width:auto;height:auto;display:flex;flex-direction:row;align-items:center;gap:8px;padding:8px 10px;border-radius:20px;background:rgba(15,24,37,.78);border:1px solid rgba(255,255,255,.14)}
+.sheet.live-sheet .encounter-tool-dock .dock-tool{width:64px;min-height:64px;height:64px;padding:6px}
+.sheet.live-sheet .encounter-tool-dock .dock-tool small{font-size:10px}
+.sheet.live-sheet .encounter-tool-dock #throw-item{width:72px!important;height:72px!important;align-self:center;margin-top:0}
+.sheet.live-sheet .encounter-status{left:14px;right:14px;bottom:calc(250px + env(safe-area-inset-bottom));padding:10px 12px;font-size:14px;line-height:1.35}
+.sheet.live-sheet .hush-live-zoom{top:auto;bottom:calc(90px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:9;padding:6px 8px;gap:6px}
+.sheet.live-sheet .hush-live-zoom button{min-width:52px;padding:9px 12px;font-size:15px}
+.sheet.live-sheet .hush-quick-shutter{left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:88px;height:88px;z-index:9}
+.sheet.live-sheet .hush-quick-shutter span{width:64px;height:64px;font-size:34px}
+.sheet.live-sheet .actions{left:12px;right:12px;bottom:calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sheet.live-sheet .actions .secondary,.sheet.live-sheet .actions .primary{min-height:58px;font-size:13px;line-height:1.2;padding:10px 12px}
+.sheet.live-sheet .encounter-backdrop,.sheet.live-sheet .encounter-live-video{height:100%!important;min-height:100%!important}
+.sheet.live-sheet .encounter-stage{height:calc(100dvh - env(safe-area-inset-top));min-height:calc(100dvh - env(safe-area-inset-top))}
+@media(max-width:390px){.sheet.live-sheet .whisker-build-stamp{top:calc(50px + env(safe-area-inset-top))}.sheet.live-sheet .encounter-photo-actions{top:calc(92px + env(safe-area-inset-top));max-width:118px}.sheet.live-sheet .encounter-tool-dock{bottom:calc(145px + env(safe-area-inset-bottom))}.sheet.live-sheet .encounter-status{bottom:calc(238px + env(safe-area-inset-bottom));font-size:13px}.sheet.live-sheet .hush-live-zoom{bottom:calc(88px + env(safe-area-inset-bottom))}.sheet.live-sheet .actions .secondary,.sheet.live-sheet .actions .primary{min-height:54px;font-size:12px}}
+
+.sheet.identified-sheet{padding-top:calc(10px + env(safe-area-inset-top));padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+.sheet.identified-sheet .sheet-head{padding:14px 12px 6px}
+.sheet.identified-sheet .sheet-head h2{font-size:18px;line-height:1.2;padding-right:42px}
+.sheet.identified-sheet .sheet-head .close-btn{top:10px;right:10px}
+.sheet.identified-sheet .actions{padding:0 12px calc(8px + env(safe-area-inset-bottom))}
+
+/* v3.10.8 — UI release stamp and layout reliability */
+/* Place the hero and action buttons without a giant empty band; keep safe areas clear. */
+.hush-story-hero{min-height:0!important;height:auto!important;padding:16px 16px 18px!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important;gap:0!important}
+.hush-story-hero::before{background-position:center 36%!important;background-size:clamp(155px,48vw,235px)!important;opacity:.86}
+.hush-story-hero::after{height:62%}
+.hush-story-brand{margin:0!important}
+.hush-story-brand h1{font-size:clamp(30px,8vw,40px)!important}
+.hush-story-copy{margin-top:clamp(150px,29vh,205px)!important}
+.hush-story-copy h2{font-size:clamp(20px,5vw,25px)!important}
+.hush-story-main-actions{margin-top:12px!important}
+.hush-story-main{min-height:132px!important;padding:14px 10px!important}
+.hush-story-mini-actions{margin-top:12px!important}
+.hush-story-mini{min-height:74px!important;padding:10px 7px!important}
+.view{padding-top:10px}
+.bottom-nav{padding-bottom:calc(13px + env(safe-area-inset-bottom,0px))!important;height:calc(73px + env(safe-area-inset-bottom,0px))!important}
+.app-shell{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+/* Prevent any live-camera tool dock from stretching into an opaque vertical column. */
+.sheet.live-sheet .encounter-tool-dock{position:absolute!important;top:auto!important;bottom:calc(150px + env(safe-area-inset-bottom,0px))!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:max-content!important;max-width:calc(100% - 20px)!important;height:auto!important;min-height:0!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;padding:6px 8px!important;background:rgba(15,24,37,.65)!important;border-radius:18px!important}
+.sheet.live-sheet .encounter-stage .hush-live-zoom{top:auto!important;bottom:calc(93px + env(safe-area-inset-bottom,0px))!important;left:50%!important;transform:translateX(-50%)!important;right:auto!important;z-index:9!important}
+.sheet.live-sheet .sheet-head{top:calc(12px + env(safe-area-inset-top,0px))!important}
+.sheet.live-sheet .whisker-build-stamp{top:calc(65px + env(safe-area-inset-top,0px))!important}
+.sheet.live-sheet .encounter-status{bottom:calc(242px + env(safe-area-inset-bottom,0px))!important}
+.sheet.live-sheet .encounter-photo-actions{top:calc(115px + env(safe-area-inset-top,0px))!important;bottom:auto!important}
+.sheet.live-sheet .actions{bottom:calc(10px + env(safe-area-inset-bottom,0px))!important}
+.sheet.live-sheet .hush-quick-shutter{bottom:calc(13px + env(safe-area-inset-bottom,0px))!important}
+/* Species selection tiles take the height they need, rather than stretching to fill each row. */
+.field-guide-species .field-guide-tile-group{height:auto!important;min-height:0!important;padding:7px 5px!important;align-self:start!important;gap:4px!important}
+.field-guide-species .field-guide-tile-group img{height:70px!important;object-fit:contain!important}
+.field-guide-types .field-guide-tile{min-height:0!important;height:auto!important;padding:7px 5px 9px!important;align-self:start!important}
+.field-guide-types .field-guide-tile img{height:auto!important;aspect-ratio:1!important;object-fit:contain!important}
+.sheet.identified-sheet{padding-top:calc(8px + env(safe-area-inset-top,0px))!important;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))!important}
+
+.hush-release-caption{text-align:center;color:#92a7ba;font-size:11px;letter-spacing:.04em;margin:0;padding:0 0 3px}
+
+/* v3.10.9 - six educational animal families, consistent specimens, zoom, reward challenges. */
+.hush-category-tabs{display:flex;gap:8px;overflow:auto;scrollbar-width:thin;padding:5px 2px 10px;max-width:100%;margin:12px 0;touch-action:pan-x}
+.hush-category-tab{border:1px solid #657e83;background:#20303d;color:#e3f7f0;border-radius:999px;padding:10px 12px;font-weight:800;font-size:12px;min-height:42px;white-space:nowrap;flex:0 0 auto}
+.hush-category-tab.active{background:#b3ffe3;border-color:#b3ffe3;color:#163a31}
+.hush-category-tab:focus-visible{outline:3px solid #ffd780;outline-offset:2px}
+.field-guide-species .field-guide-tile-group.hidden{display:none!important}
+#hush-capture-categories{margin:9px 0 12px}
+/* Original square plates had baked-in captions and rules. v72 versions remove these.
+   Preserve aspect ratio of the actual specimen while filling the available square. */
+.field-guide-figure{position:relative;width:100%;max-width:none!important;aspect-ratio:1/1;overflow:hidden;border-radius:13px;display:block;background:#d9d0bd}
+.field-guide-tile .field-guide-figure img,.field-guide-types .field-guide-tile img,.field-guide-species .field-guide-tile-group img{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none!important;object-fit:cover!important;border-radius:0!important;display:block}
+.field-guide-tile{align-items:stretch!important;justify-content:flex-start!important;gap:6px!important;min-height:0!important;padding:8px!important;align-self:stretch!important;height:auto!important;text-align:center}
+.field-guide-tile>span:not(.visual-tile-check):not(.field-guide-figure){line-height:1.2;min-height:0!important;margin-top:3px}
+.field-guide-tile-group{padding:6px!important;gap:5px!important;min-height:0!important}
+.field-guide-tile-group .field-guide-figure{max-width:none!important}
+.field-guide-types{align-items:start;grid-auto-rows:auto}
+.variant-album-tile img,.hush-guide-reference img,.hush-guide-feature>img,.hush-challenge-tile img{object-fit:cover!important;background:#d5cbb1}
+.hush-guide-reference img{aspect-ratio:1/1}
+.hush-fullscreen-guide .hush-guide-chips{margin-top:1px}
+.hush-collection-categories{margin:16px 0;padding:14px;border-radius:21px;background:#172c35;border:1px solid #456465}
+.hush-collection-categories h3{font-size:17px;margin:0 0 12px}
+.hush-category-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.hush-collection-category{display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-height:74px;text-align:left;background:#223a44;border:1.5px solid #5d7077;color:#ecfff5;padding:10px;border-radius:15px}
+.hush-collection-category.active{border-color:#aff9e1;background:#1d5b53}
+.hush-collection-category span{font-size:23px;flex:none}
+.hush-collection-category strong{font-size:13px;flex:1 1 60px}
+.hush-collection-category small{font-size:10px;color:#c3e4dc;width:100%}
+.hush-bonus-section{background:#1b2c39;border:1px solid #516e76;border-radius:19px;padding:15px 12px;margin:16px 0}
+.hush-bonus-section h3{margin:0 0 3px;font-size:20px}
+.hush-bonus-section p{font-size:12px;color:#b4d6d2;margin:0 0 12px}
+.hush-bonus-list{display:grid;grid-template-columns:1fr;gap:7px}
+.hush-bonus-challenge{color:#eafff3;background:#243d44;border:1px solid #547478;border-radius:13px;display:flex;align-items:center;gap:11px;padding:11px 12px;text-align:left;min-width:0}
+.hush-bonus-challenge>span:first-child{font-size:27px;min-width:36px;text-align:center}
+.hush-bonus-challenge>div{flex:1;min-width:0}
+.hush-bonus-challenge strong,.hush-bonus-challenge small{display:block}
+.hush-bonus-challenge strong{font-size:14px}
+.hush-bonus-challenge small{font-size:11px;color:#bbd0c9;margin:4px 0 6px}
+.hush-bonus-challenge .arrow{font-size:27px;color:#7ee6c9}
+.hush-bonus-progress{width:100%;height:5px;background:#12302f;overflow:hidden;border-radius:10px;display:block}
+.hush-bonus-progress i{display:block;height:100%;background:#45dfad;border-radius:10px}
+/* Always visible zoom control panel, adjusted for system navigation bar. */
+.sheet.live-sheet .hush-live-zoom{display:flex!important;align-items:center;z-index:12!important;bottom:calc(99px + env(safe-area-inset-bottom, 0px))!important;max-width:calc(100vw - 16px);padding:6px!important;gap:4px!important}
+.sheet.live-sheet .hush-zoom-option{min-width:46px!important;min-height:42px!important;font-size:14px!important;padding:8px 9px!important}
+.sheet.live-sheet .hush-zoom-option.selected{background:#fff!important;color:#152431!important}
+.sheet.live-sheet .hush-quick-shutter{bottom:calc(10px + env(safe-area-inset-bottom, 0px))!important}
+@media(max-width:400px){.hush-category-tab{font-size:11px;padding:9px 10px}.hush-collection-category{min-height:70px}.field-guide-tile{padding:6px!important}}
+
+/* v3.10.10 pinch-to-zoom and wider lens presentation */
+.sheet.live-sheet .hush-zoom-current{display:inline-flex;justify-content:center;align-items:center;color:#b9ffe6;border-right:1px solid #ffffff33;margin-right:2px;padding:2px 7px 2px 4px;font-size:12px;font-weight:900;white-space:nowrap;min-width:36px}
+.sheet.live-sheet .hush-zoom-option{min-width:37px!important;padding:7px 8px!important;font-size:12px!important;min-height:40px!important;white-space:nowrap}
+.sheet.live-sheet .hush-live-zoom{max-width:calc(100vw - 16px)!important;white-space:nowrap}
+.sheet.live-sheet .encounter-stage.hush-pinch-camera{touch-action:none!important}
+.sheet.live-sheet .hush-pinch-hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(165px + env(safe-area-inset-bottom,0px));font-size:11px;font-weight:700;text-shadow:0 1px 3px #000;color:#effff8;background:#0c1926a3;border-radius:30px;padding:6px 10px;z-index:9;white-space:nowrap;pointer-events:none;max-width:95%;text-align:center}
+@media(max-width:385px){.sheet.live-sheet .hush-zoom-option{min-width:34px!important;padding:6px!important;font-size:11px!important}.sheet.live-sheet .hush-zoom-current{font-size:11px;padding:2px 4px!important}}
+
+
+/* v3.10.11 — theme and camera redesign, overrides supersede legacy camera geometry */
+body:has(.hush-immersive-home) .topbar{display:none!important}
+body:has(.hush-immersive-home) .view{padding:4px 10px 30px!important}
+.hush-story-hero.hush-immersive-home{position:relative;overflow:hidden;isolation:isolate;border-radius:24px!important;min-height:clamp(570px,calc(100dvh - 135px),860px)!important;padding:calc(18px + env(safe-area-inset-top,0px)) 14px 16px!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important;background:#211b47!important;border:1px solid #ffffff24}
+.hush-story-hero.hush-immersive-home::before{content:'';position:absolute;inset:0;background-image:var(--hush-wallpaper)!important;background-position:50% 42%!important;background-size:cover!important;background-repeat:no-repeat!important;opacity:1!important;filter:none!important;z-index:-2}
+.hush-story-hero.hush-immersive-home::after{content:'';position:absolute;inset:0;height:auto!important;background:linear-gradient(180deg,#0b0c2799 0%,#15132224 22%,transparent 37%,#0b172011 52%,#06121ccc 70%,#051018f4 100%)!important;z-index:-1;pointer-events:none}
+.hush-story-hero.hush-immersive-home.hush-motion::before{animation:hushBreathingScene 18s ease-in-out infinite alternate;transform-origin:50% 48%}
+@keyframes hushBreathingScene{0%{transform:scale(1)}100%{transform:scale(1.035)}}
+@media(prefers-reduced-motion:reduce){.hush-story-hero.hush-immersive-home.hush-motion::before{animation:none}}
+.hush-immersive-home .hush-story-topbar{margin:0!important;min-height:36px!important}
+.hush-immersive-home .hush-story-icon{width:42px;height:42px;border-radius:50%;background:#101b339c;border:1px solid #ffffff5d;color:#fff;backdrop-filter:blur(10px)}
+.hush-immersive-home .hush-story-brand{margin:0!important;text-align:center;text-shadow:0 2px 10px #080d2399}
+.hush-immersive-home .hush-story-brand h1{font-size:clamp(30px,8vw,43px)!important;letter-spacing:-.025em!important;line-height:1.02;margin:0;color:#fff!important}
+.hush-immersive-home .hush-story-brand h1 em{font-style:normal;color:var(--hush-theme-accent,#ffa6dd)}
+.hush-immersive-home .hush-story-brand p{font-size:10px!important;letter-spacing:.13em!important;margin:6px 0 0;font-weight:900}
+.hush-immersive-home .hush-story-paw{display:block;font-size:33px!important;line-height:1.15}
+.hush-home-hero-spacer{flex:1 1 auto;min-height:250px}
+.hush-home-action-zone{position:relative;z-index:2;display:flex;flex-direction:column;gap:10px}
+.hush-theme-tag{background:#141b31aa;border:1px solid #ffffff3b;color:#fff;text-transform:none;font-size:11px;font-weight:800;letter-spacing:.08em;width:max-content;max-width:100%;margin:0 auto 2px;border-radius:99px;padding:6px 13px;backdrop-filter:blur(8px)}
+.hush-immersive-home .hush-story-main-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0!important}
+.hush-immersive-home .hush-story-main{border-radius:19px!important;min-height:132px!important;padding:13px 8px 12px!important;justify-content:center;gap:6px!important;backdrop-filter:blur(12px);box-shadow:0 8px 25px #0007,inset 0 1px 0 #ffffff5c;border:1.5px solid #ffffff6b!important}
+.hush-immersive-home .hush-story-main-live{background:linear-gradient(160deg,color-mix(in srgb,var(--hush-live) 92%,#062a22),color-mix(in srgb,var(--hush-live) 65%,#0a1b29))!important}
+.hush-immersive-home .hush-story-main-ar{background:linear-gradient(160deg,color-mix(in srgb,var(--hush-ar) 94%,#0a255c),color-mix(in srgb,var(--hush-ar) 61%,#08172a))!important}
+.hush-immersive-home .hush-story-main .emoji{font-size:30px!important}
+.hush-immersive-home .hush-story-main strong{font-size:16px!important}
+.hush-immersive-home .hush-story-main small{font-size:12px!important;color:#e7f6ff}
+.hush-immersive-home .hush-story-mini-actions{margin:0!important;gap:8px!important}
+.hush-immersive-home .hush-story-mini{background:#16223cbd!important;border:1px solid #ffffff4a;min-height:62px!important;padding:8px 4px!important;gap:5px!important;border-radius:15px!important;backdrop-filter:blur(12px)}
+.hush-immersive-home .hush-story-mini span{font-size:20px!important}
+.hush-immersive-home .hush-story-mini strong{font-size:11px!important;color:#fff}
+.hush-story-home .hush-story-stats{margin:0!important;padding:0!important}
+.hush-story-home .hush-story-stats>div{padding:8px!important}
+.hush-story-home .hush-story-stats strong{font-size:18px}
+.hush-story-home .hush-release-caption{color:#9ca6ca}
+@media(max-height:750px){.hush-story-hero.hush-immersive-home{min-height:510px!important}.hush-home-hero-spacer{min-height:195px}.hush-immersive-home .hush-story-main{min-height:110px!important}}
+
+.hush-theme-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.hush-theme-choice{border:2px solid #566075;border-radius:15px;padding:4px;background:#192c3b;color:#edf9fb;text-align:center;overflow:hidden;display:flex;flex-direction:column;gap:5px}
+.hush-theme-choice.active{border-color:#a0f4e3;box-shadow:0 0 0 1px #a0f4e3}
+.hush-theme-choice img{display:block;width:100%;aspect-ratio:.8;object-fit:cover;border-radius:10px}
+.hush-theme-choice span{font-weight:750;font-size:11px;line-height:1.3;padding:0 1px 6px}
+.hush-theme-mode{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hush-theme-mode button.active{color:#082c2b;background:#a6f3e2;border-color:#a6f3e2}
+.hush-theme-sheet{padding-bottom:calc(28px + env(safe-area-inset-bottom,18px))!important}
+
+.visual-change,#change-species{white-space:nowrap!important;min-width:max-content!important;width:auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;font-size:12px!important;line-height:1!important;padding:12px 10px!important;gap:5px}
+.species-picker .visual-field-heading{align-items:center;gap:10px}
+.species-picker .visual-field-heading h3{font-size:17px!important}
+.hush-other-tile .field-guide-figure{background:#1c5660}
+.field-guide-tile .field-guide-figure img{display:block;object-fit:cover!important}
+
+.hush-mystery-help{font-size:12px;line-height:1.45;color:#344c5d;background:#f1f8f5;border-radius:12px;padding:10px;margin:13px 0 0}
+.sheet.identified-sheet .hush-identified-hero,.sheet.identified-sheet .hush-identified-hero img{min-height:0!important;height:190px!important}
+.sheet.identified-sheet .hush-identified-card{padding:15px 14px!important}
+.sheet.identified-sheet .hush-identified-header h3{font-size:23px!important}
+.sheet.identified-sheet .hush-identified-panel{margin:5px 12px 12px!important}
+.sheet.identified-sheet .whisker-build-stamp{display:none!important}
+.sheet.identified-sheet .sheet-head{padding:8px 12px 0!important}
+
+/* Keep Live Capture INSIDE Android status and navigation bars; camera preview is full usable viewport. */
+.modal-layer:has(.hush-camera-clean){align-items:flex-start!important;overflow:hidden!important}
+.modal-layer .sheet.live-sheet.hush-camera-clean{
+ --hush-top-safe:max(env(safe-area-inset-top,0px),35px);
+ --hush-bottom-safe:max(env(safe-area-inset-bottom,0px),26px);
+ position:relative!important;margin-top:var(--hush-top-safe)!important;margin-bottom:var(--hush-bottom-safe)!important;
+ height:calc(100dvh - var(--hush-top-safe) - var(--hush-bottom-safe))!important;
+ min-height:0!important;max-height:none!important;padding:0!important;overflow:hidden!important;
+ background:#0b1420!important;border-radius:0!important
+}
+.sheet.live-sheet.hush-camera-clean .encounter-stage{height:100%!important;min-height:0!important;border-radius:0!important;margin:0!important}
+.sheet.live-sheet.hush-camera-clean .encounter-backdrop,.sheet.live-sheet.hush-camera-clean .encounter-live-video{height:100%!important;min-height:0!important;width:100%!important;object-fit:cover!important}
+.sheet.live-sheet.hush-camera-clean .sheet-head{top:8px!important;left:10px!important;right:10px!important;min-height:49px;padding:11px 54px!important;z-index:19!important;border-radius:18px!important;align-items:center;background:#071a2db3!important}
+.sheet.live-sheet.hush-camera-clean .sheet-head h2{font-size:18px!important}
+.sheet.live-sheet.hush-camera-clean .sheet-head .close-btn{top:6px!important;left:6px!important}
+.sheet.live-sheet.hush-camera-clean .whisker-build-stamp{display:none!important}
+.sheet.live-sheet.hush-camera-clean .encounter-quick-help,.sheet.live-sheet.hush-camera-clean .encounter-help,.sheet.live-sheet.hush-camera-clean .encounter-launch,.sheet.live-sheet.hush-camera-clean .encounter-quality,.sheet.live-sheet.hush-camera-clean .encounter-status,.sheet.live-sheet.hush-camera-clean .encounter-photo-actions,.sheet.live-sheet.hush-camera-clean .encounter-capture-tag,.sheet.live-sheet.hush-camera-clean .encounter-cat,.sheet.live-sheet.hush-camera-clean .encounter-tool-dock,.sheet.live-sheet.hush-camera-clean .actions,.sheet.live-sheet.hush-camera-clean .hush-pinch-hint{display:none!important}
+.sheet.live-sheet.hush-camera-clean .hush-live-zoom{position:absolute!important;top:auto!important;bottom:112px!important;left:50%!important;transform:translateX(-50%)!important;z-index:24!important;max-width:calc(100% - 14px)!important;background:#061a28dc!important;padding:7px!important;border-radius:999px!important;white-space:nowrap!important}
+.sheet.live-sheet.hush-camera-clean .hush-quick-shutter{position:absolute!important;top:auto!important;bottom:18px!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;z-index:23!important;width:80px!important;height:80px!important;border-radius:50%!important;background:#fff!important;border:5px solid #ffffff66!important}
+.sheet.live-sheet.hush-camera-clean .hush-quick-shutter span{width:60px!important;height:60px!important;background:#f3f9ff!important;color:#f3f9ff!important;border:3px solid #0e1b33!important}
+.sheet.live-sheet.hush-camera-clean .hush-game-toggle{position:absolute;z-index:23;right:12px;bottom:27px;min-height:54px;border-radius:15px;border:1px solid #ffffff62;color:#fff;background:#092339d9;font-weight:900;padding:10px 12px;backdrop-filter:blur(10px)}
+.sheet.live-sheet.hush-camera-clean.hush-game-open .encounter-cat{display:block!important}
+.sheet.live-sheet.hush-camera-clean.hush-game-open .encounter-tool-dock{display:flex!important;left:50%!important;right:auto!important;bottom:185px!important;top:auto!important;transform:translateX(-50%)!important;width:max-content!important;height:auto!important;min-height:0!important;flex-direction:row!important;align-items:center!important;gap:7px!important;padding:7px!important;border-radius:18px!important;background:#08192ad5!important}
+.sheet.live-sheet.hush-camera-clean.hush-game-open .encounter-status{display:block!important;bottom:278px!important;left:12px!important;right:12px!important;top:auto!important;font-size:12px!important;padding:8px!important}
+.sheet.live-sheet.hush-camera-clean.hush-game-open .actions:has(#encounter-continue:not(.hidden)){display:flex!important;position:absolute;bottom:15px!important;left:10px!important;right:10px!important;z-index:25!important}
+@media(max-height:680px){.sheet.live-sheet.hush-camera-clean .hush-live-zoom{bottom:98px!important}.sheet.live-sheet.hush-camera-clean .hush-quick-shutter{bottom:9px!important;width:74px!important;height:74px!important}.sheet.live-sheet.hush-camera-clean.hush-game-open .encounter-tool-dock{bottom:165px!important}}
+
+
+/* v3.10.12 / build 75 — two photo-backed theme cards, single navigation location */
+.hush-immersive-home .hush-story-topbar .hush-home-eyebrow{
+  color:#f6f5ff; font-size:10px;letter-spacing:.13em;font-weight:850;
+  text-shadow:0 2px 8px #091021;background:#10192d70;border:1px solid #ffffff42;
+  border-radius:999px;padding:8px 11px;backdrop-filter:blur(8px);
+}
+.hush-immersive-home .hush-home-action-zone{gap:7px!important}
+.hush-immersive-home .hush-story-main{
+  position:relative;isolation:isolate;overflow:hidden;
+  min-height:171px!important;padding:14px 9px 15px!important;
+  justify-content:flex-end!important;align-items:center;gap:7px!important;
+  color:#fff!important;text-shadow:0 2px 5px #061420d9;
+  background-size:cover!important;background-position:center 45%!important;
+  background-repeat:no-repeat!important;
+  transition:filter .2s ease,transform .2s ease;
+}
+.hush-immersive-home .hush-story-main-live{
+  background-image:linear-gradient(180deg,rgba(4,30,24,.03) 0%,rgba(1,38,23,.30) 30%,rgba(1,37,28,.85) 80%,rgba(1,29,28,.94) 100%),var(--hush-live-photo)!important;
+  border-color:#a6ffc4ad!important;
+}
+.hush-immersive-home .hush-story-main-ar{
+  background-image:linear-gradient(180deg,rgba(8,25,48,.04) 0%,rgba(7,37,75,.32) 30%,rgba(4,29,65,.86) 80%,rgba(4,21,54,.95) 100%),var(--hush-ar-photo)!important;
+  border-color:#c6e6ffbd!important;
+}
+.hush-immersive-home .hush-story-main .emoji{
+  font-size:25px!important;line-height:1;display:grid;place-items:center;
+  width:40px;height:38px;background:#0c192d9b;border:1px solid #ffffff50;
+  border-radius:13px;box-shadow:0 2px 9px #040d1880;
+}
+.hush-immersive-home .hush-story-main strong{font-size:16px!important;line-height:1.12;color:#fff!important}
+.hush-immersive-home .hush-story-main small{font-size:12px!important;line-height:1.28;max-width:137px;min-height:30px}
+.hush-immersive-home .hush-story-main:active{transform:scale(.98)}
+.hush-immersive-home .hush-story-main:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.hush-immersive-home .hush-story-mini-actions{display:none!important}
+@media(max-height:740px){.hush-immersive-home .hush-story-main{min-height:146px!important}}
+@media(max-width:345px){.hush-immersive-home .hush-story-main{min-height:151px!important;padding:10px 6px!important}.hush-immersive-home .hush-story-main strong{font-size:14px!important}.hush-immersive-home .hush-story-main small{font-size:11px!important}}

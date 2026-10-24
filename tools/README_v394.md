@@ -1,0 +1,1 @@
+The files `build_species_art.py` and `patch_v390.py` are retained as legacy artwork scripts from previous builds. **Do not run** `build_species_art.py` on v3.9.4 unless deliberately recreating the old SVG art, because it will overwrite the updated `field_art` folder. The new `field_art_v58` cards are the active artwork referenced by v3.9.4 JavaScript and ARCore.

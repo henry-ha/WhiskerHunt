@@ -9,15 +9,17 @@
     <Nullable>enable</Nullable>
     <ApplicationTitle>Hush Hunt</ApplicationTitle>
     <ApplicationId>uk.whiskerhunt.mobile</ApplicationId>
-    <ApplicationDisplayVersion>3.8.4</ApplicationDisplayVersion>
-    <ApplicationVersion>48</ApplicationVersion>
+    <ApplicationDisplayVersion>3.10.25</ApplicationDisplayVersion>
+    <ApplicationVersion>88</ApplicationVersion>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-    <MauiIcon Include="Resources\AppIcon\appicon.svg" Color="#231B3F" />
-    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#231B3F" BaseSize="256,256" />
+    <!-- MAUI-compatible bindings for native Google Play Services for AR; Android only. -->
+    <PackageReference Include="XPACE.Google.ARCore" Version="1.41.0" />
+    <MauiIcon Include="Resources\AppIcon\hushhunt_bunny_v63.png" Color="#0765DC" />
+    <MauiSplashScreen Include="Resources\Splash\hushhunt_bunny_splash_v63.png" Color="#0765DC" BaseSize="256,256" />
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

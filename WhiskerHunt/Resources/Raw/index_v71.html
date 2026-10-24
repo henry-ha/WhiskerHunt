@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="whisker-build" content="3.10.8-71">
+<meta name="theme-color" content="#0d1122">
+<meta name="description" content="Hush Hunt – discover wildlife around you.">
+<title>Hush Hunt · Wildlife discoveries</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="stylesheet" href="style_v71.css">
+<script>window.whiskerNativeBridge=true;</script>
+</head>
+<body>
+<div class="ambient one"></div><div class="ambient two"></div>
+<div id="app" class="app-shell">
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon"><img src="icon-192.png" alt="Hush Hunt" width="42" height="42"></span><span>Hush<span class="brand-strong"> Hunt</span><small>WILDLIFE · EXPLORE · DISCOVER</small></span></div>
+    <button id="head-profile" class="avatar-btn" aria-label="Open profile">🧭</button>
+  </header>
+  <main id="view" class="view" aria-live="polite"></main>
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button data-nav="home" class="nav-btn current"><span class="nav-icon">⌂</span><span>Home</span></button>
+    <button data-nav="dex" class="nav-btn"><span class="nav-icon">▦</span><span>Collection</span></button>
+    <button id="nav-catch" class="catch-fab" aria-label="Spot wildlife"><span>＋</span></button>
+    <button data-nav="explore" class="nav-btn"><span class="nav-icon">◎</span><span>Map</span></button>
+    <button data-nav="quests" class="nav-btn"><span class="nav-icon">✧</span><span>Quests</span></button>
+  </nav>
+</div>
+<div id="modal-layer" class="modal-layer hidden" aria-hidden="true"></div>
+<div id="toast" class="toast hidden" role="status"></div>
+<input id="image-input" type="file" accept="image/*" capture="environment" hidden>
+<input id="library-input" type="file" accept="image/*" hidden>
+<input id="backup-input" type="file" accept="application/json,.json" hidden>
+<script src="app_v71.js" defer></script>
+</body>
+</html>

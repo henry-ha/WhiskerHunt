@@ -10,4 +10,13 @@ namespace WhiskerHunt;
                            ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 public class MainActivity : MauiAppCompatActivity
 {
+    protected override void OnResume()
+    {
+        base.OnResume();
+        // Deliver the ARCore photo only after this WebView's activity is foreground again.
+        new Android.OS.Handler(Android.OS.Looper.MainLooper!).PostDelayed(
+            HushArCoreActivity.DispatchPending, 350);
+        new Android.OS.Handler(Android.OS.Looper.MainLooper!).PostDelayed(
+            HushWideCameraActivity.DispatchPending, 420);
+    }
 }

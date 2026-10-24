@@ -1,0 +1,1321 @@
+{
+  "version": 63,
+  "assetCount": 146,
+  "transparent": true,
+  "assets": {
+    "ant-black-garden-ant.png": {
+      "sha256": "2a4227bc9ba8d6192cd5bb207c7183fc364f129e46cf68d5b99a9f1d56491c6a",
+      "alphaBounds": [
+        48,
+        94,
+        203,
+        205
+      ]
+    },
+    "ant-group.png": {
+      "sha256": "7c5cecdf52b78e1135be8a14802b8d8a72d8af7e552c34955924a42ca50640e8",
+      "alphaBounds": [
+        48,
+        94,
+        203,
+        197
+      ]
+    },
+    "ant-other-ant.png": {
+      "sha256": "d29799570832faa6a6c64ea4057cf1505974bb6ca52c026fcd1f51a26580d4e1",
+      "alphaBounds": [
+        34,
+        94,
+        209,
+        201
+      ]
+    },
+    "ant-pavement-ant.png": {
+      "sha256": "aa17ddefb6ce22a0c63eb70f716c6e67d74551bc48ae2bbaa394653aa382ff5e",
+      "alphaBounds": [
+        34,
+        94,
+        206,
+        201
+      ]
+    },
+    "ant-red-ant.png": {
+      "sha256": "2886cbf423f29d7ca829f6bc95ccc4c17a23fb1238bce8d1788ba52e829158a1",
+      "alphaBounds": [
+        48,
+        94,
+        206,
+        196
+      ]
+    },
+    "ant-wood-ant.png": {
+      "sha256": "a28297ab7e65f5b321e819b8d4c0b8b5de79b88c7411ee965f3e36a9a0193218",
+      "alphaBounds": [
+        34,
+        94,
+        209,
+        201
+      ]
+    },
+    "ant-yellow-meadow-ant.png": {
+      "sha256": "e650b808b02c906e8e04f7eb1c1a241cb692c7fa8bccf60e55f82bd08723401d",
+      "alphaBounds": [
+        48,
+        94,
+        203,
+        196
+      ]
+    },
+    "bee-buff-tailed-bumblebee.png": {
+      "sha256": "1e4de1eabe8ccc67cd32e4e5bb3f441df379b6bcc53b26df1b71049aaa8dc786",
+      "alphaBounds": [
+        53,
+        82,
+        192,
+        180
+      ]
+    },
+    "bee-common-carder-bee.png": {
+      "sha256": "7e53b6adf72621987d76d9fb10ca328452fae10d2a32dc63cade42fd05ed1b2b",
+      "alphaBounds": [
+        53,
+        82,
+        188,
+        187
+      ]
+    },
+    "bee-group.png": {
+      "sha256": "9761ac9d3b4d2e6dc3484b406e76f399ea91b061f52bc8d44b475ea243c6c36f",
+      "alphaBounds": [
+        53,
+        82,
+        188,
+        187
+      ]
+    },
+    "bee-honeybee.png": {
+      "sha256": "b7a5191fea1659290fa14d6fe7d95a94d96a1bac07c3b2a27d4a9c5be467f17c",
+      "alphaBounds": [
+        53,
+        82,
+        188,
+        187
+      ]
+    },
+    "bee-leafcutter-bee.png": {
+      "sha256": "1548df1bbdc728288a7b6c886ffe42611091372fea0d1d4bda8b6eebcd716314",
+      "alphaBounds": [
+        53,
+        82,
+        208,
+        195
+      ]
+    },
+    "bee-mining-bee.png": {
+      "sha256": "8d849bb7ab778bca89e9a5fffa53cded9e90160b40f1d1a1edab0d3e87cfcbd5",
+      "alphaBounds": [
+        53,
+        82,
+        188,
+        187
+      ]
+    },
+    "bee-red-tailed-bumblebee.png": {
+      "sha256": "0665b44a8b5b7c849fac67f86386cba138d611716a361d0e40b31581c5f7c18b",
+      "alphaBounds": [
+        53,
+        82,
+        191,
+        180
+      ]
+    },
+    "bee-white-tailed-bumblebee.png": {
+      "sha256": "46c5f96a8290f034a16cc1719a56ea2400e4a1955ddb9cffe5f521e0c5a0b52a",
+      "alphaBounds": [
+        53,
+        82,
+        184,
+        180
+      ]
+    },
+    "beetle-click-beetle.png": {
+      "sha256": "19382e999cf906d9aed963e177e5ab893cde633bb563b3dd58b2d5f2a6686cd9",
+      "alphaBounds": [
+        34,
+        73,
+        191,
+        210
+      ]
+    },
+    "beetle-dung-beetle.png": {
+      "sha256": "4236533f78f19c46ded41176cd54308746713e0eda09305a30db35da6e9812e5",
+      "alphaBounds": [
+        35,
+        73,
+        205,
+        210
+      ]
+    },
+    "beetle-ground-beetle.png": {
+      "sha256": "3e9e9585df6627af1740aa6bc10d38ad7efaca6ca36992e2c5e7feabfe292b53",
+      "alphaBounds": [
+        35,
+        73,
+        205,
+        210
+      ]
+    },
+    "beetle-group.png": {
+      "sha256": "b6271a9e859245885980a3a939b997ff5a8e5372ac060fcd3d2a2a8f4d63eddd",
+      "alphaBounds": [
+        35,
+        40,
+        205,
+        210
+      ]
+    },
+    "beetle-longhorn-beetle.png": {
+      "sha256": "de7e9080991159ccc7cd6884c5477697083f6376f05d272e8144bfdca41ea94c",
+      "alphaBounds": [
+        49,
+        73,
+        191,
+        210
+      ]
+    },
+    "beetle-rose-chafer.png": {
+      "sha256": "488b6bb944d8518445b57f4d2df9152b72900b1b3ce3bfdfcb8e587f7be35e2c",
+      "alphaBounds": [
+        49,
+        73,
+        191,
+        210
+      ]
+    },
+    "beetle-soldier-beetle.png": {
+      "sha256": "c9b02840806e102664310fadc8d3ed1b07fd823a7b62bec738a4436dcd0a1f58",
+      "alphaBounds": [
+        34,
+        73,
+        205,
+        210
+      ]
+    },
+    "beetle-stag-beetle.png": {
+      "sha256": "89eed260ba3a1f5de9f04787a751f2b94ac8fedeabcf0bbcc060ea3b25967247",
+      "alphaBounds": [
+        49,
+        40,
+        191,
+        210
+      ]
+    },
+    "beetle-weevil.png": {
+      "sha256": "ee3930faf14a294eae06843ecd34fe01aa74c72daeb13224fb59725f6d6fd711",
+      "alphaBounds": [
+        35,
+        73,
+        205,
+        210
+      ]
+    },
+    "bird-blackbird.png": {
+      "sha256": "f7a13fee9eff83d62dc976525f98632a8d3b5e486d6a7927302074bd01a2f73b",
+      "alphaBounds": [
+        59,
+        84,
+        200,
+        205
+      ]
+    },
+    "bird-blue-tit.png": {
+      "sha256": "20213e90c51050eacac8523d297338bf1446b2ff7559e514b532cbd5a06daa88",
+      "alphaBounds": [
+        59,
+        81,
+        200,
+        204
+      ]
+    },
+    "bird-crow.png": {
+      "sha256": "a26334e5d2d4b422db8eb243fda2e1a6fd1d00eb6de1d04c0db8b36b2d730c9f",
+      "alphaBounds": [
+        59,
+        84,
+        200,
+        205
+      ]
+    },
+    "bird-duck.png": {
+      "sha256": "880ea75ca7d9c5f93b14cf46bafb547b6a8928fca0290eb8281f7b0ac37ac821",
+      "alphaBounds": [
+        43,
+        84,
+        200,
+        205
+      ]
+    },
+    "bird-great-tit.png": {
+      "sha256": "3329d83696d4cf368cc207b0954c154ca8277857ff04734f447b3eebecc3a0e6",
+      "alphaBounds": [
+        58,
+        84,
+        200,
+        205
+      ]
+    },
+    "bird-group.png": {
+      "sha256": "717f20c4a77b5002e1114bf3c340de84b7e176f4e2506b4749c4f788567b1eb1",
+      "alphaBounds": [
+        11,
+        90,
+        229,
+        217
+      ]
+    },
+    "bird-house-sparrow.png": {
+      "sha256": "f3806de951c1f0f5290bd75a714e06e9f1cbf8512a63a5dabeddb58d7e12142d",
+      "alphaBounds": [
+        59,
+        84,
+        199,
+        204
+      ]
+    },
+    "bird-magpie.png": {
+      "sha256": "c7d280a99248faee66b72208f918176be4e241a87e071ca7625efa15a45d16db",
+      "alphaBounds": [
+        59,
+        84,
+        204,
+        204
+      ]
+    },
+    "bird-owl.png": {
+      "sha256": "0fff400654822ff1eff3c035bf5c5db6dc55a9cf3170dcd6e65196017fb906e4",
+      "alphaBounds": [
+        57,
+        30,
+        229,
+        231
+      ]
+    },
+    "bird-parakeet.png": {
+      "sha256": "dd9292a9eb427c6d0a001c1e840d32aa8adf0b793450381fabefe7cd479167a2",
+      "alphaBounds": [
+        59,
+        84,
+        209,
+        231
+      ]
+    },
+    "bird-robin.png": {
+      "sha256": "6c3aabb42c34360d0d7689fcdb31a52b26cca8e1798de24a30568fafe8ffab18",
+      "alphaBounds": [
+        58,
+        84,
+        200,
+        205
+      ]
+    },
+    "bird-seagull.png": {
+      "sha256": "768291e3874d2f61bae6842b06bcfae860d41fc1592e34be9457628cfaa98358",
+      "alphaBounds": [
+        58,
+        84,
+        200,
+        205
+      ]
+    },
+    "bird-starling.png": {
+      "sha256": "b01321a458ab371fad7035d09a7313c3f89010b5af129ef66f55f6d24d2713e3",
+      "alphaBounds": [
+        59,
+        84,
+        185,
+        205
+      ]
+    },
+    "bird-swan.png": {
+      "sha256": "22e9bfec5fdcbfc15d17c803866c6b3fc84049412e8be5cba04371ecd2b5ccbf",
+      "alphaBounds": [
+        11,
+        90,
+        229,
+        217
+      ]
+    },
+    "bird-wood-pigeon.png": {
+      "sha256": "e39db5cc6340f94bae7d3ac3ce065731e30bf18867a37683efd058d55294724f",
+      "alphaBounds": [
+        58,
+        84,
+        200,
+        205
+      ]
+    },
+    "butterfly-brimstone.png": {
+      "sha256": "6c2e00e8c9ce74d2b9a7784568634a705a0153822250bfc246712147352163e4",
+      "alphaBounds": [
+        30,
+        52,
+        210,
+        177
+      ]
+    },
+    "butterfly-comma.png": {
+      "sha256": "4c5c894b53a6ecb6aaf5a434bbbc197f9320ad43c37397c358cd71b5f292801e",
+      "alphaBounds": [
+        31,
+        55,
+        209,
+        177
+      ]
+    },
+    "butterfly-common-blue.png": {
+      "sha256": "9a641a507d51adf1a74a343b7c233394d653bd44a455da16dd30d87b493b8548",
+      "alphaBounds": [
+        30,
+        54,
+        210,
+        177
+      ]
+    },
+    "butterfly-group.png": {
+      "sha256": "a846052c20a9409a86b9fece5314fc91934919938e34d9892021f17356cd0886",
+      "alphaBounds": [
+        30,
+        52,
+        210,
+        177
+      ]
+    },
+    "butterfly-large-white.png": {
+      "sha256": "b314be542606f162cf6e0921de32fb1d7f103ab0d1238c9c1fcbf9396f4bf9e2",
+      "alphaBounds": [
+        31,
+        53,
+        209,
+        177
+      ]
+    },
+    "butterfly-painted-lady.png": {
+      "sha256": "71da18d739f54e1126bff122a4e1cd070fbedaea997487b688ac38018c6039d0",
+      "alphaBounds": [
+        31,
+        53,
+        209,
+        177
+      ]
+    },
+    "butterfly-peacock.png": {
+      "sha256": "6dfd765273fc9f6cc7b2aca2cdd97d8c3676e80f2092391cf78a559f65f657b2",
+      "alphaBounds": [
+        30,
+        53,
+        209,
+        177
+      ]
+    },
+    "butterfly-red-admiral.png": {
+      "sha256": "d3587341c729138dd780056d797a8945648fe71fc10dcc9fdd4bc2eb559fea8d",
+      "alphaBounds": [
+        31,
+        53,
+        209,
+        177
+      ]
+    },
+    "butterfly-small-tortoiseshell.png": {
+      "sha256": "63959b6105e8a0e58a5c1fb512a11f9e5081a2890d992e03ccf4d02477fa6329",
+      "alphaBounds": [
+        31,
+        76,
+        209,
+        176
+      ]
+    },
+    "cat-black.png": {
+      "sha256": "b7d2a2c8df320d7472a857b8392606722873b1d6fd21f96d94eb6c70ae7bcc37",
+      "alphaBounds": [
+        56,
+        30,
+        209,
+        217
+      ]
+    },
+    "cat-brown.png": {
+      "sha256": "96e264b99fdc1d4df8e81ad1bccfaecfc1f58840bdf44ff37c84b0d2eb1cd618",
+      "alphaBounds": [
+        35,
+        30,
+        209,
+        217
+      ]
+    },
+    "cat-calico.png": {
+      "sha256": "1e3a48776bed45ce4b629341f35623ee8063a81d88a49f2b6c2227248c29fcd2",
+      "alphaBounds": [
+        32,
+        30,
+        216,
+        202
+      ]
+    },
+    "cat-colourpoint.png": {
+      "sha256": "c1410db8e8640c4d1263b84914eb8a4e015101cbcb338c22ca77a23f9bc4d2ce",
+      "alphaBounds": [
+        63,
+        39,
+        216,
+        219
+      ]
+    },
+    "cat-cream.png": {
+      "sha256": "9967f6e8d92cbbafcf473bfbb13c0b6bd3b8177efb478fb5ee427384569619df",
+      "alphaBounds": [
+        56,
+        30,
+        190,
+        217
+      ]
+    },
+    "cat-ginger.png": {
+      "sha256": "335263342c49873ade846ae337f360eb9ecbeb0f9897a8891896391dbbad9f0b",
+      "alphaBounds": [
+        56,
+        30,
+        209,
+        217
+      ]
+    },
+    "cat-grey.png": {
+      "sha256": "02540dfbd7b8d79d89fec92ef8f93508847cf231b170cb7685d6938810031e36",
+      "alphaBounds": [
+        56,
+        30,
+        209,
+        217
+      ]
+    },
+    "cat-group.png": {
+      "sha256": "798a73633942b022dc14323bfd45a2db0f7e2f8a0614155be116d03fe5f7f8e5",
+      "alphaBounds": [
+        56,
+        30,
+        209,
+        217
+      ]
+    },
+    "cat-other.png": {
+      "sha256": "75460648cf1b5527d35810e120544aac7548ce906b72ac87ac4ddd6397a6089e",
+      "alphaBounds": [
+        56,
+        30,
+        209,
+        217
+      ]
+    },
+    "cat-tabby.png": {
+      "sha256": "cf989149695effbfedfcc1a7294923747e2c669295a9f5ca298ce30c4e0a4093",
+      "alphaBounds": [
+        24,
+        30,
+        188,
+        219
+      ]
+    },
+    "cat-tortoiseshell.png": {
+      "sha256": "bbc25d0d36566a58bc0b3ccd548cfdf303fb18a196f137af6844c79e85b06b95",
+      "alphaBounds": [
+        51,
+        30,
+        216,
+        219
+      ]
+    },
+    "cat-tuxedo.png": {
+      "sha256": "c05a74510d9e3239bb4162366f18a5c31e33fa02e82cb4b8b6e646e4d0120fa9",
+      "alphaBounds": [
+        54,
+        30,
+        210,
+        214
+      ]
+    },
+    "cat-white.png": {
+      "sha256": "17dd8cda84458106c7d1ada72ad476e4177109571a9f641e0be067a6b20b2ee1",
+      "alphaBounds": [
+        56,
+        77,
+        184,
+        172
+      ]
+    },
+    "dog-bulldog.png": {
+      "sha256": "4b838c07a5849652bd9fa69ebe63f44ddf2f0c5e9d1710ed2a6150fb98dbd8d5",
+      "alphaBounds": [
+        34,
+        66,
+        204,
+        205
+      ]
+    },
+    "dog-dachshund.png": {
+      "sha256": "dd857c4a658f923719983a7dc931c8a161bf4c7c58d828cb1206b967782b2e0b",
+      "alphaBounds": [
+        30,
+        90,
+        216,
+        219
+      ]
+    },
+    "dog-golden-retriever.png": {
+      "sha256": "ce18b0c81b7d7100af178e0f9b97b0b4caa4fc6fe164bc3a3223b0eeeb841aad",
+      "alphaBounds": [
+        20,
+        59,
+        204,
+        231
+      ]
+    },
+    "dog-group.png": {
+      "sha256": "52763c62bda38bae24debaa8d04a689d148181d5f7c22159239106971962af03",
+      "alphaBounds": [
+        18,
+        49,
+        180,
+        231
+      ]
+    },
+    "dog-husky.png": {
+      "sha256": "e2cf2bd8ad5650d9fee1abbbb8d1e886a9594f0c63c41a04236e7ad8e64dabf9",
+      "alphaBounds": [
+        45,
+        35,
+        204,
+        203
+      ]
+    },
+    "dog-labrador.png": {
+      "sha256": "4574b0a970e78a54d6d8c8be6b9608d5c11212071241b10e53c17df4d83d8944",
+      "alphaBounds": [
+        18,
+        49,
+        180,
+        231
+      ]
+    },
+    "dog-mixed-breed.png": {
+      "sha256": "5959338d09d71e6102dfb3cf5114b1033498c9be026a2ba702eb02e699f0146d",
+      "alphaBounds": [
+        84,
+        25,
+        203,
+        231
+      ]
+    },
+    "dog-poodle.png": {
+      "sha256": "a70f4446590e9c569820752ea3bce1a1685cc8468c223492dda413377f64e4f8",
+      "alphaBounds": [
+        44,
+        69,
+        205,
+        208
+      ]
+    },
+    "dog-spaniel.png": {
+      "sha256": "3ec2e19e9f985d01ec8a8a5ff20c602ece797408d4f4a7bb181b6f024481a486",
+      "alphaBounds": [
+        44,
+        68,
+        205,
+        208
+      ]
+    },
+    "dog-terrier.png": {
+      "sha256": "21b0184cedadbce026003f67f2c335798c6e4bd2844cbae11826979f5940e8f3",
+      "alphaBounds": [
+        35,
+        36,
+        217,
+        181
+      ]
+    },
+    "dragonfly-broad-bodied-chaser.png": {
+      "sha256": "5165e2baeef7c5115dbb1bcf3261ddc66114744845db30ddf8250ac82287e32b",
+      "alphaBounds": [
+        21,
+        64,
+        219,
+        219
+      ]
+    },
+    "dragonfly-common-darter.png": {
+      "sha256": "645856e13557bf79a059d679a995774de600c7c560faffeef94b4557b91900bb",
+      "alphaBounds": [
+        21,
+        68,
+        219,
+        220
+      ]
+    },
+    "dragonfly-emperor-dragonfly.png": {
+      "sha256": "dd02611fcbe1b751b5afaa0c515191d2a9581afa537051f3b0bbea1e6cd52b9c",
+      "alphaBounds": [
+        22,
+        65,
+        219,
+        219
+      ]
+    },
+    "dragonfly-four-spotted-chaser.png": {
+      "sha256": "f1b9ae850cf7923b3890dd0de4ebf6dd1f739a61a84d126272cd8736ae7c3fa6",
+      "alphaBounds": [
+        16,
+        37,
+        194,
+        230
+      ]
+    },
+    "dragonfly-golden-ringed-dragonfly.png": {
+      "sha256": "475c63ebbbb62a733b95a794e0ceb6c426d7f35305470155bba591265ac8ee51",
+      "alphaBounds": [
+        76,
+        39,
+        219,
+        231
+      ]
+    },
+    "dragonfly-group.png": {
+      "sha256": "c51f790a4951141d9e121e9c2dc4f8e5d7414b23a09e9049d205b8325f197b6d",
+      "alphaBounds": [
+        16,
+        37,
+        224,
+        230
+      ]
+    },
+    "dragonfly-southern-hawker.png": {
+      "sha256": "cba312b2fae0c0255ea605f41df29ed18a5499822c90481c6d8be9e5e21cd95d",
+      "alphaBounds": [
+        21,
+        54,
+        218,
+        218
+      ]
+    },
+    "frog-bullfrog.png": {
+      "sha256": "e58632e720272e83c7db9f3dc9ca9d066cd2e0a42ddbae5f0783ea1c79818b53",
+      "alphaBounds": [
+        11,
+        49,
+        219,
+        223
+      ]
+    },
+    "frog-common-frog.png": {
+      "sha256": "072de97753850dc30f9c23f0330d9a7deef539e20ab2a75be42436db451204bc",
+      "alphaBounds": [
+        11,
+        48,
+        219,
+        223
+      ]
+    },
+    "frog-group.png": {
+      "sha256": "cd1e436e12e9c6fea6824b206a666ef0a7f096c09a0a72c96274f9455c5dab97",
+      "alphaBounds": [
+        11,
+        49,
+        219,
+        223
+      ]
+    },
+    "frog-marsh-frog.png": {
+      "sha256": "b6d87956cfbfbc5801783edc6d37897a7ea0e75ec20597499218221716421f83",
+      "alphaBounds": [
+        11,
+        49,
+        219,
+        223
+      ]
+    },
+    "frog-other-frog.png": {
+      "sha256": "3c8a5c00a089abe554deda4306f51fc74c2cb11bef8403082adbfeacd5cde80e",
+      "alphaBounds": [
+        11,
+        35,
+        207,
+        220
+      ]
+    },
+    "frog-pool-frog.png": {
+      "sha256": "a907af2a852228eff54d6c9ade97e185f8d194a16acf7be0ac01eb7406947af6",
+      "alphaBounds": [
+        11,
+        49,
+        218,
+        223
+      ]
+    },
+    "frog-tree-frog.png": {
+      "sha256": "13cdc61509090365d696375d124c4e42217a0cec12a8d3df3d0e1d4aa4f87483",
+      "alphaBounds": [
+        11,
+        35,
+        207,
+        220
+      ]
+    },
+    "hedgehog-african-pygmy-hedgehog.png": {
+      "sha256": "59b48e0c9bef573848f9ce1a029e853c2ff0c4c898a3d3797305a88ade3c3855",
+      "alphaBounds": [
+        19,
+        51,
+        229,
+        217
+      ]
+    },
+    "hedgehog-european-hedgehog.png": {
+      "sha256": "6e197eed96782f2f0f16232a6995923d7beebe29e734f9df53b13a6444500b17",
+      "alphaBounds": [
+        13,
+        38,
+        223,
+        218
+      ]
+    },
+    "hedgehog-group.png": {
+      "sha256": "e4d377df0be977a081500ecc44f188bb7668fcbbede4d5fbcdeb1236879dd7a0",
+      "alphaBounds": [
+        11,
+        38,
+        223,
+        218
+      ]
+    },
+    "hedgehog-long-eared-hedgehog.png": {
+      "sha256": "9741157ac064c67f0c42d8f3e7144984af351e7db9a77a54fe64dac6443a331d",
+      "alphaBounds": [
+        11,
+        46,
+        221,
+        217
+      ]
+    },
+    "hedgehog-other-hedgehog.png": {
+      "sha256": "05fefcf721103b69a0df6694643dd914f02d144f23ee30fa21393bdce059fced",
+      "alphaBounds": [
+        11,
+        38,
+        223,
+        218
+      ]
+    },
+    "ladybird-fourteen-spot.png": {
+      "sha256": "a81b24318ce7d713de649dfc021eaa1a1057600fc82fc17e524810ae9935328d",
+      "alphaBounds": [
+        59,
+        70,
+        173,
+        203
+      ]
+    },
+    "ladybird-group.png": {
+      "sha256": "f6d5e50fe7a0f6096c617f730c712719ce27f69719a58bbaf4956fe4aa044ff0",
+      "alphaBounds": [
+        35,
+        70,
+        205,
+        205
+      ]
+    },
+    "ladybird-harlequin.png": {
+      "sha256": "0cb1f32005cae256cfbfb0d82b0524933699f14136525cc73a8b7763d13cca06",
+      "alphaBounds": [
+        35,
+        70,
+        205,
+        202
+      ]
+    },
+    "ladybird-pine-ladybird.png": {
+      "sha256": "2aa164dc731bdf2d39e3d2867cf8808c6c6fd739ad368f0fb29148e4cca92979",
+      "alphaBounds": [
+        34,
+        70,
+        205,
+        203
+      ]
+    },
+    "ladybird-seven-spot.png": {
+      "sha256": "46f1d5ec298cd6122c45ac2ca0231730aec44c519ee2a48fe5fce53277f9ea7a",
+      "alphaBounds": [
+        59,
+        70,
+        173,
+        203
+      ]
+    },
+    "ladybird-twenty-two-spot.png": {
+      "sha256": "c8282c1a9d87d884e8c8eceed3efe4c0bcfd60f686166e07183c0f41cb57d6c1",
+      "alphaBounds": [
+        34,
+        70,
+        204,
+        203
+      ]
+    },
+    "ladybird-two-spot.png": {
+      "sha256": "6ed94c92ae4c9fc1e11ea8eedfc236ecc3af7f7636d889bde174f0157ea9ea2f",
+      "alphaBounds": [
+        59,
+        70,
+        173,
+        203
+      ]
+    },
+    "moth-elephant-hawk-moth.png": {
+      "sha256": "01886e4a2e1b37705562563c57461c3f7e738bfc9241ef933e8d26b03cc73947",
+      "alphaBounds": [
+        38,
+        53,
+        202,
+        177
+      ]
+    },
+    "moth-emperor-moth.png": {
+      "sha256": "14cbe2b0e0507f52bb2a84f9b9bb5bafd7cc6d911d81034f6e4e8a8db3071641",
+      "alphaBounds": [
+        37,
+        53,
+        202,
+        177
+      ]
+    },
+    "moth-garden-tiger.png": {
+      "sha256": "7be2e3187459d8022de8b5e6ca2da597d4f0b985842240b40414c00b45d35989",
+      "alphaBounds": [
+        38,
+        53,
+        202,
+        177
+      ]
+    },
+    "moth-group.png": {
+      "sha256": "04207dc57197b4d4e11c45c411dd963bacdee0bc7481ed6eeefce7a8d1b488f3",
+      "alphaBounds": [
+        37,
+        52,
+        203,
+        177
+      ]
+    },
+    "moth-hummingbird-hawk-moth.png": {
+      "sha256": "e798f301814db23c43319932199910cca9e2e6b904809492b5d4940772828315",
+      "alphaBounds": [
+        38,
+        55,
+        202,
+        177
+      ]
+    },
+    "moth-jersey-tiger.png": {
+      "sha256": "343c3eecaa602a0965de1f1aad9fa58325713978143bf26c0dc38886189ef475",
+      "alphaBounds": [
+        38,
+        53,
+        202,
+        177
+      ]
+    },
+    "moth-silver-y.png": {
+      "sha256": "1b36030932fe51e6552c452328583b416dae9ce89a4d81356982d44134754eca",
+      "alphaBounds": [
+        37,
+        52,
+        203,
+        177
+      ]
+    },
+    "moth-six-spot-burnet.png": {
+      "sha256": "e9689479056da11389b235d02bebe6d3362edbcf04d1235e7a32eaf83ba83c96",
+      "alphaBounds": [
+        38,
+        53,
+        202,
+        177
+      ]
+    },
+    "other-bat.png": {
+      "sha256": "c69672f13ac54d3128a735c2e40447ed41723945b11225141d5fcd244c571edf",
+      "alphaBounds": [
+        31,
+        29,
+        219,
+        197
+      ]
+    },
+    "other-deer.png": {
+      "sha256": "af60d0ac1e59e51dfecd56983f464f74d868989ad34c3671726795d841ee480a",
+      "alphaBounds": [
+        19,
+        17,
+        229,
+        231
+      ]
+    },
+    "other-fish.png": {
+      "sha256": "c0b9dc0234d183ee615d933677b384e773e49b67df81d7197563c6d1e5580912",
+      "alphaBounds": [
+        22,
+        34,
+        218,
+        218
+      ]
+    },
+    "other-fox.png": {
+      "sha256": "4aecb13397b6b1fc25aa0acada1d32e6998cb56594cb8622dcbd4f183161a896",
+      "alphaBounds": [
+        47,
+        11,
+        229,
+        210
+      ]
+    },
+    "other-group.png": {
+      "sha256": "19dabd04a7e3c335e45e5a49f2289ade399b74d9607e91812d5b567bd3935e12",
+      "alphaBounds": [
+        19,
+        17,
+        229,
+        231
+      ]
+    },
+    "other-lizard.png": {
+      "sha256": "c9d762223a794a4ac24be3d3a749c45f8a7bf48cbdec99ceabcf147f490c2a6e",
+      "alphaBounds": [
+        13,
+        33,
+        226,
+        231
+      ]
+    },
+    "other-mouse.png": {
+      "sha256": "4e05182fd3029a77a4d17b08ca1e790ed260230bcc083f5402ebabd0a7516cd6",
+      "alphaBounds": [
+        19,
+        107,
+        215,
+        224
+      ]
+    },
+    "other-not-sure.png": {
+      "sha256": "accd10c8522ba2006ffe37d0300a7936a95bc89a4d734528c0b5d119bb504903",
+      "alphaBounds": [
+        11,
+        11,
+        169,
+        171
+      ]
+    },
+    "other-other-animal.png": {
+      "sha256": "e299ab98c67b7d8c59159a96c7edaf6ec1a3c967049e3c5db80fb3f7a12534ad",
+      "alphaBounds": [
+        11,
+        11,
+        229,
+        230
+      ]
+    },
+    "other-slug.png": {
+      "sha256": "6d14dd7d2843b916327aa5f70246264d3a8f6770ad7a40523e37268448c076e2",
+      "alphaBounds": [
+        22,
+        55,
+        218,
+        178
+      ]
+    },
+    "other-tortoise.png": {
+      "sha256": "455deaa39d11fbfe18167cc6afdf79c1ce4190c1e9b2fece8dfca8857ae2a09f",
+      "alphaBounds": [
+        39,
+        66,
+        218,
+        218
+      ]
+    },
+    "other-worm.png": {
+      "sha256": "4b1e93ab5ff3bc6122e29dc170349daa0eacc9732e3e711f4397b52c19b6bddc",
+      "alphaBounds": [
+        22,
+        55,
+        218,
+        218
+      ]
+    },
+    "rabbit-dutch-rabbit.png": {
+      "sha256": "34f0789e13406b0c0136ce13a6e071912d4d4c9a8849b547a45780bd0e1b1484",
+      "alphaBounds": [
+        55,
+        14,
+        226,
+        231
+      ]
+    },
+    "rabbit-flemish-giant.png": {
+      "sha256": "c910caec09a4c3ffb0748487b7f5d603c55923c15b823696fcec86a3720a7d2e",
+      "alphaBounds": [
+        40,
+        11,
+        229,
+        231
+      ]
+    },
+    "rabbit-group.png": {
+      "sha256": "fc6d15deda96915e4f985ba8a5f4ca52ed8464c1e8229bc4bde37a4404fa233f",
+      "alphaBounds": [
+        63,
+        52,
+        210,
+        231
+      ]
+    },
+    "rabbit-lionhead.png": {
+      "sha256": "fe6f4d885089ffad851b3fd082446c10bdb4711190e4167dc4980a60d2ec8f6c",
+      "alphaBounds": [
+        11,
+        42,
+        228,
+        231
+      ]
+    },
+    "rabbit-lop-eared.png": {
+      "sha256": "46ca17b2c61f7612b7e1e685492fd506b34a15a445ee1d3f1e4041f4d73d69a2",
+      "alphaBounds": [
+        12,
+        46,
+        229,
+        231
+      ]
+    },
+    "rabbit-netherland-dwarf.png": {
+      "sha256": "446f77cfb6f4143ddc0dccaea5d8e64c8d05b42cd535928f27160ac77377d62c",
+      "alphaBounds": [
+        16,
+        54,
+        224,
+        224
+      ]
+    },
+    "rabbit-wild-rabbit.png": {
+      "sha256": "7d41071ff9f45f80d2be4747e27a2c8ae8fd8cd7996583b598223867288653b4",
+      "alphaBounds": [
+        63,
+        52,
+        209,
+        231
+      ]
+    },
+    "snail-amber-snail.png": {
+      "sha256": "50ad6bd877c8b4ee3680c6576219756cf83e0001d0b9c395eb40766c399317b2",
+      "alphaBounds": [
+        11,
+        48,
+        189,
+        210
+      ]
+    },
+    "snail-garden-snail.png": {
+      "sha256": "fbe9b110973a377b9b845afa362cca34818c2a38e8fe6d3afe9533916645b712",
+      "alphaBounds": [
+        66,
+        80,
+        226,
+        202
+      ]
+    },
+    "snail-glass-snail.png": {
+      "sha256": "cefee6d992b77585296f9b83fd11316672ad7b84d17359cf8a5184b4893bd045",
+      "alphaBounds": [
+        67,
+        52,
+        184,
+        171
+      ]
+    },
+    "snail-group.png": {
+      "sha256": "fbebac0155c2a3b126a3ce5c38a13879422e22a739d8239aa94349ac61989353",
+      "alphaBounds": [
+        35,
+        83,
+        215,
+        202
+      ]
+    },
+    "snail-grove-snail.png": {
+      "sha256": "a7c5af81ae9be61f2d9b0ebcad47d824b9fb95c268cb4e50ec2a90cadd1a9aa1",
+      "alphaBounds": [
+        59,
+        84,
+        213,
+        202
+      ]
+    },
+    "snail-other-snail.png": {
+      "sha256": "58d03ac5107d9e8ab678872a56fb7047b9a043fccef9da2a0c1911f79dc78ed1",
+      "alphaBounds": [
+        15,
+        51,
+        202,
+        210
+      ]
+    },
+    "snail-pond-snail.png": {
+      "sha256": "ee8b25141f09f05bd2e84bc6c8823e150897f35a1299db7fc154506c1bcf2dd6",
+      "alphaBounds": [
+        66,
+        12,
+        229,
+        230
+      ]
+    },
+    "snail-roman-snail.png": {
+      "sha256": "a9771075042b23fd83ba1bc63665672ea8eafbbc0d9e028aa846b3dc605a4621",
+      "alphaBounds": [
+        11,
+        34,
+        226,
+        210
+      ]
+    },
+    "spider-cellar-spider.png": {
+      "sha256": "e7b1d150f56dfe3fbc689c3ccba29ddb1652ac1dfd87d3b1dcb141a62b511179",
+      "alphaBounds": [
+        23,
+        59,
+        218,
+        213
+      ]
+    },
+    "spider-crab-spider.png": {
+      "sha256": "9d907a53d9abc8c02a47330f85baa861457c96e0cba735e24f5b7134e1037440",
+      "alphaBounds": [
+        33,
+        82,
+        218,
+        201
+      ]
+    },
+    "spider-garden-spider.png": {
+      "sha256": "cc1f1c0bcc3009085735039eeb70025ed6425c14a58a4ac0cdde8d4eb82ff215",
+      "alphaBounds": [
+        43,
+        81,
+        197,
+        193
+      ]
+    },
+    "spider-group.png": {
+      "sha256": "4ab2258c9f191e8fe5ceb78088c5ee328178b4cc83fe579e37cb721a87a54715",
+      "alphaBounds": [
+        34,
+        81,
+        205,
+        205
+      ]
+    },
+    "spider-house-spider.png": {
+      "sha256": "d67a9ca1af6329146565f5ad8e4c79650c83d0c07daf6be2b2b4e5254b84beaa",
+      "alphaBounds": [
+        43,
+        81,
+        197,
+        193
+      ]
+    },
+    "spider-jumping-spider.png": {
+      "sha256": "f0b29a2f4dc90dd72da0bc64c5fe9f7899a0643070140b8eb4e479dc56effc87",
+      "alphaBounds": [
+        34,
+        82,
+        205,
+        201
+      ]
+    },
+    "spider-wolf-spider.png": {
+      "sha256": "6b39a86533a712ab9544db1a1a89f12fc6124490d8ae586dec33bcad7f3afe4b",
+      "alphaBounds": [
+        22,
+        65,
+        219,
+        219
+      ]
+    },
+    "spider-zebra-spider.png": {
+      "sha256": "9e5a8d398fcfd2dad9cd1fc9116d4e18f5c42789452f9275c2c64922e0e1e492",
+      "alphaBounds": [
+        44,
+        82,
+        197,
+        192
+      ]
+    },
+    "squirrel-flying-squirrel.png": {
+      "sha256": "df6bede5a3572aacc01b830d7cdf786d5f590de0fbf344c6d5eb8113f094d4df",
+      "alphaBounds": [
+        36,
+        56,
+        227,
+        229
+      ]
+    },
+    "squirrel-grey-squirrel.png": {
+      "sha256": "5ec32188a5028b9f137f216d4365acf61b99c1c90bf2cdd9d631148d6ae92934",
+      "alphaBounds": [
+        43,
+        56,
+        227,
+        231
+      ]
+    },
+    "squirrel-ground-squirrel.png": {
+      "sha256": "18bc0628d4c44f78766412ae8df0f09d4dc5622275e6f14d3bc5f4fda7c67115",
+      "alphaBounds": [
+        52,
+        59,
+        197,
+        211
+      ]
+    },
+    "squirrel-group.png": {
+      "sha256": "dfe8dcd88ef878b99507da3a2b2330a7f356a808da3f0eafd5ececc17c095292",
+      "alphaBounds": [
+        43,
+        56,
+        227,
+        231
+      ]
+    },
+    "squirrel-other-squirrel.png": {
+      "sha256": "567fe5a9ad82a16ca60de837bf6cb9079dc60b2d8ad14695f5533e9c4ada5cf6",
+      "alphaBounds": [
+        12,
+        56,
+        197,
+        231
+      ]
+    },
+    "squirrel-red-squirrel.png": {
+      "sha256": "619d14db9ff4a782ac1c1caf3d13d136fc7f2e7c5ffb7cb0e63122ae02a2ff0a",
+      "alphaBounds": [
+        52,
+        59,
+        198,
+        231
+      ]
+    }
+  }
+}

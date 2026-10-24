@@ -1,0 +1,30 @@
+import subprocess, time, os
+from playwright.sync_api import sync_playwright
+process=subprocess.Popen(['python','-m','http.server','18474','--bind','127.0.0.1','--directory','/mnt/data/hush_v3111/BrowserPreview'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+time.sleep(1)
+try:
+ with sync_playwright() as p:
+  browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox','--disable-dev-shm-usage'])
+  page=browser.new_page(viewport={'width':393,'height':844},device_scale_factor=1,is_mobile=True,has_touch=True)
+  errors=[]
+  page.on('pageerror',lambda e: errors.append(str(e)))
+  page.goto('file:///mnt/data/hush_v3111/BrowserPreview/index_v74.html',wait_until='networkidle',timeout=30000)
+  page.wait_for_timeout(900)
+  print('page title',page.title())
+  print('home live',page.locator('#hush-direct-live').count(),'home ar',page.locator('#hush-direct-ar').count())
+  print('hero bg',page.locator('.hush-story-hero').evaluate('(el)=>getComputedStyle(el, "::before").backgroundImage'))
+  print('version caption',page.locator('.hush-release-caption').inner_text() if page.locator('.hush-release-caption').count() else 'NO VERSION')
+  page.screenshot(path='/mnt/data/hush_v3111/Home_QA_v74.png',full_page=True)
+  page.locator('#hush-theme-open-home').click()
+  print('theme choices',page.locator('[data-hush-theme-id]').count())
+  print('dynamic pressed',page.locator('#hush-theme-dynamic').get_attribute('aria-pressed'))
+  page.locator('[data-hush-theme-id="moonlit-owl"]').click()
+  print('static pressed',page.locator('#hush-theme-static').get_attribute('aria-pressed'))
+  print('theme settings storage',page.evaluate('localStorage.getItem("hush.theme.settings.v74")'))
+  page.locator('#hush-theme-done').click()
+  print('home bg after select',page.locator('.hush-story-hero').get_attribute('style'))
+  page.reload(wait_until='networkidle')
+  page.wait_for_timeout(600)
+  print('home bg after reload',page.locator('.hush-story-hero').get_attribute('style'))
+  print('page errors',errors[:10]);browser.close()
+finally:process.terminate()

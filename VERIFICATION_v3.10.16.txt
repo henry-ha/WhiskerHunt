@@ -1,0 +1,36 @@
+Hush Hunt v3.10.16 release verification
+
+PASS — Android version v3.10.16
+PASS — Android build 79
+PASS — Android ID unchanged
+PASS — Android points to index_v79.html
+PASS — Browser correct stylesheet
+PASS — Browser correct script
+PASS — Browser correct version
+PASS — Browser app stamped 79
+PASS — Browser theme overwrite guarded
+PASS — Browser final theme renderer flagged
+PASS — Browser large panel not used
+PASS — Browser dynamic repeat actions
+PASS — Browser cache versioned
+PASS — Browser old startup files absent
+PASS — Browser themes present
+PASS — Browser button backgrounds present
+PASS — Android correct stylesheet
+PASS — Android correct script
+PASS — Android correct version
+PASS — Android app stamped 79
+PASS — Android theme overwrite guarded
+PASS — Android final theme renderer flagged
+PASS — Android large panel not used
+PASS — Android dynamic repeat actions
+PASS — Android cache versioned
+PASS — Android old startup files absent
+PASS — Android themes present
+PASS — Android button backgrounds present
+PASS — Android and browser JS identical
+PASS — Android and browser CSS identical
+PASS — Android and browser startup identical
+
+Browser checks: Theme selection changed the computed wallpaper from vivid-fox to meadow-rabbit. UI flow: New Dog, New Squirrel, New Butterfly, Blue Morpho identification, and repeat actions all exercised with DOM fixture.
+Android APK: not built or device-tested in this environment.

@@ -1,0 +1,166 @@
+{
+  "version": "3.10.19",
+  "build": 82,
+  "themes": [
+    {
+      "id": "twilight-fox",
+      "name": "Twilight Fox",
+      "wallpaper": "themes_v82/twilight-fox.webp",
+      "preview": "theme_previews_v82/twilight-fox.webp",
+      "live": "button_scenes_v82/twilight-fox-live.webp",
+      "ar": "button_scenes_v82/twilight-fox-ar.webp"
+    },
+    {
+      "id": "mountain-deer",
+      "name": "Mountain Deer",
+      "wallpaper": "themes_v82/mountain-deer.webp",
+      "preview": "theme_previews_v82/mountain-deer.webp",
+      "live": "button_scenes_v82/mountain-deer-live.webp",
+      "ar": "button_scenes_v82/mountain-deer-ar.webp"
+    },
+    {
+      "id": "meadow-rabbit",
+      "name": "Meadow Rabbit",
+      "wallpaper": "themes_v82/meadow-rabbit.webp",
+      "preview": "theme_previews_v82/meadow-rabbit.webp",
+      "live": "button_scenes_v82/meadow-rabbit-live.webp",
+      "ar": "button_scenes_v82/meadow-rabbit-ar.webp"
+    },
+    {
+      "id": "waterfall-kingfisher",
+      "name": "Waterfall Kingfisher",
+      "wallpaper": "themes_v82/waterfall-kingfisher.webp",
+      "preview": "theme_previews_v82/waterfall-kingfisher.webp",
+      "live": "button_scenes_v82/waterfall-kingfisher-live.webp",
+      "ar": "button_scenes_v82/waterfall-kingfisher-ar.webp"
+    },
+    {
+      "id": "forest-owl",
+      "name": "Forest Owl",
+      "wallpaper": "themes_v82/forest-owl.webp",
+      "preview": "theme_previews_v82/forest-owl.webp",
+      "live": "button_scenes_v82/forest-owl-live.webp",
+      "ar": "button_scenes_v82/forest-owl-ar.webp"
+    },
+    {
+      "id": "lakeside-swan",
+      "name": "Lakeside Swan",
+      "wallpaper": "themes_v82/lakeside-swan.webp",
+      "preview": "theme_previews_v82/lakeside-swan.webp",
+      "live": "button_scenes_v82/lakeside-swan-live.webp",
+      "ar": "button_scenes_v82/lakeside-swan-ar.webp"
+    },
+    {
+      "id": "woodland-hedgehog",
+      "name": "Woodland Hedgehog",
+      "wallpaper": "themes_v82/woodland-hedgehog.webp",
+      "preview": "theme_previews_v82/woodland-hedgehog.webp",
+      "live": "button_scenes_v82/woodland-hedgehog-live.webp",
+      "ar": "button_scenes_v82/woodland-hedgehog-ar.webp"
+    },
+    {
+      "id": "red-squirrel-glade",
+      "name": "Red Squirrel Glade",
+      "wallpaper": "themes_v82/red-squirrel-glade.webp",
+      "preview": "theme_previews_v82/red-squirrel-glade.webp",
+      "live": "button_scenes_v82/red-squirrel-glade-live.webp",
+      "ar": "button_scenes_v82/red-squirrel-glade-ar.webp"
+    },
+    {
+      "id": "robin-dawn",
+      "name": "Robin Dawn",
+      "wallpaper": "themes_v82/robin-dawn.webp",
+      "preview": "theme_previews_v82/robin-dawn.webp",
+      "live": "button_scenes_v82/robin-dawn-live.webp",
+      "ar": "button_scenes_v82/robin-dawn-ar.webp"
+    },
+    {
+      "id": "butterfly-garden",
+      "name": "Butterfly Garden",
+      "wallpaper": "themes_v82/butterfly-garden.webp",
+      "preview": "theme_previews_v82/butterfly-garden.webp",
+      "live": "button_scenes_v82/butterfly-garden-live.webp",
+      "ar": "button_scenes_v82/butterfly-garden-ar.webp"
+    },
+    {
+      "id": "highland-stag",
+      "name": "Highland Stag",
+      "wallpaper": "themes_v82/highland-stag.webp",
+      "preview": "theme_previews_v82/highland-stag.webp",
+      "live": "button_scenes_v82/highland-stag-live.webp",
+      "ar": "button_scenes_v82/highland-stag-ar.webp"
+    },
+    {
+      "id": "river-otter",
+      "name": "River Otter",
+      "wallpaper": "themes_v82/river-otter.webp",
+      "preview": "theme_previews_v82/river-otter.webp",
+      "live": "button_scenes_v82/river-otter-live.webp",
+      "ar": "button_scenes_v82/river-otter-ar.webp"
+    },
+    {
+      "id": "puffin-cliffs",
+      "name": "Puffin Cliffs",
+      "wallpaper": "themes_v82/puffin-cliffs.webp",
+      "preview": "theme_previews_v82/puffin-cliffs.webp",
+      "live": "button_scenes_v82/puffin-cliffs-live.webp",
+      "ar": "button_scenes_v82/puffin-cliffs-ar.webp"
+    },
+    {
+      "id": "moonlit-badger",
+      "name": "Moonlit Badger",
+      "wallpaper": "themes_v82/moonlit-badger.webp",
+      "preview": "theme_previews_v82/moonlit-badger.webp",
+      "live": "button_scenes_v82/moonlit-badger-live.webp",
+      "ar": "button_scenes_v82/moonlit-badger-ar.webp"
+    },
+    {
+      "id": "autumn-hare",
+      "name": "Autumn Hare",
+      "wallpaper": "themes_v82/autumn-hare.webp",
+      "preview": "theme_previews_v82/autumn-hare.webp",
+      "live": "button_scenes_v82/autumn-hare-live.webp",
+      "ar": "button_scenes_v82/autumn-hare-ar.webp"
+    },
+    {
+      "id": "golden-eagle-peaks",
+      "name": "Golden Eagle Peaks",
+      "wallpaper": "themes_v82/golden-eagle-peaks.webp",
+      "preview": "theme_previews_v82/golden-eagle-peaks.webp",
+      "live": "button_scenes_v82/golden-eagle-peaks-live.webp",
+      "ar": "button_scenes_v82/golden-eagle-peaks-ar.webp"
+    },
+    {
+      "id": "woodland-frog",
+      "name": "Woodland Frog",
+      "wallpaper": "themes_v82/woodland-frog.webp",
+      "preview": "theme_previews_v82/woodland-frog.webp",
+      "live": "button_scenes_v82/woodland-frog-live.webp",
+      "ar": "button_scenes_v82/woodland-frog-ar.webp"
+    },
+    {
+      "id": "wildflower-bee-meadow",
+      "name": "Wildflower Bee Meadow",
+      "wallpaper": "themes_v82/wildflower-bee-meadow.webp",
+      "preview": "theme_previews_v82/wildflower-bee-meadow.webp",
+      "live": "button_scenes_v82/wildflower-bee-meadow-live.webp",
+      "ar": "button_scenes_v82/wildflower-bee-meadow-ar.webp"
+    },
+    {
+      "id": "arctic-fox-snowfall",
+      "name": "Arctic Fox Snowfall",
+      "wallpaper": "themes_v82/arctic-fox-snowfall.webp",
+      "preview": "theme_previews_v82/arctic-fox-snowfall.webp",
+      "live": "button_scenes_v82/arctic-fox-snowfall-live.webp",
+      "ar": "button_scenes_v82/arctic-fox-snowfall-ar.webp"
+    },
+    {
+      "id": "red-panda-bamboo",
+      "name": "Red Panda Bamboo",
+      "wallpaper": "themes_v82/red-panda-bamboo.webp",
+      "preview": "theme_previews_v82/red-panda-bamboo.webp",
+      "live": "button_scenes_v82/red-panda-bamboo-live.webp",
+      "ar": "button_scenes_v82/red-panda-bamboo-ar.webp"
+    }
+  ]
+}
