@@ -6,7 +6,7 @@
              Padding="0"
              Shell.NavBarIsVisible="False">
     <WebView x:Name="GameWebView"
-             Source="index_v88.html"
+             Source="index_v94.html"
              Navigating="OnWebNavigating"
              Navigated="OnWebNavigated"
  />

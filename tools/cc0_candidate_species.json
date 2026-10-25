@@ -1,0 +1,231 @@
+[
+  {
+    "key": "wildlife-cat-tabby",
+    "display": "Tabby",
+    "group": "Cat",
+    "pack": "pets",
+    "titles": [
+      "Cat Standing (Grey Tabby)"
+    ],
+    "emoji": "🐱"
+  },
+  {
+    "key": "wildlife-cat-ginger",
+    "display": "Ginger",
+    "group": "Cat",
+    "pack": "pets",
+    "titles": [
+      "Cat Standing (Ginger Tabby)"
+    ],
+    "emoji": "🐱"
+  },
+  {
+    "key": "wildlife-cat-tuxedo",
+    "display": "Tuxedo",
+    "group": "Cat",
+    "pack": "pets",
+    "titles": [
+      "Cat Standing (Tuxedo)"
+    ],
+    "emoji": "🐱"
+  },
+  {
+    "key": "wildlife-cat-calico",
+    "display": "Calico",
+    "group": "Cat",
+    "pack": "pets",
+    "titles": [
+      "Cat Standing (Calico)"
+    ],
+    "emoji": "🐱"
+  },
+  {
+    "key": "wildlife-cat-grey",
+    "display": "Grey",
+    "group": "Cat",
+    "pack": "pets",
+    "titles": [
+      "Cat Sitting (Grey Tabby)"
+    ],
+    "emoji": "🐱"
+  },
+  {
+    "key": "wildlife-dog-terrier",
+    "display": "Terrier",
+    "group": "Dog",
+    "pack": "pets",
+    "titles": [
+      "Small Terrier Standing"
+    ],
+    "emoji": "🐶"
+  },
+  {
+    "key": "wildlife-dog-spaniel",
+    "display": "Spaniel",
+    "group": "Dog",
+    "pack": "pets",
+    "titles": [
+      "Spaniel Standing"
+    ],
+    "emoji": "🐶"
+  },
+  {
+    "key": "wildlife-dog-golden-retriever",
+    "display": "Golden Retriever",
+    "group": "Dog",
+    "pack": "pets",
+    "titles": [
+      "Retriever Standing"
+    ],
+    "emoji": "🐶"
+  },
+  {
+    "key": "wildlife-dog-bulldog",
+    "display": "Bulldog",
+    "group": "Dog",
+    "pack": "pets",
+    "titles": [
+      "Bulldog Standing"
+    ],
+    "emoji": "🐶"
+  },
+  {
+    "key": "wildlife-dog-labrador",
+    "display": "Labrador",
+    "group": "Dog",
+    "pack": "pets_hd",
+    "titles": [
+      "Labrador Standing",
+      "Labrador Retriever Standing"
+    ],
+    "emoji": "🐶"
+  },
+  {
+    "key": "wildlife-dog-poodle",
+    "display": "Poodle",
+    "group": "Dog",
+    "pack": "pets_hd",
+    "titles": [
+      "Poodle Standing",
+      "Standard Poodle"
+    ],
+    "emoji": "🐶"
+  },
+  {
+    "key": "wildlife-dog-husky",
+    "display": "Husky",
+    "group": "Dog",
+    "pack": "pets_hd",
+    "titles": [
+      "Siberian Husky",
+      "Husky Standing"
+    ],
+    "emoji": "🐶"
+  },
+  {
+    "key": "wildlife-dog-dachshund",
+    "display": "Dachshund",
+    "group": "Dog",
+    "pack": "pets_hd",
+    "titles": [
+      "Dachshund",
+      "Sausage Dog"
+    ],
+    "emoji": "🐶"
+  },
+  {
+    "key": "wildlife-rabbit-wild-rabbit",
+    "display": "Wild Rabbit",
+    "group": "Rabbit",
+    "pack": "pets",
+    "titles": [
+      "Rabbit Sitting"
+    ],
+    "emoji": "🐰"
+  },
+  {
+    "key": "wildlife-bird-parakeet",
+    "display": "Parakeet",
+    "group": "Bird",
+    "pack": "pets",
+    "titles": [
+      "Budgie"
+    ],
+    "emoji": "🐦"
+  },
+  {
+    "key": "wildlife-other-tortoise",
+    "display": "Tortoise",
+    "group": "Other",
+    "pack": "pets",
+    "titles": [
+      "Tortoise"
+    ],
+    "emoji": "🦊"
+  },
+  {
+    "key": "wildlife-other-lizard",
+    "display": "Lizard",
+    "group": "Other",
+    "pack": "pets_hd",
+    "titles": [
+      "Leopard Gecko",
+      "Gecko"
+    ],
+    "emoji": "🦊"
+  },
+  {
+    "key": "wildlife-other-deer",
+    "display": "Deer",
+    "group": "Other",
+    "pack": "wild",
+    "titles": [
+      "Red deer stag"
+    ],
+    "emoji": "🦊"
+  },
+  {
+    "key": "wildlife-other-fox",
+    "display": "Fox",
+    "group": "Other",
+    "pack": "wild",
+    "titles": [
+      "Red Fox",
+      "Red fox"
+    ],
+    "emoji": "🦊"
+  },
+  {
+    "key": "wildlife-other-mouse",
+    "display": "Mouse",
+    "group": "Other",
+    "pack": "pets_hd",
+    "titles": [
+      "House Mouse",
+      "Mouse"
+    ],
+    "emoji": "🦊"
+  },
+  {
+    "key": "wildlife-other-bat",
+    "display": "Bat",
+    "group": "Other",
+    "pack": "wild",
+    "titles": [
+      "Fruit Bat",
+      "Bat"
+    ],
+    "emoji": "🦊"
+  },
+  {
+    "key": "wildlife-other-fish",
+    "display": "Fish",
+    "group": "Other",
+    "pack": "pets_hd",
+    "titles": [
+      "Goldfish",
+      "Common Goldfish"
+    ],
+    "emoji": "🦊"
+  }
+]

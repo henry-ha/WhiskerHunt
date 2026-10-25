@@ -4154,3 +4154,31 @@ hushShowPhoneWide81=function(){
  $('hush-wide81-native').onclick=hushOpenNativeWide86;
  $('hush-wide81-cancel').onclick=()=>panel.remove();
 };
+
+
+/* v3.10.26 build 89: Android launches ONE native rear live preview from Home.
+   0.6×, 1×, 2× and 3× switch inside that preview without a confirmation box.
+   Non-Android browser continues using its existing getUserMedia flow. */
+const hushBrowserLive89=startLiveEncounter;
+startLiveEncounter=function(){
+  if(!hasAndroidActionBridge()) return hushBrowserLive89();
+  if(hushWideRequest86!==null)return;
+  const token=String(++nativePhotoRequestSequence);
+  nativePhotoRequestToken=token;
+  hushWideNativeToken84=token;
+  hushWideRequest86=token;
+  stopLiveCamera();
+  document.querySelector('#hush-wide81')?.remove();
+  location.href='whiskerhunt://wide-camera?request='+encodeURIComponent(token);
+};
+// The native screen owns the camera throughout the zoom interaction. If
+// cancelled, return quietly to the previous web screen, NOT to a frozen video.
+const hushNativeResultBefore89=window.hushNativeWideResult;
+window.hushNativeWideResult=function(result){
+  if(result && String(result.request)===String(hushWideRequest86) && result.status!=='captured'){
+    hushWideRequest86=null;hushWideNativeToken84=null;nativePhotoRequestToken=null;
+    if(result.status!=='cancelled')toast(result.message||'Unable to open the rear camera.');
+    return;
+  }
+  return hushNativeResultBefore89?.(result);
+};

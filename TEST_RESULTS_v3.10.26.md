@@ -1,0 +1,13 @@
+# v3.10.26 / Build 89 — Source Test Results
+- PASS: Browser and Android current JavaScript/CSS are byte-identical.
+- PASS: JavaScript syntax check (`node --check`).
+- PASS: New Android launch file `index_v89.html` points to current JS/CSS.
+- PASS: Project application version and build number updated to 3.10.26 / 89.
+- PASS: Native Camera2 uses one preview and changes repeating zoom requests.
+- PASS: Native 0.6× button gated by Camera2 rear zoom capabilities.
+- PASS: JPEG bitmap orientation normalization exists.
+- PASS: ARCore spider eight-leg geometry and species-specific families wired.
+- PASS: Home header controls shifted below Android status area.
+- NOT RUN: Android compilation (dotnet SDK / MAUI Android workloads not available here).
+- NOT RUN: physical OnePlus 11 0.6× optical lens, preview sensor rotation and ARCore rendering.
+- LIMITATION: procedural AR wildlife is not photorealistic production-model quality.

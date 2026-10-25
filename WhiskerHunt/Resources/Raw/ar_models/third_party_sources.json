@@ -1,0 +1,130 @@
+[
+  {
+    "key": "wildlife-cat-tabby",
+    "name": "Tabby",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-cat-standing-grey-tabby-45fdde53",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-cat-ginger",
+    "name": "Ginger",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-cat-standing-f166d717",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-cat-tuxedo",
+    "name": "Tuxedo",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-cat-standing-tuxedo-26e3181b",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-cat-calico",
+    "name": "Calico",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-cat-standing-calico-2f1ba9f7",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-cat-grey",
+    "name": "Grey",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-cat-sitting-grey-tabby-0e8f64e8",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-dog-terrier",
+    "name": "Terrier",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-dog-terrier-e6b8083d",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-dog-spaniel",
+    "name": "Spaniel",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-dog-spaniel-0269b539",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-dog-golden-retriever",
+    "name": "Golden Retriever",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-dog-retriever-1f071e0e",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-dog-bulldog",
+    "name": "Bulldog",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-dog-bulldog-4d16d2a8",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-dog-dachshund",
+    "name": "Dachshund",
+    "source": "https://3dassets.dev/assets/pets-and-companions-hd-dachshund-cc25d2f9",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-rabbit-wild-rabbit",
+    "name": "Wild Rabbit",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-rabbit-0fdeb244",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-bird-parakeet",
+    "name": "Parakeet",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-budgie-84319a40",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-other-tortoise",
+    "name": "Tortoise",
+    "source": "https://3dassets.dev/assets/companion-animals-and-pet-home-tortoise-0bb65a27",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-other-lizard",
+    "name": "Lizard",
+    "source": "https://3dassets.dev/assets/pets-and-companions-hd-leopard-gecko-081e58b1",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-other-deer",
+    "name": "Deer",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-red-deer-stag-82f8d92a",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  },
+  {
+    "key": "wildlife-other-fish",
+    "name": "Fish",
+    "source": "https://3dassets.dev/assets/pets-and-companions-hd-goldfish-c7f53616",
+    "creator": "3D Assets",
+    "license": "CC0-1.0",
+    "changes": "Static GLB normalized to Hush Hunt Android renderer"
+  }
+]
