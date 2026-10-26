@@ -66,6 +66,19 @@ public sealed class HushArCoreActivity : Activity
     private bool _capturePending;
     private bool _placementReady;
     private bool _modelFrameConfirmed;
+    // Resize the animal without moving its ARCore world anchor or digitally cropping the camera.
+    private float _animalScale = 1f;
+    private float _pinchDistance;
+    private bool _pinching;
+    private TextView? _sizeLabel;
+    private TextView? _petFeedback;
+    // Every tap/stroke is checked against projected 3D bounds, not the entire camera.
+    private float _petLeft, _petTop, _petRight, _petBottom;
+    private bool _petBoundsValid, _petGestureStarted, _petGestureTriggered;
+    private float _petStartX, _petStartY, _petTravelX, _petTravelY;
+    private long _lastPetTick, _reactionStartedAt;
+    private static readonly long ReactionDurationMs = 850;
+
     private readonly object _frameLock = new();
 
     protected override void OnCreate(Bundle? savedInstanceState)
@@ -98,17 +111,15 @@ public sealed class HushArCoreActivity : Activity
         // at the world anchor. Never add a 2D ImageView sprite to this activity.
 
         var top = new LinearLayout(this) { Orientation = Orientation.Vertical };
-        top.SetPadding(Dp(16), Dp(44), Dp(73), Dp(9));
+        top.SetPadding(Dp(16), Dp(44), Dp(72), Dp(12));
         top.SetBackgroundColor(AndroidColor.Argb(160, 14, 18, 35));
-        var title = new TextView(this) { Text = "AR Safari ✨", TextSize = 19 };
+        var title = new TextView(this) { Text = "3D Safari ✨", TextSize = 19 };
         title.SetTextColor(AndroidColor.White);
         top.AddView(title);
-        _status = new TextView(this) { Text = $"Find a floor or table, then tap Place {name}.", TextSize = 15 };
+        _status = new TextView(this) { Text = "Scan a floor or table ✨", TextSize = 15 };
         _status.SetTextColor(AndroidColor.Rgb(168, 247, 228));
         top.AddView(_status);
-        var tip = new TextView(this) { Text = "Textured 3D species model · anchored in your room · walk around to view all sides. Prototype assets are not photogrammetry.", TextSize = 11 };
-        tip.SetTextColor(AndroidColor.LightGray);
-        top.AddView(tip);
+        // Keep the interface readable for children: technical ARCore details belong in Help, not on the camera.
         _root.AddView(top, new LayoutParams(-1, -2, GravityFlags.Top));
         var close = new AndroidButton(this) { Text = "✕", TextSize = 20 };
         close.SetTextColor(AndroidColor.White);
@@ -116,47 +127,202 @@ public sealed class HushArCoreActivity : Activity
         closeBg.SetColor(AndroidColor.Rgb(203, 45, 64));
         closeBg.SetCornerRadius(Dp(28));
         close.Background = closeBg;
-        close.ContentDescription = "Close AR Safari";
-        close.Click += (_, _) => FinishWith("cancelled", "AR Safari closed.");
+        close.ContentDescription = "Close 3D Safari";
+        close.Click += (_, _) => FinishWith("cancelled", "3D Safari closed.");
         var closeParams = new LayoutParams(Dp(48), Dp(48), GravityFlags.Top | GravityFlags.Right);
         closeParams.TopMargin = Dp(42);
         closeParams.RightMargin = Dp(12);
         _root.AddView(close, closeParams);
 
 
+        // Small animal zoom controls float beside the scene, clear of both camera and action buttons.
+        // They change the 3D animal's display scale, not the rear-camera field of view.
+        var sizeTray = new LinearLayout(this) { Orientation = Orientation.Vertical };
+        sizeTray.SetGravity(GravityFlags.Center);
+        sizeTray.SetPadding(Dp(5), Dp(7), Dp(5), Dp(7));
+        var sizeBackground = new GradientDrawable();
+        sizeBackground.SetColor(AndroidColor.Argb(218, 12, 23, 43));
+        sizeBackground.SetCornerRadius(Dp(23));
+        sizeTray.Background = sizeBackground;
+        var bigger = new AndroidButton(this) { Text = "+", TextSize = 23, ContentDescription = "Make 3D animal bigger" };
+        var smaller = new AndroidButton(this) { Text = "−", TextSize = 23, ContentDescription = "Make 3D animal smaller" };
+        StyleCaptureToken(bigger, AndroidColor.Rgb(37, 79, 89));
+        StyleCaptureToken(smaller, AndroidColor.Rgb(37, 79, 89));
+        _sizeLabel = new TextView(this) { Text = "1×", TextSize = 13, Gravity = GravityFlags.Center };
+        _sizeLabel.SetTextColor(AndroidColor.White);
+        sizeTray.AddView(bigger, new LinearLayout.LayoutParams(Dp(46), Dp(46)));
+        sizeTray.AddView(_sizeLabel, new LinearLayout.LayoutParams(Dp(46), Dp(31)));
+        sizeTray.AddView(smaller, new LinearLayout.LayoutParams(Dp(46), Dp(46)));
+        bigger.Click += (_, _) => AdjustAnimalSize(1.25f);
+        smaller.Click += (_, _) => AdjustAnimalSize(0.8f);
+        var sizeParams = new LayoutParams(Dp(58), -2, GravityFlags.Right | GravityFlags.CenterVertical);
+        sizeParams.RightMargin = Dp(12);
+        _root.AddView(sizeTray, sizeParams);
+
+        // A tiny, non-interactive acknowledgment replaces extra game controls.
+        _petFeedback = new TextView(this)
+        {
+            Text = "💚 Nice pet!", TextSize = 19, Gravity = GravityFlags.Center,
+            Visibility = ViewStates.Invisible, Alpha = 0f
+        };
+        _petFeedback.SetTextColor(AndroidColor.White);
+        _petFeedback.SetPadding(Dp(14), Dp(8), Dp(14), Dp(8));
+        var petBackground = new GradientDrawable();
+        petBackground.SetColor(AndroidColor.Argb(219, 14, 90, 76));
+        petBackground.SetCornerRadius(Dp(22));
+        _petFeedback.Background = petBackground;
+        var petParams = new LayoutParams(-2, -2, GravityFlags.CenterHorizontal | GravityFlags.Bottom);
+        petParams.BottomMargin = Dp(152);
+        _root.AddView(_petFeedback, petParams);
+
         var bottom = new LinearLayout(this) { Orientation = Orientation.Horizontal };
         bottom.SetGravity(GravityFlags.Center);
-        bottom.SetPadding(Dp(9), Dp(8), Dp(9), Dp(8)); // Native buttons sit in their own safe-area tray
-        bottom.SetBackgroundColor(AndroidColor.Argb(195, 12, 17, 36));
-        var back = new AndroidButton(this) { Text = "← 2D Safari" };
+        bottom.SetPadding(Dp(14), Dp(10), Dp(14), Dp(10));
+        bottom.SetBackgroundColor(AndroidColor.Argb(130, 12, 17, 36));
+        var back = new AndroidButton(this) { Text = "2D", ContentDescription = "Switch to 2D Safari" };
         back.Click += (_, _) => FinishWith("2d", "2D Safari selected.");
-        _place = new AndroidButton(this) { Text = "🐾 Place 3D", Enabled = false };
+        _place = new AndroidButton(this) { Text = "Place", Enabled = false, ContentDescription = "Place animal on tracked floor or table" };
         _place.Click += (_, _) => PlaceAtCenter();
-        _collect = new AndroidButton(this) { Text = "🐾 Capture", Enabled = false };
+        _collect = new AndroidButton(this) { Text = "📷 Photo", Enabled = false, ContentDescription = "Photograph this 3D animal" };
         _collect.Click += (_, _) => Capture();
-        // Big, clearly separated capture tokens. Placement and capture use the same wildlife
-        // icon language as the WebView encounter tools; these remain accessible tap targets.
+        StyleCaptureToken(back, AndroidColor.Rgb(40, 54, 75));
         StyleCaptureToken(_place, AndroidColor.Rgb(21, 106, 103));
         StyleCaptureToken(_collect, AndroidColor.Rgb(27, 129, 79));
-        StyleCaptureToken(back, AndroidColor.Rgb(40, 54, 75));
-        bottom.AddView(back, new LinearLayout.LayoutParams(0, Dp(62), 1f));
-        bottom.AddView(_place, new LinearLayout.LayoutParams(0, Dp(62), 1f));
-        bottom.AddView(_collect, new LinearLayout.LayoutParams(0, Dp(62), 1f));
-        // Android gesture/three-button navigation can cover a bottom-aligned FrameLayout.
-        // Lift the entire action tray rather than padding buttons inside the occluded area.
+        var backParams = new LinearLayout.LayoutParams(0, Dp(55), 0.85f);
+        var placeParams = new LinearLayout.LayoutParams(0, Dp(55), 1f);
+        var photoParams = new LinearLayout.LayoutParams(0, Dp(55), 1.15f);
+        backParams.RightMargin = Dp(10);
+        placeParams.RightMargin = Dp(10);
+        bottom.AddView(back, backParams);
+        bottom.AddView(_place, placeParams);
+        bottom.AddView(_collect, photoParams);
         var trayParams = new LayoutParams(-1, -2, GravityFlags.Bottom);
-        trayParams.BottomMargin = Dp(68);
+        trayParams.BottomMargin = Dp(62);
         _root.AddView(bottom, trayParams);
         SetContentView(_root);
         _surface.Touch += (_, e) =>
         {
-            if (e.Event?.Action == MotionEventActions.Up && _surface is not null && _renderer is not null)
+            var motion = e.Event;
+            if (motion is null || _surface is null || _renderer is null) { e.Handled = true; return; }
+            var action = motion.ActionMasked;
+            // Two-finger animal size control always wins over petting/placing.
+            if (motion.PointerCount >= 2 || action == MotionEventActions.PointerDown)
             {
-                float x = e.Event.GetX(), y = e.Event.GetY();
-                if (y > Dp(156) && y < _surface.Height - Dp(178)) _renderer.QueuePlacement(x, y);
+                _petGestureStarted = false;
+                _pinching = true;
+                if (motion.PointerCount >= 2)
+                {
+                    float dx = motion.GetX(0) - motion.GetX(1);
+                    float dy = motion.GetY(0) - motion.GetY(1);
+                    float distance = MathF.Sqrt(dx * dx + dy * dy);
+                    if (_pinchDistance > 8f && action == MotionEventActions.Move)
+                    {
+                        var ratio = distance / _pinchDistance;
+                        if (ratio <= .92f || ratio >= 1.09f)
+                            AdjustAnimalSize(Math.Clamp(ratio, .85f, 1.18f));
+                    }
+                    _pinchDistance = distance;
+                }
+            }
+            else if (action == MotionEventActions.Down)
+            {
+                _petStartX = motion.GetX(); _petStartY = motion.GetY();
+                _petTravelX = _petStartX; _petTravelY = _petStartY;
+                _petGestureStarted = IsInsideAnimal(_petStartX, _petStartY);
+                _petGestureTriggered = false;
+            }
+            else if (action == MotionEventActions.Move && !_pinching && _petGestureStarted)
+            {
+                float x = motion.GetX(), y = motion.GetY();
+                // A deliberate stroke of ~30dp; don't trigger on accidental jitter.
+                float dx = x - _petTravelX, dy = y - _petTravelY;
+                _petTravelX = x; _petTravelY = y;
+                if (MathF.Abs(dx) + MathF.Abs(dy) >= Dp(3))
+                {
+                    float fromStartX = x - _petStartX, fromStartY = y - _petStartY;
+                    if (!_petGestureTriggered && IsInsideAnimal(x, y) &&
+                        MathF.Sqrt(fromStartX * fromStartX + fromStartY * fromStartY) >= Dp(30))
+                    {
+                        _petGestureTriggered = true;
+                        PetAnimal(isStroke: true);
+                    }
+                }
+            }
+            else if (action == MotionEventActions.Up)
+            {
+                if (!_pinching)
+                {
+                    float x = motion.GetX(), y = motion.GetY();
+                    if (_petGestureStarted)
+                    {
+                        // If the finger stayed over the creature, allow a gentle tap.
+                        if (!_petGestureTriggered && IsInsideAnimal(x, y)) PetAnimal(isStroke: false);
+                    }
+                    else if (y > Dp(132) && y < _surface.Height - Dp(150))
+                        _renderer.QueuePlacement(x, y);
+                }
+                _petGestureStarted = false;
+                _petGestureTriggered = false;
+                _pinchDistance = 0f;
+                _pinching = false;
+            }
+            else if (action == MotionEventActions.Cancel)
+            {
+                _pinchDistance = 0f; _pinching = false;
+                _petGestureStarted = false; _petGestureTriggered = false;
             }
             e.Handled = true;
         };
+    }
+
+    private bool IsInsideAnimal(float x, float y)
+    {
+        if (!_modelFrameConfirmed || _anchor is null) return false;
+        lock (_frameLock)
+        {
+            if (!_petBoundsValid) return false;
+            // A little padding makes small snails and ladybirds easier to pet.
+            float pad = Dp(14);
+            return x >= _petLeft - pad && x <= _petRight + pad &&
+                   y >= _petTop - pad && y <= _petBottom + pad;
+        }
+    }
+
+    internal void UpdatePetBounds(bool valid, float left, float top, float right, float bottom)
+    {
+        lock (_frameLock)
+        {
+            _petBoundsValid = valid;
+            if (!valid) return;
+            _petLeft = left; _petTop = top; _petRight = right; _petBottom = bottom;
+        }
+    }
+
+    private void PetAnimal(bool isStroke)
+    {
+        if (!_modelFrameConfirmed || _anchor is null) return;
+        long now = System.Environment.TickCount64;
+        if (now - System.Threading.Interlocked.Read(ref _lastPetTick) < 480) return;
+        System.Threading.Interlocked.Exchange(ref _lastPetTick, now);
+        System.Threading.Interlocked.Exchange(ref _reactionStartedAt, now);
+        var message = isStroke ? "💚 That tickles!" : "💚 Hello, friend!";
+        _surface?.PerformHapticFeedback(FeedbackConstants.VirtualKey);
+        if (_petFeedback is not null)
+        {
+            _petFeedback.Animate().Cancel();
+            _petFeedback.Text = message;
+            _petFeedback.Visibility = ViewStates.Visible;
+            _petFeedback.Alpha = 1f;
+            _petFeedback.Animate().Alpha(0f).SetStartDelay(430).SetDuration(480).Start();
+        }
+        SetStatus($"{_animalName} likes that! Pet again 💚");
+    }
+
+    private void AdjustAnimalSize(float factor)
+    {
+        _animalScale = Math.Clamp(_animalScale * factor, .5f, 3f);
+        if (_sizeLabel is not null)
+            _sizeLabel.Text = _animalScale.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "×";
     }
 
     protected override void OnResume()
@@ -193,7 +359,7 @@ public sealed class HushArCoreActivity : Activity
             _session.Resume();
             _resumed = true;
             _surface.OnResume();
-            SetStatus("Find a well-lit, textured floor or table. Move your phone slowly side to side, then tap that surface to place a creature. If unavailable, use 2D Safari.");
+            SetStatus("Move slowly to find a surface ✨");
         }
         catch (Exception ex)
         {
@@ -216,6 +382,7 @@ public sealed class HushArCoreActivity : Activity
     {
         if (_resumed)
         {
+            UpdatePetBounds(false, 0, 0, 0, 0);
             _surface?.OnPause();
             try { _session?.Pause(); } catch (Exception e) { JLog.Warn("HushHuntAR", e.Message); }
             _resumed = false;
@@ -230,7 +397,7 @@ public sealed class HushArCoreActivity : Activity
         base.OnDestroy();
     }
 
-    public override void OnBackPressed() { FinishWith("cancelled", "AR Safari closed."); }
+    public override void OnBackPressed() { FinishWith("cancelled", "3D Safari closed."); }
 
     private int Dp(int px) => (int)(px * Resources!.DisplayMetrics!.Density + .5f);
     private void StyleCaptureToken(AndroidButton? button, AndroidColor color)
@@ -266,7 +433,7 @@ public sealed class HushArCoreActivity : Activity
         // Native ARCore does not substitute 2D previews: the separate 2D Safari mode
         // is the explicit, accessible fallback when no real plane is detected.
         RunOnUiThread(() =>
-            SetStatus("No tracked surface here. Scan a textured floor or table slowly, or tap 2D Safari to play without tracking."));
+            SetStatus("Try a floor or table ✨"));
     }
 
     internal void UpdatePlacementReady(bool ready)
@@ -281,8 +448,8 @@ public sealed class HushArCoreActivity : Activity
             if (_anchor is null)
             {
                 SetStatus(ready
-                    ? "Surface tracked! Tap the surface or the Place token to add your creature."
-                    : "Searching for a real plane… move slowly over a textured floor or table. Use 2D Safari if tracking is unavailable.");
+                    ? "Ready! Tap Place ✨"
+                    : "Move slowly to find a surface ✨");
             }
         });
     }
@@ -296,9 +463,10 @@ public sealed class HushArCoreActivity : Activity
             _anchor = anchor;
             // Placement alone does NOT establish that the GLB is visible.
             _modelFrameConfirmed = false;
+            UpdatePetBounds(false, 0, 0, 0, 0);
             if (_collect is not null) _collect.Enabled = false;
-            if (_place is not null) _place.Text = "🧭 Move";
-            SetStatus($"Surface anchor ready. Rendering {_animalName}…");
+            if (_place is not null) _place.Text = "Move";
+            SetStatus($"Here comes {_animalName}! ✨");
         });
     }
 
@@ -317,7 +485,7 @@ public sealed class HushArCoreActivity : Activity
         RunOnUiThread(() =>
         {
             if (_collect is not null) _collect.Enabled = true;
-            SetStatus($"3D draw submitted for {_animalName}. If it is not visible, tap Move and choose another tracked surface before Capture.");
+            SetStatus($"{_animalName} is here! Touch to pet 💚");
         });
     }
 
@@ -336,7 +504,7 @@ public sealed class HushArCoreActivity : Activity
         }
         _capturePending = true;
         if (_collect is not null) _collect.Enabled = false;
-        SetStatus("Saving your AR discovery photo…");
+        SetStatus("Taking your photo… 📷");
         Bitmap? snapshot = null;
         try
         {
@@ -511,7 +679,12 @@ public sealed class HushArCoreActivity : Activity
                 GLES.GlDisableVertexAttribArray(_vertex); GLES.GlDisableVertexAttribArray(_uv);
 
                 var camera = frame.Camera;
-                if (camera.TrackingState != TrackingState.Tracking) { _host.UpdatePlacementReady(false); return; }
+                if (camera.TrackingState != TrackingState.Tracking)
+                {
+                    _host.UpdatePlacementReady(false);
+                    _host.UpdatePetBounds(false, 0, 0, 0, 0);
+                    return;
+                }
 
                 // Some phones track a floor at the LOWER third while the centre points at a wall.
                 // Probe a sparse grid for genuinely tracked planes instead of locking
@@ -545,12 +718,22 @@ public sealed class HushArCoreActivity : Activity
                     for (int i = 0; i < 8 && GLES.GlGetError() != GLES.GlNoError; i++) { }
                     try
                     {
-                        _animal.Draw(_view, _projection, pos);
+                        long reactionStart = System.Threading.Interlocked.Read(ref _host._reactionStartedAt);
+                        float petProgress = reactionStart > 0
+                            ? Math.Clamp((System.Environment.TickCount64 - reactionStart) / (float)HushArCoreActivity.ReactionDurationMs, 0f, 1f)
+                            : 1f;
+                        _animal.Draw(_view, _projection, pos,
+                            System.Threading.Volatile.Read(ref _host._animalScale), petProgress, System.Environment.TickCount64 % 600000L / 1000f);
+                        if (_animal.TryGetScreenBounds(_width, _height, out var bounds))
+                            _host.UpdatePetBounds(true, bounds.left, bounds.top, bounds.right, bounds.bottom);
+                        else
+                            _host.UpdatePetBounds(false, 0, 0, 0, 0);
                         _host.OnModelDrawn(GLES.GlGetError());
                     }
                     catch (Exception modelError)
                     {
                         JLog.Warn("HushHuntAR", "Textured GLB rendering failed: " + modelError);
+                        _host.UpdatePetBounds(false, 0, 0, 0, 0);
                         _host.SetStatus("Could not render this 3D animal. Try reopening AR Safari.");
                     }
                 }
@@ -558,7 +741,7 @@ public sealed class HushArCoreActivity : Activity
             catch (Exception error)
             {
                 JLog.Warn("HushHuntAR", "Frame: " + error.Message);
-                _host.SetStatus("Tracking needs more light or space. Move slowly and try again.");
+                _host.SetStatus("Move slowly and try again ✨");
             }
         }
         private static IEnumerable<(float x, float y)> PlaneSamplePoints(int width,int height)

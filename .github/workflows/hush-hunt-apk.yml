@@ -1,0 +1,145 @@
+# Hush Hunt Android APK builder - .NET 10 MAUI
+# Add to the ROOT of the GitHub repository as .github/workflows/hush-hunt-apk.yml.
+# Requires four repository secrets (see README_GITHUB_APK.md).
+name: Hush Hunt - Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'WhiskerHunt/**'
+      - '.github/workflows/hush-hunt-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  android-apk:
+    name: Build signed Android APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_SIGNING_STORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_SIGNING_KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+    steps:
+      - name: Get Hush Hunt source
+        uses: actions/checkout@v4
+
+      - name: Verify project and packaged AR models
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f WhiskerHunt/WhiskerHunt.csproj || { echo '::error::WhiskerHunt/WhiskerHunt.csproj not found at repository root'; exit 1; }
+          grep -q '<TargetFramework>net10.0-android</TargetFramework>' WhiskerHunt/WhiskerHunt.csproj || { echo '::error::Project framework is not net10.0-android; update this workflow'; exit 1; }
+          count=$(find WhiskerHunt/Resources/Raw/ar_models -maxdepth 1 -type f -name '*.glb' | wc -l | tr -d ' ')
+          echo "Bundled ARCore GLB models: $count"
+          if [ "$count" -lt 1 ]; then
+            echo '::error::No AR models found. Commit your imported .glb files and installed_species.json before building.'
+            exit 1
+          fi
+          echo 'Note: GitHub builds only the GLB files committed into the repository.'
+
+      - name: Install Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install .NET MAUI Android workload
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet --info
+          dotnet workload install maui-android
+          dotnet workload list
+
+      - name: Prepare Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install required Android API
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager --install 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
+          dotnet build WhiskerHunt/WhiskerHunt.csproj \
+            -t:InstallAndroidDependencies -f net10.0-android \
+            "-p:AndroidSdkDirectory=$ANDROID_HOME" \
+            -p:AcceptAndroidSDKLicenses=True -v:minimal
+
+      - name: Recover signing keystore from GitHub secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$ANDROID_KEYSTORE_BASE64" || -z "$ANDROID_KEY_ALIAS" || -z "$ANDROID_SIGNING_STORE_PASS" || -z "$ANDROID_SIGNING_KEY_PASS" ]]; then
+            echo '::error::Configure all four ANDROID_* signing secrets as described in README_GITHUB_APK.md.'
+            exit 1
+          fi
+          keyfile="$RUNNER_TEMP/hushhunt-signing.keystore"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$keyfile"
+          test -s "$keyfile" || { echo '::error::Keystore secret decoded to an empty file'; exit 1; }
+          chmod 600 "$keyfile"
+          echo "HUSH_KEYSTORE_PATH=$keyfile" >> "$GITHUB_ENV"
+          echo 'Keystore restored to temporary runner storage (not uploaded).'
+
+      - name: Restore NuGet packages
+        shell: bash
+        run: dotnet restore WhiskerHunt/WhiskerHunt.csproj
+
+      - name: Publish signed installable APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          # CI version code is greater than previous Build 96; increments on each run.
+          build_code=$((100000 + GITHUB_RUN_NUMBER))
+          echo "HUSH_BUILD_CODE=$build_code" >> "$GITHUB_ENV"
+          dotnet publish WhiskerHunt/WhiskerHunt.csproj \
+            -f net10.0-android -c Release --no-restore \
+            -p:AndroidPackageFormats=apk \
+            -p:AndroidCreatePackagePerAbi=false \
+            -p:AndroidKeyStore=true \
+            "-p:AndroidSigningKeyStore=$HUSH_KEYSTORE_PATH" \
+            "-p:AndroidSigningKeyAlias=$ANDROID_KEY_ALIAS" \
+            -p:AndroidSigningStorePass=env:ANDROID_SIGNING_STORE_PASS \
+            -p:AndroidSigningKeyPass=env:ANDROID_SIGNING_KEY_PASS \
+            "-p:ApplicationVersion=$build_code"
+
+      - name: Collect and verify SIGNED APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          publish_dir='WhiskerHunt/bin/Release/net10.0-android/publish'
+          mapfile -t signed_apks < <(find "$publish_dir" -maxdepth 1 -type f -iname '*-signed.apk' | sort)
+          if [ "${#signed_apks[@]}" -ne 1 ]; then
+            echo "::error::Expected exactly one signed APK, found ${#signed_apks[@]}."
+            find "$publish_dir" -maxdepth 1 -type f -name '*.apk' -print || true
+            exit 1
+          fi
+          mkdir -p dist
+          cp "${signed_apks[0]}" "dist/HushHunt-v3.10.33-ci${HUSH_BUILD_CODE}-Signed.apk"
+          unzip -tqq "dist/HushHunt-v3.10.33-ci${HUSH_BUILD_CODE}-Signed.apk"
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+          ls -lh dist/
+          {
+            echo '### Hush Hunt APK is ready'
+            echo "APK signed using your stored certificate; Android version code: ${HUSH_BUILD_CODE}."
+            echo 'Open the Artifacts section below and download HushHunt-Android-APK.'
+            echo '**Keep signing with the same key for future updates.**'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload APK for download on phone
+        uses: actions/upload-artifact@v4
+        with:
+          name: HushHunt-Android-APK-${{ github.run_number }}
+          path: dist/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30

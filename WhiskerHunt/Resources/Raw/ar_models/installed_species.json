@@ -1,107 +1,140 @@
 [
   {
-    "key": "wildlife-cat-tabby",
-    "file": "cat-tabby.glb",
-    "name": "Tabby"
-  },
-  {
-    "key": "wildlife-cat-ginger",
-    "file": "cat-ginger.glb",
-    "name": "Ginger"
-  },
-  {
-    "key": "wildlife-cat-tuxedo",
-    "file": "cat-tuxedo.glb",
-    "name": "Tuxedo"
-  },
-  {
-    "key": "wildlife-cat-calico",
-    "file": "cat-calico.glb",
-    "name": "Calico"
-  },
-  {
-    "key": "wildlife-cat-grey",
-    "file": "cat-grey.glb",
-    "name": "Grey"
-  },
-  {
-    "key": "wildlife-dog-terrier",
-    "file": "dog-terrier.glb",
-    "name": "Terrier"
-  },
-  {
-    "key": "wildlife-dog-spaniel",
-    "file": "dog-spaniel.glb",
-    "name": "Spaniel"
-  },
-  {
-    "key": "wildlife-dog-golden-retriever",
-    "file": "dog-golden-retriever.glb",
-    "name": "Golden Retriever"
-  },
-  {
-    "key": "wildlife-dog-bulldog",
-    "file": "dog-bulldog.glb",
-    "name": "Bulldog"
-  },
-  {
-    "key": "wildlife-dog-dachshund",
-    "file": "dog-dachshund.glb",
-    "name": "Dachshund"
-  },
-  {
-    "key": "wildlife-rabbit-wild-rabbit",
-    "file": "rabbit-wild-rabbit.glb",
-    "name": "Wild Rabbit"
-  },
-  {
-    "key": "wildlife-bird-parakeet",
-    "file": "bird-parakeet.glb",
-    "name": "Parakeet"
-  },
-  {
-    "key": "wildlife-other-tortoise",
-    "file": "other-tortoise.glb",
-    "name": "Tortoise"
-  },
-  {
-    "key": "wildlife-other-lizard",
-    "file": "other-lizard.glb",
-    "name": "Lizard"
-  },
-  {
-    "key": "wildlife-other-deer",
-    "file": "other-deer.glb",
-    "name": "Deer"
-  },
-  {
-    "key": "wildlife-other-fish",
-    "file": "other-fish.glb",
-    "name": "Fish"
-  },
-  {
     "key": "wildlife-snail-garden-snail",
     "file": "snail-garden-snail.glb",
-    "name": "Garden Snail"
+    "name": "Garden Snail",
+    "species": "Snail"
   },
   {
     "key": "wildlife-snail-amber-snail",
     "file": "snail-amber-snail.glb",
-    "name": "Amber Snail"
+    "name": "Amber Snail",
+    "species": "Snail"
   },
   {
     "key": "wildlife-ladybird-seven-spot",
     "file": "ladybird-seven-spot.glb",
-    "name": "Seven-spot Ladybird"
+    "name": "Seven-spot",
+    "species": "Ladybird"
   },
   {
     "key": "wildlife-spider-garden-spider",
     "file": "spider-garden-spider.glb",
-    "name": "Garden Spider"
+    "name": "Garden Spider",
+    "species": "Spider"
   },
   {
     "key": "wildlife-other-slug",
     "file": "other-slug.glb",
-    "name": "Garden Slug"
+    "name": "Slug",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-other-fox",
+    "file": "other-fox.glb",
+    "name": "Fox",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-rabbit-wild-rabbit",
+    "file": "rabbit-wild-rabbit.glb",
+    "name": "Wild Rabbit",
+    "species": "Rabbit"
+  },
+  {
+    "key": "wildlife-squirrel-grey-squirrel",
+    "file": "squirrel-grey-squirrel.glb",
+    "name": "Grey Squirrel",
+    "species": "Squirrel"
+  },
+  {
+    "key": "wildlife-hedgehog-european-hedgehog",
+    "file": "hedgehog-european-hedgehog.glb",
+    "name": "European Hedgehog",
+    "species": "Hedgehog"
+  },
+  {
+    "key": "wildlife-frog-common-frog",
+    "file": "frog-common-frog.glb",
+    "name": "Common Frog",
+    "species": "Frog"
+  },
+  {
+    "key": "wildlife-dog-labrador",
+    "file": "dog-labrador.glb",
+    "name": "Labrador",
+    "species": "Dog"
+  },
+  {
+    "key": "ginger-tabby",
+    "file": "cat-ginger-tabby.glb",
+    "name": "Ginger Tabby",
+    "species": "Cat"
+  },
+  {
+    "key": "wildlife-bird-robin",
+    "file": "bird-robin.glb",
+    "name": "Robin",
+    "species": "Bird"
+  },
+  {
+    "key": "wildlife-bird-owl",
+    "file": "bird-owl.glb",
+    "name": "Owl",
+    "species": "Bird"
+  },
+  {
+    "key": "wildlife-butterfly-peacock",
+    "file": "butterfly-peacock.glb",
+    "name": "Peacock",
+    "species": "Butterfly"
+  },
+  {
+    "key": "wildlife-bee-honeybee",
+    "file": "bee-honeybee.glb",
+    "name": "Honeybee",
+    "species": "Bee"
+  },
+  {
+    "key": "wildlife-beetle-stag-beetle",
+    "file": "beetle-stag-beetle.glb",
+    "name": "Stag Beetle",
+    "species": "Beetle"
+  },
+  {
+    "key": "wildlife-dragonfly-emperor-dragonfly",
+    "file": "dragonfly-emperor-dragonfly.glb",
+    "name": "Emperor Dragonfly",
+    "species": "Dragonfly"
+  },
+  {
+    "key": "wildlife-ant-black-garden-ant",
+    "file": "ant-black-garden-ant.glb",
+    "name": "Black Garden Ant",
+    "species": "Ant"
+  },
+  {
+    "key": "wildlife-other-deer",
+    "file": "other-deer.glb",
+    "name": "Deer",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-other-mouse",
+    "file": "other-mouse.glb",
+    "name": "Mouse",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-other-tortoise",
+    "file": "other-tortoise.glb",
+    "name": "Tortoise",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-other-bat",
+    "file": "other-bat.glb",
+    "name": "Bat",
+    "species": "Other"
   }
 ]

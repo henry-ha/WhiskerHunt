@@ -1,3 +1,9 @@
+# Current update (v3.10.34 / Build 97)
+
+This historical document describes the older v3.10.27 pipeline below. **Build 97 has 23 bundled 3D Safari species selections**, including 18 added static GLB meshes. Their authoring source is in `tools/generate_v97_lowpoly_wildlife.py` (Python 3 + trimesh + NumPy; only needed to regenerate assets, not on the phone). They use matte-colour geometric materials rather than photogrammetric texture maps and remain stylised. `WhiskerHunt/Resources/Raw/ar_models/installed_species.json` lists exactly the 23 bundled files. On-screen finger petting works through the v3.10.33 interaction plus v97 haptics/idle; no physical hand occlusion or skeletal animal animation is present. See `RELEASE_NOTES_v3.10.34.md` for the latest status.
+
+---
+
 # Hush Hunt — ARCore textured wildlife GLB pipeline (v3.10.27 / build 90)
 
 This release **replaces** the previous run-time ellipsoid/blob renderer with a native OpenGL ES 2.0 textured GLB model loader. Animals are fixed to a real ARCore world anchor; you can walk around the model and capture it against the real camera view.

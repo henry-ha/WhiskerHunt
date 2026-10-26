@@ -351,15 +351,31 @@ internal sealed class HushGlbAnimal3D
         }
     }
 
-    public void Draw(float[] view,float[] projection,float[] anchor)
+    public void Draw(float[] view,float[] projection,float[] anchor,float animalScale=1f,float petProgress=1f,float idleSeconds=0f)
     {
         if(_program==0)return;
         float maxExtent=Math.Max(_max[0]-_min[0],Math.Max(_max[1]-_min[1],_max[2]-_min[2]));
         if(maxExtent<=0||!float.IsFinite(maxExtent))return;
-        float s=_displaySizeMetres/maxExtent;
+        float s=(_displaySizeMetres/maxExtent)*Math.Clamp(animalScale,.5f,3f);
+        // Soft body-wide pet response works even for non-rigged static GLBs.
+        // No fake anatomical animation: dedicated rigged animations can be added later.
+        float phase = Math.Clamp(petProgress, 0f, 1f);
+        float envelope = MathF.Sin(phase * MathF.PI);
+        // Light idle motion keeps unrigged animal models feeling alive. No implied skeletal motion.
+        bool flying = _label.Contains("Butterfly", StringComparison.OrdinalIgnoreCase) ||
+                      _label.Contains("Dragonfly", StringComparison.OrdinalIgnoreCase) ||
+                      _label.Contains("Bee", StringComparison.OrdinalIgnoreCase) ||
+                      _label.Contains("Bat", StringComparison.OrdinalIgnoreCase);
+        float idleBob = MathF.Sin(idleSeconds * (flying ? 3.4f : 1.6f)) *
+                        _displaySizeMetres * (flying ? .024f : .008f);
+        float idleTurn = MathF.Sin(idleSeconds * .72f) * (flying ? 3.5f : 1.3f);
+        float bounce = envelope * .025f * _displaySizeMetres + idleBob;
+        float swayDegrees = envelope * MathF.Sin(phase * 7f * MathF.PI) * 3.5f;
+        float pulse = 1f + .055f * envelope + .004f * MathF.Sin(idleSeconds * 2.1f);
         GlMatrix.SetIdentityM(_model,0);
-        GlMatrix.TranslateM(_model,0,anchor[0],anchor[1],anchor[2]);
-        GlMatrix.ScaleM(_model,0,s,s,s);
+        GlMatrix.TranslateM(_model,0,anchor[0],anchor[1] + bounce,anchor[2]);
+        GlMatrix.RotateM(_model,0,swayDegrees + idleTurn,0f,1f,0f);
+        GlMatrix.ScaleM(_model,0,s*pulse,s*pulse,s*pulse);
         GlMatrix.TranslateM(_model,0,-(_min[0]+_max[0])*.5f,-_min[1],-(_min[2]+_max[2])*.5f);
         GlMatrix.MultiplyMM(_vm,0,view,0,_model,0);GlMatrix.MultiplyMM(_mvp,0,projection,0,_vm,0);
         GLES.GlEnable(GLES.GlDepthTest);GLES.GlDepthMask(true);
@@ -384,5 +400,40 @@ internal sealed class HushGlbAnimal3D
         GLES.GlDisableVertexAttribArray(_position);GLES.GlDisableVertexAttribArray(_normal);GLES.GlDisableVertexAttribArray(_uv);
         GLES.GlDisable(GLES.GlDepthTest);
     }
+    /// <summary>
+    /// Projects the actual glTF mesh AABB into display pixels for conservative
+    /// touch hit-testing. Called only on the GL rendering thread after Draw().
+    /// </summary>
+    public bool TryGetScreenBounds(int width, int height,
+        out (float left, float top, float right, float bottom) bounds)
+    {
+        bounds = default;
+        if (width <= 0 || height <= 0) return false;
+        float left = float.PositiveInfinity, top = float.PositiveInfinity;
+        float right = float.NegativeInfinity, bottom = float.NegativeInfinity;
+        int visiblePoints = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            float x = (i & 1) == 0 ? _min[0] : _max[0];
+            float y = (i & 2) == 0 ? _min[1] : _max[1];
+            float z = (i & 4) == 0 ? _min[2] : _max[2];
+            // OpenGL column-major clip transform, with Y flipped for Android touch.
+            float cx = _mvp[0] * x + _mvp[4] * y + _mvp[8] * z + _mvp[12];
+            float cy = _mvp[1] * x + _mvp[5] * y + _mvp[9] * z + _mvp[13];
+            float cw = _mvp[3] * x + _mvp[7] * y + _mvp[11] * z + _mvp[15];
+            if (cw <= .015f || !float.IsFinite(cw)) continue;
+            float px = (cx / cw + 1f) * width * .5f;
+            float py = (1f - cy / cw) * height * .5f;
+            if (!float.IsFinite(px) || !float.IsFinite(py)) continue;
+            left = MathF.Min(left, px); right = MathF.Max(right, px);
+            top = MathF.Min(top, py); bottom = MathF.Max(bottom, py);
+            visiblePoints++;
+        }
+        if (visiblePoints < 4 || right < 0 || bottom < 0 || left > width || top > height) return false;
+        bounds = (Math.Clamp(left,0,width),Math.Clamp(top,0,height),
+                  Math.Clamp(right,0,width),Math.Clamp(bottom,0,height));
+        return (bounds.right - bounds.left) >= 5f && (bounds.bottom - bounds.top) >= 5f;
+    }
+
 }
 #endif

@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 RAW=ROOT/'WhiskerHunt'/'Resources'/'Raw'
 MODELS=RAW/'ar_models'
-JS=RAW/'app_v94.js'
+JS=RAW/'app_v95.js'
 CAT=ROOT/'tools'/'cc0_candidate_species.json'
 MARKER='/* BEGIN GENERATED NATIVE 3D CHOICES (tools/import_cc0_wildlife.py) */'
 END_MARKER='/* END GENERATED NATIVE 3D CHOICES */'
