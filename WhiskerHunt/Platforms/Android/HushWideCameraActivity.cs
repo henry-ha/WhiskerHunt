@@ -49,7 +49,7 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
     private CaptureRequest.Builder? _previewRequest;
     private ImageReader? _reader;
     private TextView? _status;
-    private AndroidButton? _shutter;
+    private Android.Widget.ImageButton? _shutter;
     private AndroidView? _flashOverlay;
     private readonly Dictionary<float, AndroidButton> _zoomButtons = new();
     private readonly Handler _handler = new(Looper.MainLooper!);
@@ -127,7 +127,7 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
         // Single, compact camera control floating above Android's navigation area.
         var controls = new LinearLayout(this) { Orientation = Android.Widget.Orientation.Vertical };
         controls.SetGravity(GravityFlags.Center);
-        controls.SetPadding(0, 0, 0, Dp(2));
+        controls.SetPadding(0, 0, 0, Dp(8));
         var zoomStrip = new LinearLayout(this) { Orientation = Android.Widget.Orientation.Horizontal };
         zoomStrip.SetGravity(GravityFlags.Center);
         zoomStrip.SetPadding(0, Dp(3), 0, Dp(3));
@@ -156,23 +156,44 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
         var zoomParams = new LinearLayout.LayoutParams(-2, -2);
         zoomParams.Gravity = GravityFlags.CenterHorizontal;
         controls.AddView(zoomStrip, zoomParams);
-        _shutter = new AndroidButton(this)
-        {
-            Text = "📷", Enabled = false, TextSize = 28
-        };
+        // Draw the shutter as a true oval in an explicitly sized holder. The old
+        // WRAP_CONTENT LinearLayout clipped its lower border on some devices.
+        _shutter = new Android.Widget.ImageButton(this) { Enabled = false };
         _shutter.SetMinimumHeight(0);
         _shutter.SetMinimumWidth(0);
-        _shutter.SetTextColor(AndroidColor.Rgb(13, 35, 56));
-        _shutter.Background = ShutterBackground();
-        _shutter.Elevation = Dp(6);
+        _shutter.SetPadding(0, 0, 0, 0);
+        _shutter.SetBackgroundColor(AndroidColor.Transparent);
+        _shutter.SetImageResource(Android.Resource.Drawable.IcMenuCamera);
+        _shutter.SetScaleType(ImageView.ScaleType.FitCenter);
+        _shutter.SetColorFilter(AndroidColor.Rgb(13, 35, 56));
         _shutter.ContentDescription = "Capture wildlife photo";
         _shutter.Click += (_, _) => { PlayShutterFlash(); TakePhoto(); };
-        var shutterHolder = new LinearLayout(this) { Orientation = Android.Widget.Orientation.Horizontal };
-        shutterHolder.SetGravity(GravityFlags.Center);
-        var shutterParams = new LinearLayout.LayoutParams(Dp(70), Dp(70));
-        shutterParams.TopMargin = Dp(9);
-        shutterHolder.AddView(_shutter, shutterParams);
-        controls.AddView(shutterHolder);
+
+        var shutterHolder = new FrameLayout(this);
+        shutterHolder.SetClipChildren(false);
+        shutterHolder.SetClipToPadding(false);
+        var shutterShell = new FrameLayout(this);
+        shutterShell.SetClipChildren(false);
+        shutterShell.Background = ShutterBackground();
+        shutterShell.Elevation = Dp(4);
+        shutterShell.ContentDescription = "Capture wildlife photo";
+        shutterShell.Clickable = true;
+        shutterShell.Click += (_, _) =>
+        {
+            if (_shutter?.Enabled == true) { PlayShutterFlash(); TakePhoto(); }
+        };
+        // The camera glyph is restored to 34dp, with NO artificial upward nudge.
+        var shutterIconParams = new FrameLayout.LayoutParams(Dp(34), Dp(34), GravityFlags.Center);
+        shutterShell.AddView(_shutter, shutterIconParams);
+        var shellParams = new FrameLayout.LayoutParams(Dp(78), Dp(78), GravityFlags.Center);
+        shutterHolder.AddView(shutterShell, shellParams);
+        // Reserve height for the *entire* circle plus breathing room, instead of
+        // relying on measuring a child with a top margin.
+        var shutterHolderParams = new LinearLayout.LayoutParams(-1, Dp(102));
+        shutterHolderParams.TopMargin = Dp(8);
+        controls.SetClipChildren(false);
+        controls.SetClipToPadding(false);
+        controls.AddView(shutterHolder, shutterHolderParams);
         var hint = new TextView(this) { Text = "Pinch to zoom  •  Tap the camera to capture", TextSize = 11 };
         hint.Gravity = GravityFlags.Center;
         hint.SetTextColor(AndroidColor.White);
@@ -180,7 +201,7 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
         hint.SetPadding(0, Dp(8), 0, Dp(2));
         controls.AddView(hint);
         var controlsParams = new FrameLayout.LayoutParams(-1, -2, GravityFlags.Bottom);
-        controlsParams.BottomMargin = Dp(112); // Extra safety gap: circular shutter and hint stay clear of Android navigation.
+        controlsParams.BottomMargin = Dp(118); // The shutter now has explicit measured height and cannot be clipped by the hint.
         root.AddView(controls, controlsParams);
         SetContentView(root);
     }
@@ -194,7 +215,9 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
     }
     private GradientDrawable ShutterBackground()
     {
-        var d = Rounded(AndroidColor.White, 100);
+        var d = new GradientDrawable();
+        d.SetShape(ShapeType.Oval);
+        d.SetColor(AndroidColor.White);
         d.SetStroke(Dp(4), AndroidColor.Rgb(133, 242, 213));
         return d;
     }

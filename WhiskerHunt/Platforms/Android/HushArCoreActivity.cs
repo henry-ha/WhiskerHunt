@@ -77,6 +77,7 @@ public sealed class HushArCoreActivity : Activity
     private bool _petBoundsValid, _petGestureStarted, _petGestureTriggered;
     private float _petStartX, _petStartY, _petTravelX, _petTravelY;
     private long _lastPetTick, _reactionStartedAt;
+    private readonly System.Random _petRandom = new();
     private static readonly long ReactionDurationMs = 850;
 
     private readonly object _frameLock = new();
@@ -87,8 +88,8 @@ public sealed class HushArCoreActivity : Activity
         _model = Intent?.GetStringExtra("model") ?? "";
         _species = Intent?.GetStringExtra("species") ?? "Other";
         _animalName = Intent?.GetStringExtra("name") ?? "Animal";
-        // Exact species/variety match only. Do not mislabel generic shapes as wildlife.
-        if (!HushGlbAnimal3D.TryLoad(this, _species, _animalName, out _animal, out var loadMessage))
+        // Resolve the exact native 3D model key, independent of presentation labels.
+        if (!HushGlbAnimal3D.TryLoad(this, _model, _species, _animalName, out _animal, out var loadMessage))
         {
             FinishWith("fallback", loadMessage);
             return;
@@ -298,6 +299,65 @@ public sealed class HushArCoreActivity : Activity
         }
     }
 
+    private (string bubble, string status) BuildPetResponse(bool isStroke)
+    {
+        string species = (_species ?? string.Empty).Trim().ToLowerInvariant();
+        string name = string.IsNullOrWhiteSpace(_animalName) ? "This animal" : _animalName;
+        string[] lines = species switch
+        {
+            "cat" => isStroke
+                ? new[] { "🐱 Meow! That's a nice stroke.", "🐱 Prrr… chin scratches approved.", "🐱 Soft paws and a happy purr." }
+                : new[] { "🐱 Meow! Hello there.", "🐱 Prrr… curious cat activated.", "🐱 Meow! Gentle taps are welcome." },
+            "dog" => isStroke
+                ? new[] { "🐶 Woof! Tail wag unlocked.", "🐶 Happy dog mode: ON.", "🐶 Woof! That feels good." }
+                : new[] { "🐶 Woof! New friend spotted.", "🐶 Bark bark! Hello, human.", "🐶 Woof! Ready to play." },
+            "bird" => isStroke
+                ? new[] { "🐦 Chirp chirp! Easy does it.", "🐦 Fluffing feathers happily.", "🐦 Tweet! That tickles." }
+                : new[] { "🐦 Chirp! Hello from the perch.", "🐦 Tweet tweet!", "🐦 A tiny greeting song." },
+            "squirrel" => isStroke
+                ? new[] { "🐿️ Chitter! That's friendly.", "🐿️ Tiny paws approved.", "🐿️ Chitter-chitter!" }
+                : new[] { "🐿️ Chitter! Fast little friend here.", "🐿️ Sniff sniff… hello.", "🐿️ Chitter! Want a nut?" },
+            "rabbit" => isStroke
+                ? new[] { "🐇 Sniff! Soft strokes only.", "🐇 Hop-hop… that feels gentle.", "🐇 Wiggle-nose approved." }
+                : new[] { "🐇 Hop! Hello, friend.", "🐇 Sniff sniff!", "🐇 Ears up — visitor detected." },
+            "frog" => isStroke
+                ? new[] { "🐸 Ribbit! Gentle touch detected.", "🐸 Croak! That's friendly.", "🐸 Ribbit-ribbit!" }
+                : new[] { "🐸 Ribbit! Hello from the pond.", "🐸 Croak! Nice to meet you.", "🐸 Ribbit!" },
+            "hedgehog" => isStroke
+                ? new[] { "🦔 Snuffle! Careful around the spikes.", "🦔 Tiny sniff of approval.", "🦔 Snuffle snuffle!" }
+                : new[] { "🦔 Snuffle! Hello there.", "🦔 Curled up, but friendly.", "🦔 Sniff… a new visitor." },
+            "bee" => isStroke
+                ? new[] { "🐝 Bzzz! Gentle breeze detected.", "🐝 Buzz buzz!", "🐝 A tiny happy buzz." }
+                : new[] { "🐝 Bzzz! Pollinator on duty.", "🐝 Buzz! Friendly fly-by.", "🐝 Bzzz… hello!" },
+            "butterfly" => isStroke
+                ? new[] { "🦋 Flutter flutter!", "🦋 Wings shimmering happily.", "🦋 Light as air." }
+                : new[] { "🦋 A graceful hello.", "🦋 Flutter! Nice to see you.", "🦋 Wings ready." },
+            "ant" => isStroke
+                ? new[] { "🐜 Marching happily.", "🐜 Tiny footsteps of approval.", "🐜 Antenna salute!" }
+                : new[] { "🐜 Scout ant reporting in.", "🐜 Hello from the colony.", "🐜 Tiny but mighty." },
+            "beetle" => isStroke
+                ? new[] { "🪲 Click! That's enough polish.", "🪲 Shell shining nicely.", "🪲 Tap-tap… beetle approved." }
+                : new[] { "🪲 Beetle says hello.", "🪲 A sturdy little greeting.", "🪲 Tiny armour, big personality." },
+            _ when name.Contains("Fox", StringComparison.OrdinalIgnoreCase) => isStroke
+                ? new[] { "🦊 Soft brush of the fur.", "🦊 Clever fox approves.", "🦊 A sly little smile." }
+                : new[] { "🦊 Fox says hello.", "🦊 Curious eyes watching you.", "🦊 Sly but friendly." },
+            _ when name.Contains("Deer", StringComparison.OrdinalIgnoreCase) => isStroke
+                ? new[] { "🦌 Gentle nose nudge.", "🦌 Calm forest friend.", "🦌 Soft hoof shuffle." }
+                : new[] { "🦌 A cautious hello.", "🦌 Ears twitch — visitor nearby.", "🦌 Graceful and alert." },
+            _ when name.Contains("Mouse", StringComparison.OrdinalIgnoreCase) => isStroke
+                ? new[] { "🐭 Squeak! Tiny paws approved.", "🐭 Little whiskers are happy.", "🐭 Squeak squeak!" }
+                : new[] { "🐭 Squeak! Hello there.", "🐭 Tiny explorer on the move.", "🐭 A little nose wiggle hello." },
+            _ => isStroke
+                ? new[] { "💚 That tickles!", "💚 Friendly pat received.", "💚 A happy little reaction." }
+                : new[] { "💚 Hello, friend!", "💚 Nice to meet you.", "💚 A curious greeting." }
+        };
+        var bubble = lines[_petRandom.Next(lines.Length)];
+        var status = isStroke
+            ? $"{name} is enjoying the attention ✨"
+            : $"{name} is reacting to you ✨";
+        return (bubble, status);
+    }
+
     private void PetAnimal(bool isStroke)
     {
         if (!_modelFrameConfirmed || _anchor is null) return;
@@ -305,17 +365,17 @@ public sealed class HushArCoreActivity : Activity
         if (now - System.Threading.Interlocked.Read(ref _lastPetTick) < 480) return;
         System.Threading.Interlocked.Exchange(ref _lastPetTick, now);
         System.Threading.Interlocked.Exchange(ref _reactionStartedAt, now);
-        var message = isStroke ? "💚 That tickles!" : "💚 Hello, friend!";
+        var response = BuildPetResponse(isStroke);
         _surface?.PerformHapticFeedback(FeedbackConstants.VirtualKey);
         if (_petFeedback is not null)
         {
             _petFeedback.Animate().Cancel();
-            _petFeedback.Text = message;
+            _petFeedback.Text = response.bubble;
             _petFeedback.Visibility = ViewStates.Visible;
             _petFeedback.Alpha = 1f;
-            _petFeedback.Animate().Alpha(0f).SetStartDelay(430).SetDuration(480).Start();
+            _petFeedback.Animate().Alpha(0f).SetStartDelay(520).SetDuration(620).Start();
         }
-        SetStatus($"{_animalName} likes that! Pet again 💚");
+        SetStatus(response.status);
     }
 
     private void AdjustAnimalSize(float factor)

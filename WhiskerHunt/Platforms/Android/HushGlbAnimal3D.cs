@@ -45,21 +45,46 @@ internal sealed class HushGlbAnimal3D
     private readonly float[] _max = { float.MinValue, float.MinValue, float.MinValue };
     private readonly float[] _model = new float[16], _vm = new float[16], _mvp = new float[16];
     private int _program, _position, _normal, _uv, _mvpLoc, _modelLoc, _colorLoc, _textureLoc;
+    private int _shadowProgram, _shadowVertex, _shadowMvpLoc, _shadowCenterLoc, _shadowSizeLoc, _shadowAlphaLoc;
+    private FloatBuffer? _shadowQuad;
     private int _whiteTexture;
 
     private HushGlbAnimal3D(string label, float displaySizeMetres)
     { _label = label; _displaySizeMetres = displaySizeMetres; }
 
-    // Prevents generic family-level stand-ins being displayed as specific species.
-    // To add more: package ar_models/<family>-<variety>.glb with rights to redistribute.
-    public static bool TryLoad(Context context, string group, string variety, out HushGlbAnimal3D? result, out string message)
+    // Use the verified selection key, not just a displayed name. In particular,
+    // the Cat catalogue key "ginger-tabby" maps to the bundled
+    // ar_models/cat-ginger-tabby.glb, while other animals use wildlife-<group>-<variety>.
+    // Deliberately no generic or other-species substitute: a missing American
+    // Shorthair GLB is not the same thing as the installed Ginger Tabby.
+    private static string? ResolveBundledFilename(string modelKey, string group, string variety)
+    {
+        var groupSlug = Slug(group);
+        var varietySlug = Slug(variety);
+        if (groupSlug.Length == 0 || varietySlug.Length == 0) return null;
+        if (groupSlug == "cat" && varietySlug == "ginger-tabby" &&
+            (modelKey == "ginger-tabby" || modelKey == "wildlife-cat-ginger-tabby" || modelKey == "cat-ginger-tabby"))
+            return "cat-ginger-tabby.glb";
+        var expectedKey = "wildlife-" + groupSlug + "-" + varietySlug;
+        if (string.Equals(modelKey, expectedKey, StringComparison.Ordinal))
+            return groupSlug + "-" + varietySlug + ".glb";
+        return null;
+    }
+
+    public static bool TryLoad(Context context, string modelKey, string group, string variety,
+        out HushGlbAnimal3D? result, out string message)
     {
         result = null;
-        var filename = Slug(group) + "-" + Slug(variety) + ".glb";
-        if (string.IsNullOrWhiteSpace(variety) || filename.Length > 125)
-        { message = "This animal does not have a matching 3D model yet."; return false; }
+        var filename = ResolveBundledFilename(modelKey, group, variety);
+        if (filename is null || filename.Length > 125)
+        {
+            message = "No matching 3D model is installed for " + variety + ". This animal is still available in 2D Safari.";
+            return false;
+        }
         try
         {
+            // Explicitly check the exact bundled asset rather than silently trying
+            // another animal. An absent model or damaged GLB must be reported.
             using var file = context.Assets!.Open("ar_models/" + filename);
             using var ms = new MemoryStream();
             file.CopyTo(ms);
@@ -85,17 +110,18 @@ internal sealed class HushGlbAnimal3D
         }
         catch (Java.IO.FileNotFoundException)
         {
-            message = "There is no detailed 3D asset for " + variety + " yet. Opening 2D Safari avoids an inaccurate animal.";
+            message = "The bundled 3D file for " + variety + " is missing (" + filename + "). Please install the complete Hush Hunt source/build.";
             return false;
         }
         catch (FileNotFoundException)
         {
-            message = "There is no detailed 3D asset for " + variety + " yet. Use 2D Safari.";
+            message = "The bundled 3D file for " + variety + " is missing (" + filename + "). Use 2D Safari until the full app is installed.";
             return false;
         }
         catch (Exception e)
         {
-            message = "The " + variety + " 3D model is unavailable (" + e.GetType().Name + "). Use 2D Safari.";
+            Android.Util.Log.Warn("HushHuntAR", "Could not decode ar_models/" + filename + ": " + e);
+            message = "The " + variety + " 3D model could not load (" + e.GetType().Name + ", " + filename + "). Try 2D Safari.";
             return false;
         }
     }
@@ -319,8 +345,11 @@ internal sealed class HushGlbAnimal3D
         const string vs="attribute vec3 aPoint;attribute vec3 aNormal;attribute vec2 aUV;uniform mat4 uMVP;varying vec3 vNormal;varying vec2 vUV;"+
             "void main(){gl_Position=uMVP*vec4(aPoint,1.0);vNormal=normalize(aNormal);vUV=aUV;}";
         const string fs="precision mediump float;varying vec3 vNormal;varying vec2 vUV;uniform sampler2D uTex;uniform vec4 uTint;"+
-            "void main(){vec3 l=normalize(vec3(-0.5,0.9,0.75));float diffuse=max(0.0,dot(normalize(vNormal),l));"+
-            "vec4 albedo=texture2D(uTex,vec2(vUV.x,1.0-vUV.y))*uTint;gl_FragColor=vec4(albedo.rgb*(0.52+0.48*diffuse),albedo.a);}";
+            "void main(){vec3 n=normalize(vNormal);vec3 key=normalize(vec3(-0.55,0.90,0.75));vec3 fill=normalize(vec3(0.45,0.35,0.95));"+
+            "float keyDiffuse=max(0.0,dot(n,key));float fillDiffuse=max(0.0,dot(n,fill));float up=max(0.0,n.y);"+
+            "float rim=pow(1.0-max(0.0,n.z),2.0)*0.18;vec4 albedo=texture2D(uTex,vec2(vUV.x,1.0-vUV.y))*uTint;"+
+            "float shade=0.34+0.46*keyDiffuse+0.16*fillDiffuse+0.10*up;vec3 lit=albedo.rgb*shade + albedo.rgb*rim;"+
+            "gl_FragColor=vec4(lit,albedo.a);}";
         int v=Shader(GLES.GlVertexShader,vs),f=Shader(GLES.GlFragmentShader,fs);
         _program=GLES.GlCreateProgram();GLES.GlAttachShader(_program,v);GLES.GlAttachShader(_program,f);GLES.GlLinkProgram(_program);
         var linkStatus = new int[1];
@@ -330,6 +359,23 @@ internal sealed class HushGlbAnimal3D
         _position=GLES.GlGetAttribLocation(_program,"aPoint");_normal=GLES.GlGetAttribLocation(_program,"aNormal");
         _uv=GLES.GlGetAttribLocation(_program,"aUV");_mvpLoc=GLES.GlGetUniformLocation(_program,"uMVP");
         _colorLoc=GLES.GlGetUniformLocation(_program,"uTint");_textureLoc=GLES.GlGetUniformLocation(_program,"uTex");
+
+        const string shadowVs="attribute vec2 aPoint;uniform mat4 uMVP;uniform vec3 uCenter;uniform vec2 uSize;varying vec2 vPoint;"+
+            "void main(){vPoint=aPoint;vec3 world=vec3(uCenter.x+aPoint.x*uSize.x,uCenter.y,uCenter.z+aPoint.y*uSize.y);gl_Position=uMVP*vec4(world,1.0);} ";
+        const string shadowFs="precision mediump float;varying vec2 vPoint;uniform float uAlpha;"+
+            "void main(){float dist=length(vPoint);float falloff=1.0-smoothstep(0.15,1.0,dist);gl_FragColor=vec4(0.0,0.0,0.0,falloff*uAlpha);} ";
+        int sv=Shader(GLES.GlVertexShader,shadowVs),sf=Shader(GLES.GlFragmentShader,shadowFs);
+        _shadowProgram=GLES.GlCreateProgram();GLES.GlAttachShader(_shadowProgram,sv);GLES.GlAttachShader(_shadowProgram,sf);GLES.GlLinkProgram(_shadowProgram);
+        GLES.GlGetProgramiv(_shadowProgram, GLES.GlLinkStatus, linkStatus, 0);
+        if (linkStatus[0] == 0)
+            throw new InvalidOperationException("3D wildlife shadow shader link failed: " + GLES.GlGetProgramInfoLog(_shadowProgram));
+        _shadowVertex=GLES.GlGetAttribLocation(_shadowProgram,"aPoint");
+        _shadowMvpLoc=GLES.GlGetUniformLocation(_shadowProgram,"uMVP");
+        _shadowCenterLoc=GLES.GlGetUniformLocation(_shadowProgram,"uCenter");
+        _shadowSizeLoc=GLES.GlGetUniformLocation(_shadowProgram,"uSize");
+        _shadowAlphaLoc=GLES.GlGetUniformLocation(_shadowProgram,"uAlpha");
+        _shadowQuad = Direct(new float[] { -1f,-1f, 1f,-1f, -1f,1f, 1f,1f });
+
         int[] ids=new int[1];GLES.GlGenTextures(1,ids,0);_whiteTexture=ids[0];
         GLES.GlBindTexture(GLES.GlTexture2d,_whiteTexture);
         GLES.GlTexParameteri(GLES.GlTexture2d,GLES.GlTextureMinFilter,GLES.GlLinear);
@@ -351,6 +397,23 @@ internal sealed class HushGlbAnimal3D
         }
     }
 
+    private float SpeciesBobMultiplier()
+    {
+        if (_label.Contains("Rabbit", StringComparison.OrdinalIgnoreCase) || _label.Contains("Frog", StringComparison.OrdinalIgnoreCase)) return 1.7f;
+        if (_label.Contains("Squirrel", StringComparison.OrdinalIgnoreCase) || _label.Contains("Mouse", StringComparison.OrdinalIgnoreCase)) return 1.35f;
+        if (_label.Contains("Dog", StringComparison.OrdinalIgnoreCase) || _label.Contains("Fox", StringComparison.OrdinalIgnoreCase) || _label.Contains("Cat", StringComparison.OrdinalIgnoreCase)) return 1.15f;
+        if (_label.Contains("Deer", StringComparison.OrdinalIgnoreCase) || _label.Contains("Tortoise", StringComparison.OrdinalIgnoreCase)) return .85f;
+        return 1f;
+    }
+
+    private float SpeciesSwayMultiplier()
+    {
+        if (_label.Contains("Bird", StringComparison.OrdinalIgnoreCase) || _label.Contains("Butterfly", StringComparison.OrdinalIgnoreCase) || _label.Contains("Bee", StringComparison.OrdinalIgnoreCase) || _label.Contains("Dragonfly", StringComparison.OrdinalIgnoreCase) || _label.Contains("Bat", StringComparison.OrdinalIgnoreCase)) return 1.15f;
+        if (_label.Contains("Dog", StringComparison.OrdinalIgnoreCase) || _label.Contains("Fox", StringComparison.OrdinalIgnoreCase) || _label.Contains("Cat", StringComparison.OrdinalIgnoreCase) || _label.Contains("Squirrel", StringComparison.OrdinalIgnoreCase)) return 1.25f;
+        if (_label.Contains("Deer", StringComparison.OrdinalIgnoreCase)) return .8f;
+        return 1f;
+    }
+
     public void Draw(float[] view,float[] projection,float[] anchor,float animalScale=1f,float petProgress=1f,float idleSeconds=0f)
     {
         if(_program==0)return;
@@ -369,15 +432,42 @@ internal sealed class HushGlbAnimal3D
         float idleBob = MathF.Sin(idleSeconds * (flying ? 3.4f : 1.6f)) *
                         _displaySizeMetres * (flying ? .024f : .008f);
         float idleTurn = MathF.Sin(idleSeconds * .72f) * (flying ? 3.5f : 1.3f);
-        float bounce = envelope * .025f * _displaySizeMetres + idleBob;
-        float swayDegrees = envelope * MathF.Sin(phase * 7f * MathF.PI) * 3.5f;
-        float pulse = 1f + .055f * envelope + .004f * MathF.Sin(idleSeconds * 2.1f);
+        float bobMultiplier = SpeciesBobMultiplier();
+        float swayMultiplier = SpeciesSwayMultiplier();
+        float bounce = envelope * (.025f * bobMultiplier) * _displaySizeMetres + idleBob;
+        float swayDegrees = envelope * MathF.Sin(phase * 7f * MathF.PI) * 3.5f * swayMultiplier;
+        float pulse = 1f + .055f * envelope + .004f * MathF.Sin(idleSeconds * 2.1f) + (bobMultiplier - 1f) * .01f * envelope;
         GlMatrix.SetIdentityM(_model,0);
         GlMatrix.TranslateM(_model,0,anchor[0],anchor[1] + bounce,anchor[2]);
         GlMatrix.RotateM(_model,0,swayDegrees + idleTurn,0f,1f,0f);
         GlMatrix.ScaleM(_model,0,s*pulse,s*pulse,s*pulse);
         GlMatrix.TranslateM(_model,0,-(_min[0]+_max[0])*.5f,-_min[1],-(_min[2]+_max[2])*.5f);
         GlMatrix.MultiplyMM(_vm,0,view,0,_model,0);GlMatrix.MultiplyMM(_mvp,0,projection,0,_vm,0);
+        var pv = new float[16];
+        GlMatrix.MultiplyMM(pv,0,projection,0,view,0);
+
+        float extentX = Math.Max(.08f, (_max[0] - _min[0]) * s * .38f);
+        float extentZ = Math.Max(.08f, (_max[2] - _min[2]) * s * .38f);
+        float shadowY = anchor[1] + .0035f;
+        float shadowAlpha = flying ? .16f : .28f;
+        var shadowCenterX = anchor[0];
+        var shadowCenterZ = anchor[2];
+
+        GLES.GlEnable(GLES.GlBlend);
+        GLES.GlBlendFunc(GLES.GlSrcAlpha, GLES.GlOneMinusSrcAlpha);
+        GLES.GlDisable(GLES.GlDepthTest);
+        GLES.GlDepthMask(false);
+        GLES.GlUseProgram(_shadowProgram);
+        GLES.GlUniformMatrix4fv(_shadowMvpLoc,1,false,pv,0);
+        GLES.GlUniform3f(_shadowCenterLoc, shadowCenterX, shadowY, shadowCenterZ);
+        GLES.GlUniform2f(_shadowSizeLoc, extentX, extentZ);
+        GLES.GlUniform1f(_shadowAlphaLoc, shadowAlpha);
+        _shadowQuad!.Position(0);
+        GLES.GlEnableVertexAttribArray(_shadowVertex);
+        GLES.GlVertexAttribPointer(_shadowVertex,2,GLES.GlFloat,false,0,_shadowQuad);
+        GLES.GlDrawArrays(GLES.GlTriangleStrip,0,4);
+        GLES.GlDisableVertexAttribArray(_shadowVertex);
+
         GLES.GlEnable(GLES.GlDepthTest);GLES.GlDepthMask(true);
         GLES.GlDisable(0x0B44); // GL_CULL_FACE: disable face culling for imported GLB meshes.
         GLES.GlDisable(GLES.GlBlend);
