@@ -36,6 +36,11 @@ internal sealed class HushGlbAnimal3D
         public byte[]? Image;
         public int GlTexture;
         public float[] Factor = { 1, 1, 1, 1 };
+        public int AlphaMode; // 0=OPAQUE, 1=MASK, 2=BLEND in glTF 2.0
+        public float AlphaCutoff = .5f;
+        public bool DoubleSided;
+        public bool NeedsBaseColorTexture;
+        public bool DecodedImage;
     }
     private readonly List<Part> _parts = new();
     private readonly List<SurfaceMaterial> _materials = new();
@@ -45,6 +50,7 @@ internal sealed class HushGlbAnimal3D
     private readonly float[] _max = { float.MinValue, float.MinValue, float.MinValue };
     private readonly float[] _model = new float[16], _vm = new float[16], _mvp = new float[16];
     private int _program, _position, _normal, _uv, _mvpLoc, _modelLoc, _colorLoc, _textureLoc;
+    private int _alphaModeLoc, _alphaCutoffLoc;
     private int _shadowProgram, _shadowVertex, _shadowMvpLoc, _shadowCenterLoc, _shadowSizeLoc, _shadowAlphaLoc;
     private FloatBuffer? _shadowQuad;
     private int _whiteTexture;
@@ -137,7 +143,11 @@ internal sealed class HushGlbAnimal3D
             message = "No installed 3D model for " + variety + ".";
             return false;
         }
-        foreach (string assetPath in new[] { "ar_fallback/" + filename, "ar_models/" + filename })
+        // IMPORTANT: Always prefer the original/repaired ar_models GLB.
+        // The previous fallback-first ordering silently displayed a simplified,
+        // untextured animal even when the correct detailed GLB was installed.
+        // ar_fallback is strictly a last-resort recovery path.
+        foreach (string assetPath in new[] { "ar_models/" + filename, "ar_fallback/" + filename })
         {
             try
             {
@@ -165,7 +175,11 @@ internal sealed class HushGlbAnimal3D
                 model.Parse(data);
                 if (model._parts.Count == 0) continue;
                 result = model;
-                message = "Legacy preview available.";
+                bool isPrimary = assetPath.StartsWith("ar_models/", StringComparison.Ordinal);
+                message = isPrimary ? "Primary repaired GLB loaded." : "Legacy backup GLB loaded.";
+                Android.Util.Log.Info("HushHuntAR", "MODEL SOURCE: " + assetPath +
+                    " (" + data.Length + " bytes, " + model._parts.Count + " mesh parts)" +
+                    (isPrimary ? " [PRIMARY]" : " [FALLBACK - check installed ar_models GLB]"));
                 return true;
             }
             catch (Java.IO.FileNotFoundException) { /* An optional fallback can be absent. */ }
@@ -174,7 +188,7 @@ internal sealed class HushGlbAnimal3D
                 Android.Util.Log.Warn("HushHuntAR", "Legacy model unavailable: " + assetPath + " (" + error.GetType().Name + ")");
             }
         }
-        message = "This HD animal requires Filament; the legacy renderer is intentionally skipped.";
+        message = "Primary model and last-resort fallback are both incompatible with the legacy renderer.";
         return false;
     }
 
@@ -282,12 +296,19 @@ internal sealed class HushGlbAnimal3D
             foreach(var material in root.GetProperty("materials").EnumerateArray())
             {
                 var current=new SurfaceMaterial();
+                string alphaMode = Has(material,"alphaMode")
+                    ? material.GetProperty("alphaMode").GetString() ?? "OPAQUE" : "OPAQUE";
+                current.AlphaMode = alphaMode == "MASK" ? 1 : alphaMode == "BLEND" ? 2 : 0;
+                current.AlphaCutoff = Has(material,"alphaCutoff")
+                    ? material.GetProperty("alphaCutoff").GetSingle() : .5f;
+                current.DoubleSided = Has(material,"doubleSided") && material.GetProperty("doubleSided").GetBoolean();
                 if (Has(material,"pbrMetallicRoughness"))
                 {
                     var pbr=material.GetProperty("pbrMetallicRoughness");
                     current.Factor=Numbers(pbr,"baseColorFactor",new float[]{1,1,1,1});
                     if (Has(pbr,"baseColorTexture") && Has(root,"textures") && Has(root,"images"))
                     {
+                        current.NeedsBaseColorTexture = true;
                         int textureIndex=Int(pbr.GetProperty("baseColorTexture"),"index");
                         int source=Int(root.GetProperty("textures")[textureIndex],"source");
                         var image=root.GetProperty("images")[source];
@@ -397,11 +418,14 @@ internal sealed class HushGlbAnimal3D
         const string vs="attribute vec3 aPoint;attribute vec3 aNormal;attribute vec2 aUV;uniform mat4 uMVP;varying vec3 vNormal;varying vec2 vUV;"+
             "void main(){gl_Position=uMVP*vec4(aPoint,1.0);vNormal=normalize(aNormal);vUV=aUV;}";
         const string fs="precision mediump float;varying vec3 vNormal;varying vec2 vUV;uniform sampler2D uTex;uniform vec4 uTint;"+
+            "uniform int uAlphaMode;uniform float uAlphaCutoff;"+
             "void main(){vec3 n=normalize(vNormal);vec3 key=normalize(vec3(-0.55,0.90,0.75));vec3 fill=normalize(vec3(0.45,0.35,0.95));"+
             "float keyDiffuse=max(0.0,dot(n,key));float fillDiffuse=max(0.0,dot(n,fill));float up=max(0.0,n.y);"+
             "float rim=pow(1.0-max(0.0,n.z),2.0)*0.18;vec4 albedo=texture2D(uTex,vec2(vUV.x,1.0-vUV.y))*uTint;"+
+            "if(uAlphaMode==1 && albedo.a<uAlphaCutoff)discard;"+
+            "if(uAlphaMode==2 && albedo.a<0.04)discard;"+
             "float shade=0.47+0.34*keyDiffuse+0.15*fillDiffuse+0.09*up;vec3 lit=albedo.rgb*shade + albedo.rgb*rim;"+
-            "gl_FragColor=vec4(lit,albedo.a);}";
+            "gl_FragColor=vec4(lit,uAlphaMode==2?albedo.a:1.0);}";
         int v=Shader(GLES.GlVertexShader,vs),f=Shader(GLES.GlFragmentShader,fs);
         _program=GLES.GlCreateProgram();GLES.GlAttachShader(_program,v);GLES.GlAttachShader(_program,f);GLES.GlLinkProgram(_program);
         var linkStatus = new int[1];
@@ -411,6 +435,8 @@ internal sealed class HushGlbAnimal3D
         _position=GLES.GlGetAttribLocation(_program,"aPoint");_normal=GLES.GlGetAttribLocation(_program,"aNormal");
         _uv=GLES.GlGetAttribLocation(_program,"aUV");_mvpLoc=GLES.GlGetUniformLocation(_program,"uMVP");
         _colorLoc=GLES.GlGetUniformLocation(_program,"uTint");_textureLoc=GLES.GlGetUniformLocation(_program,"uTex");
+        _alphaModeLoc=GLES.GlGetUniformLocation(_program,"uAlphaMode");
+        _alphaCutoffLoc=GLES.GlGetUniformLocation(_program,"uAlphaCutoff");
 
         const string shadowVs="attribute vec2 aPoint;uniform mat4 uMVP;uniform vec3 uCenter;uniform vec2 uSize;varying vec2 vPoint;"+
             "void main(){vPoint=aPoint;vec3 world=vec3(uCenter.x+aPoint.x*uSize.x,uCenter.y,uCenter.z+aPoint.y*uSize.y);gl_Position=uMVP*vec4(world,1.0);} ";
@@ -439,6 +465,15 @@ internal sealed class HushGlbAnimal3D
             m.GlTexture=_whiteTexture;if(m.Image is null)continue;
             using var bmp=BitmapFactory.DecodeByteArray(m.Image,0,m.Image.Length);
             if(bmp is null)continue;
+            m.DecodedImage = true;
+            if (m.NeedsBaseColorTexture && m.AlphaMode == 0 && bmp.HasAlpha)
+            {
+                // Trimesh-exported fallbacks sometimes lose glTF alphaMode.
+                // A PNG with an alpha channel needs cutout handling for fur cards.
+                // Fully opaque RGBA textures are unchanged by this mask.
+                m.AlphaMode = 1;
+                m.AlphaCutoff = .18f;
+            }
             GLES.GlGenTextures(1,ids,0);m.GlTexture=ids[0];
             GLES.GlBindTexture(GLES.GlTexture2d,m.GlTexture);
             GLES.GlTexParameteri(GLES.GlTexture2d,GLES.GlTextureMinFilter,GLES.GlLinear);
@@ -534,18 +569,46 @@ internal sealed class HushGlbAnimal3D
         GLES.GlUniformMatrix4fv(_mvpLoc,1,false,_mvp,0);
         GLES.GlActiveTexture(GLES.GlTexture0);GLES.GlUniform1i(_textureLoc,0);
         GLES.GlEnableVertexAttribArray(_position);GLES.GlEnableVertexAttribArray(_normal);GLES.GlEnableVertexAttribArray(_uv);
-        foreach(var part in _parts)
+        // glTF PBR: draw opaque + alpha-mask first; translucent fur cards last.
+        // Previously these cards were forced opaque, causing solid jagged strips
+        // covering eyes, faces and coats in imported HD models.
+        for (int pass = 0; pass < 2; pass++)
         {
-            var mat=_materials[Math.Clamp(part.MaterialIndex,0,_materials.Count-1)];
-            GLES.GlBindTexture(GLES.GlTexture2d,mat.GlTexture);
-            var col=mat.Factor;
-            GLES.GlUniform4f(_colorLoc,col[0],col[1],col[2],col[3]);
-            part.Positions.Position(0);part.Normals.Position(0);part.Uvs.Position(0);
-            GLES.GlVertexAttribPointer(_position,3,GLES.GlFloat,false,0,part.Positions);
-            GLES.GlVertexAttribPointer(_normal,3,GLES.GlFloat,false,0,part.Normals);
-            GLES.GlVertexAttribPointer(_uv,2,GLES.GlFloat,false,0,part.Uvs);
-            GLES.GlDrawArrays(GLES.GlTriangles,0,part.Count);
+            bool blendedPass = pass == 1;
+            if (blendedPass)
+            {
+                GLES.GlEnable(GLES.GlBlend);
+                GLES.GlBlendFunc(GLES.GlSrcAlpha, GLES.GlOneMinusSrcAlpha);
+                GLES.GlDepthMask(false);
+            }
+            foreach(var part in _parts)
+            {
+                var mat=_materials[Math.Clamp(part.MaterialIndex,0,_materials.Count-1)];
+                if ((mat.AlphaMode == 2) != blendedPass) continue;
+                // Never draw fur/whisker alpha cards as solid triangles when the
+                // original texture is missing or failed to decode.
+                if (mat.NeedsBaseColorTexture && !mat.DecodedImage) continue;
+                // Some converted wildlife GLBs have inconsistent face winding.
+                // Keep culling off until their normals / mesh topology are repaired.
+                GLES.GlDisable(0x0B44);
+                GLES.GlUniform1i(_alphaModeLoc, mat.AlphaMode);
+                GLES.GlUniform1f(_alphaCutoffLoc, mat.AlphaCutoff);
+                GLES.GlBindTexture(GLES.GlTexture2d,mat.GlTexture);
+                var col=mat.Factor;
+                GLES.GlUniform4f(_colorLoc,col[0],col[1],col[2],col[3]);
+                part.Positions.Position(0);part.Normals.Position(0);part.Uvs.Position(0);
+                GLES.GlVertexAttribPointer(_position,3,GLES.GlFloat,false,0,part.Positions);
+                GLES.GlVertexAttribPointer(_normal,3,GLES.GlFloat,false,0,part.Normals);
+                GLES.GlVertexAttribPointer(_uv,2,GLES.GlFloat,false,0,part.Uvs);
+                GLES.GlDrawArrays(GLES.GlTriangles,0,part.Count);
+            }
+            if (blendedPass)
+            {
+                GLES.GlDepthMask(true);
+                GLES.GlDisable(GLES.GlBlend);
+            }
         }
+        GLES.GlDisable(0x0B44);
         GLES.GlDisableVertexAttribArray(_position);GLES.GlDisableVertexAttribArray(_normal);GLES.GlDisableVertexAttribArray(_uv);
         GLES.GlDisable(GLES.GlDepthTest);
     }

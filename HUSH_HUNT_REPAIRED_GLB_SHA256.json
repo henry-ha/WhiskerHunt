@@ -1,0 +1,368 @@
+{
+  "ant-black-garden-ant.glb": {
+    "bytes": 145484,
+    "sha256": "79124eb572417dd4e0aec45a13956c31332b89d1c3dad9d813d34fb72a7ecd18",
+    "images": 0,
+    "meshes": 6
+  },
+  "bee-honeybee.glb": {
+    "bytes": 141900,
+    "sha256": "b070e242ad0b8a0a4cd383feadfad9ccffcbfc6e08940037748e7e140f2797fe",
+    "images": 0,
+    "meshes": 8
+  },
+  "beetle-stag-beetle.glb": {
+    "bytes": 122772,
+    "sha256": "5d4f62a929aaa8cd9a7aef4195373509762822cc686b494c1630373ca3db8686",
+    "images": 0,
+    "meshes": 5
+  },
+  "bird-owl.glb": {
+    "bytes": 900552,
+    "sha256": "9bea48068887f07882d32f21eb498abe4f3e74f9219290e9f93460277be77fd2",
+    "images": 1,
+    "meshes": 4
+  },
+  "bird-parakeet.glb": {
+    "bytes": 286972,
+    "sha256": "f33cb7da74bcf918cd7d4bbc87d0a361d046fc046903a2aa9c88692f495b9d9b",
+    "images": 0,
+    "meshes": 7
+  },
+  "bird-robin.glb": {
+    "bytes": 813852,
+    "sha256": "08907ed79279fa21b58466ec45b9502cca7b3f3c42a763986f70eccce384784f",
+    "images": 2,
+    "meshes": 7
+  },
+  "butterfly-peacock.glb": {
+    "bytes": 158740,
+    "sha256": "dd2e36ff984bd1c3d85c51eba5dafb9f7266c2b8ee8580f5f2e6dfa15382e3b7",
+    "images": 0,
+    "meshes": 7
+  },
+  "cat-calico.glb": {
+    "bytes": 466060,
+    "sha256": "4a8278481fe68823ab1e7eb1d6f17bae04c46c3abec8001afa920c7789ad454b",
+    "images": 0,
+    "meshes": 4
+  },
+  "cat-domestic-shorthair.glb": {
+    "bytes": 760052,
+    "sha256": "85d03313b9104f930daa1f4d0df13dcf615763fabebf0eaf06e4b01966e3735e",
+    "images": 1,
+    "meshes": 6
+  },
+  "cat-ginger-tabby.glb": {
+    "bytes": 430940,
+    "sha256": "c0eb4e02232d27143f7157cf2353ba0fab336900fd718e541c7e3f1f15452748",
+    "images": 0,
+    "meshes": 7
+  },
+  "cat-ginger.glb": {
+    "bytes": 467196,
+    "sha256": "2381c260c6347a5446b10c94a43afa7a2c34ddd87a824273939f6da441a703b5",
+    "images": 0,
+    "meshes": 5
+  },
+  "cat-grey.glb": {
+    "bytes": 425676,
+    "sha256": "434cb5fbf0f5f0d2059febcb3213cc826cc0084a79cbe9d63bf3ff6fef5a222d",
+    "images": 0,
+    "meshes": 4
+  },
+  "cat-tabby.glb": {
+    "bytes": 466080,
+    "sha256": "761dd2d440321432d5a026aa7dc86d668c11e915ce2a6ec926cbe5ff700a3c3b",
+    "images": 0,
+    "meshes": 4
+  },
+  "cat-tuxedo.glb": {
+    "bytes": 464812,
+    "sha256": "9cd537fe3d231446e1b5d37e253834c6b70163468806f51c1c04f98b3bd62026",
+    "images": 0,
+    "meshes": 3
+  },
+  "dog-bulldog.glb": {
+    "bytes": 476720,
+    "sha256": "104d18d255cfc7b175d9fd8613cc38182074f7d90379b0878654fc06541140e4",
+    "images": 0,
+    "meshes": 3
+  },
+  "dog-dachshund.glb": {
+    "bytes": 811444,
+    "sha256": "c7143ef9e54e4510cd45c9b0af194186db849e534175f14d0eb402a6d9e72612",
+    "images": 2,
+    "meshes": 3
+  },
+  "dog-golden-retriever.glb": {
+    "bytes": 414308,
+    "sha256": "b033c941e4fe5224bf357869c04d3dab490bdf7b095833c33436e28e932b441c",
+    "images": 0,
+    "meshes": 3
+  },
+  "dog-labrador.glb": {
+    "bytes": 737484,
+    "sha256": "b6306d100d5ce5af8e8b23b2e47200a451197e01c639377680952fc3af83b1a9",
+    "images": 1,
+    "meshes": 3
+  },
+  "dog-spaniel.glb": {
+    "bytes": 437812,
+    "sha256": "d90746c95e3360a34a35d1c360313a802c896ffc6724c4f30c584a0cba3b630f",
+    "images": 0,
+    "meshes": 3
+  },
+  "dog-terrier.glb": {
+    "bytes": 477056,
+    "sha256": "35507ec6be17684d75943cf85cc806dd281674f4895cc6eefcf05c88434dacdb",
+    "images": 0,
+    "meshes": 4
+  },
+  "dragonfly-emperor-dragonfly.glb": {
+    "bytes": 263624,
+    "sha256": "3737c61679452530d303d8d67cdc630cbb716b812b8c28173687026c230374c8",
+    "images": 0,
+    "meshes": 6
+  },
+  "frog-common-frog.glb": {
+    "bytes": 592224,
+    "sha256": "c7ffa86d687e2ee9fd45771ddb4c0d161b7b64f4b4e39c10eb9386c1198dc09a",
+    "images": 1,
+    "meshes": 4
+  },
+  "hedgehog-european-hedgehog.glb": {
+    "bytes": 207532,
+    "sha256": "98d132874b436622a60afd9157cb1b12386de10b462c7263c68372b323856a36",
+    "images": 0,
+    "meshes": 6
+  },
+  "ladybird-seven-spot.glb": {
+    "bytes": 226524,
+    "sha256": "ae08b8626e36655733a776ea9ce22097914ebbb015193dea8858a22035390bf0",
+    "images": 0,
+    "meshes": 9
+  },
+  "other-african-elephant.glb": {
+    "bytes": 1859672,
+    "sha256": "aad0e52a71f25ca89a6b75ff3ab239684d76b85f40d5cf9a0cecc9fd986b5c5c",
+    "images": 1,
+    "meshes": 4
+  },
+  "other-african-lion.glb": {
+    "bytes": 991240,
+    "sha256": "83dab9734fb7e81b3ac752702c6eb3c07cd2e74a33ff94003c87efd4b345d218",
+    "images": 1,
+    "meshes": 6
+  },
+  "other-african-lioness.glb": {
+    "bytes": 893388,
+    "sha256": "2c15554767b62516cbd23b5be0ecbee77d9987c6014c4e1716540fd7c745f49d",
+    "images": 1,
+    "meshes": 6
+  },
+  "other-bat.glb": {
+    "bytes": 109924,
+    "sha256": "05990857aa90ff91bd5ab3f8f942fad3a3fc9c19cb4c4aebbb0002b3dad4c1ee",
+    "images": 0,
+    "meshes": 5
+  },
+  "other-bengal-tiger.glb": {
+    "bytes": 1000736,
+    "sha256": "8f23411adb2c96be5b493a2b82e6774f467c0b75bef91cb301c64c5cde7bd12c",
+    "images": 1,
+    "meshes": 6
+  },
+  "other-black-rhinoceros.glb": {
+    "bytes": 1869592,
+    "sha256": "393da267b46c9f20e96d975c8494ecc5350b682d443b231a58d7f229c508c6b0",
+    "images": 1,
+    "meshes": 3
+  },
+  "other-cheetah.glb": {
+    "bytes": 1269172,
+    "sha256": "24e9a4ca375cbbe542b385a0905256ca37b2ea83c946f7a421303cd317397d81",
+    "images": 1,
+    "meshes": 6
+  },
+  "other-chimpanzee.glb": {
+    "bytes": 1929616,
+    "sha256": "8005cfffef11b5f036d241e404d949cb04f34c26e635ace17a19ce556596ad02",
+    "images": 2,
+    "meshes": 4
+  },
+  "other-deer.glb": {
+    "bytes": 865032,
+    "sha256": "76dafaa437fbf1a44e7247026806a70f244837582c9aa52759d5e0066151c67e",
+    "images": 1,
+    "meshes": 6
+  },
+  "other-dromedary-camel.glb": {
+    "bytes": 852312,
+    "sha256": "ec6656b8019d21dd5505f4254743ae75f7aae370abf369c63ef67a5cef585268",
+    "images": 1,
+    "meshes": 4
+  },
+  "other-fish.glb": {
+    "bytes": 295832,
+    "sha256": "3c033d1a5a1cf5026e653f0e3f73fa3ff9fbe534180be0efe681a7ec10da56dd",
+    "images": 2,
+    "meshes": 4
+  },
+  "other-fox.glb": {
+    "bytes": 492552,
+    "sha256": "6ea4b1c7d65a0ebdaf97e3257a3c3f7576d3b466a8931c43ef7cfad64ed6b6d9",
+    "images": 0,
+    "meshes": 7
+  },
+  "other-giant-anteater.glb": {
+    "bytes": 924080,
+    "sha256": "621efe92f35f45f925cd4a0624f1b87e1eb5fa0225233d524242fbbc4230f784",
+    "images": 1,
+    "meshes": 6
+  },
+  "other-grey-wolf.glb": {
+    "bytes": 876472,
+    "sha256": "2eda2f0f347fcf41a88f52d74f6426d719e0065c09344128da0974723c2e614e",
+    "images": 1,
+    "meshes": 5
+  },
+  "other-grizzly-bear.glb": {
+    "bytes": 848804,
+    "sha256": "e7ef627e646558f651f9f1a04906aa6477869a959705e29dc4eab0beccd9fe75",
+    "images": 1,
+    "meshes": 5
+  },
+  "other-hippopotamus.glb": {
+    "bytes": 1893120,
+    "sha256": "ec8ab242cd859d0b31653c8fec1b6ee9f4a3b2d8a83e9e3f9c9ed95b9ecaa986",
+    "images": 1,
+    "meshes": 3
+  },
+  "other-jaguar.glb": {
+    "bytes": 1279224,
+    "sha256": "5699b0ea7ac477d7bbe289d454cf348582c40f0c5771bbd26799993aed7079cf",
+    "images": 1,
+    "meshes": 6
+  },
+  "other-komodo-dragon.glb": {
+    "bytes": 2043192,
+    "sha256": "ed4db5b8a26857064948911d3fe45b02f94b249a65a82909ac511af3c8bce932",
+    "images": 2,
+    "meshes": 5
+  },
+  "other-lizard.glb": {
+    "bytes": 472664,
+    "sha256": "07088b52c8c5c6e0fd822b630a8f4bce31fc0e96b6a60538ea423372ae65670e",
+    "images": 2,
+    "meshes": 4
+  },
+  "other-meerkat.glb": {
+    "bytes": 662256,
+    "sha256": "1b3f712d54eca39ad28db1e30c0df98c72bdf4678cd8ccdbd9154a0638370d7d",
+    "images": 1,
+    "meshes": 5
+  },
+  "other-mouse.glb": {
+    "bytes": 504992,
+    "sha256": "ef6427f3ce4dfb607571c402ed53adc4bdef3d6b6979df0ec7c6876af9bbc321",
+    "images": 0,
+    "meshes": 7
+  },
+  "other-orangutan.glb": {
+    "bytes": 1938168,
+    "sha256": "80d7f85c51b2c63c45921efb5b197162a24b2f99ad527045d9ea7b0d8a44ba1d",
+    "images": 2,
+    "meshes": 4
+  },
+  "other-plains-zebra.glb": {
+    "bytes": 932388,
+    "sha256": "c2c48fd424fa2fdb21eecede3d1d6f8c2367de0a148d63be4c356c469f597a59",
+    "images": 1,
+    "meshes": 5
+  },
+  "other-polar-bear.glb": {
+    "bytes": 821300,
+    "sha256": "86c5000018723fb814fc49507ed287151b8129038206bd53a58d8d99387b2f3e",
+    "images": 1,
+    "meshes": 4
+  },
+  "other-red-kangaroo.glb": {
+    "bytes": 761440,
+    "sha256": "970e27d99ebea80930412fd1b045ad97a972769164496814c5236f3e099ac270",
+    "images": 1,
+    "meshes": 5
+  },
+  "other-red-panda.glb": {
+    "bytes": 926076,
+    "sha256": "42e67acac86308e5a82dbc56201a6f3afafafb59a13ed86347548b8568b78793",
+    "images": 1,
+    "meshes": 6
+  },
+  "other-reticulated-giraffe.glb": {
+    "bytes": 942792,
+    "sha256": "01a8f92d178e0cbec12daf551c4fe57336c1f05c53cd83f535464db0043c1c20",
+    "images": 1,
+    "meshes": 6
+  },
+  "other-ring-tailed-lemur.glb": {
+    "bytes": 665340,
+    "sha256": "5c5817b88e445f21dc1c3acd15702800e1948fbe392b25ae5cc8b9baf601fca0",
+    "images": 1,
+    "meshes": 4
+  },
+  "other-silverback-gorilla.glb": {
+    "bytes": 1965624,
+    "sha256": "7ba7d939484b89899edb63afbc92d8104738a4a553f91a971e9087af35070fd1",
+    "images": 2,
+    "meshes": 5
+  },
+  "other-slug.glb": {
+    "bytes": 820672,
+    "sha256": "328aca641a4145799b938232073a1ef3824dcea9ba5270aec18724fd37730438",
+    "images": 3,
+    "meshes": 18
+  },
+  "other-snow-leopard.glb": {
+    "bytes": 1232752,
+    "sha256": "8e347f73428400db3cd3f234509efad163336c4c66bc4a4a2f23a7cb0d140941",
+    "images": 1,
+    "meshes": 6
+  },
+  "other-tortoise.glb": {
+    "bytes": 705164,
+    "sha256": "7fe692a80596df877f85e46dffbb706d1e257d649a9223b9e8c9af340fdc4fda",
+    "images": 2,
+    "meshes": 4
+  },
+  "rabbit-wild-rabbit.glb": {
+    "bytes": 612768,
+    "sha256": "ced89f7030fa005376a97ae84e703310d989f026e173e57cef1f351dc1b0932b",
+    "images": 1,
+    "meshes": 4
+  },
+  "snail-amber-snail.glb": {
+    "bytes": 1882228,
+    "sha256": "ddb7c1bc9b17680276e6cfe47b6d06a3945b0cd9c3b728ff4449cfe2ca18c952",
+    "images": 4,
+    "meshes": 20
+  },
+  "snail-garden-snail.glb": {
+    "bytes": 1877948,
+    "sha256": "5fb6935a832ade1e1cf217dabb3cbee93f856b7a0a82f752bce8843a2594b9b6",
+    "images": 4,
+    "meshes": 20
+  },
+  "spider-garden-spider.glb": {
+    "bytes": 915016,
+    "sha256": "a71f4c7367060e3c258f7b37979233631b56a419c9871ac24d5bb87a00d2d446",
+    "images": 4,
+    "meshes": 33
+  },
+  "squirrel-grey-squirrel.glb": {
+    "bytes": 201008,
+    "sha256": "dac11d6ec815af42bf73966207b2446a7d2e78530463918f6dfd43af5017eebd",
+    "images": 0,
+    "meshes": 5
+  }
+}

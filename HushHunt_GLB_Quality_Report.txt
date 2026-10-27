@@ -1,0 +1,117 @@
+HUSH HUNT - GLB COMPATIBILITY AND QUALITY CHECK
+No model files were overwritten. Structure OK does NOT mean that anatomy, eyes, materials or render are correct.
+Original animal files checked: 61
+
+ant-black-garden-ant.glb | STRUCTURALLY_VALID; rendering not proven | triangles=7064 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+bee-honeybee.glb | STRUCTURALLY_VALID; rendering not proven | triangles=7168 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+beetle-stag-beetle.glb | STRUCTURALLY_VALID; rendering not proven | triangles=5516 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+bird-owl.glb | STRUCTURALLY_VALID; rendering not proven | triangles=16972 | images=1
+bird-parakeet.glb | STRUCTURALLY_VALID; rendering not proven | triangles=2332 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+bird-robin.glb | STRUCTURALLY_VALID; rendering not proven | triangles=14328 | images=2
+butterfly-peacock.glb | STRUCTURALLY_VALID; rendering not proven | triangles=8392 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+cat-calico.glb | STRUCTURALLY_VALID; rendering not proven | triangles=3840 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+cat-domestic-shorthair.glb | STRUCTURALLY_VALID; rendering not proven | triangles=15282 | images=1
+cat-ginger-tabby.glb | STRUCTURALLY_VALID; rendering not proven | triangles=18904 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+cat-ginger.glb | STRUCTURALLY_VALID; rendering not proven | triangles=3840 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+cat-grey.glb | STRUCTURALLY_VALID; rendering not proven | triangles=3504 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+cat-tabby.glb | STRUCTURALLY_VALID; rendering not proven | triangles=3840 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+cat-tuxedo.glb | STRUCTURALLY_VALID; rendering not proven | triangles=3840 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+dog-bulldog.glb | STRUCTURALLY_VALID; rendering not proven | triangles=3940 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+dog-dachshund.glb | STRUCTURALLY_VALID; rendering not proven | triangles=15422 | images=2
+dog-golden-retriever.glb | STRUCTURALLY_VALID; rendering not proven | triangles=3420 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+dog-labrador.glb | STRUCTURALLY_VALID; rendering not proven | triangles=15906 | images=1
+  ISSUE: DEGRADED_FALLBACK: fallback lost one or more original textures/PBR materials
+dog-spaniel.glb | STRUCTURALLY_VALID; rendering not proven | triangles=3616 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+dog-terrier.glb | STRUCTURALLY_VALID; rendering not proven | triangles=3932 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+dragonfly-emperor-dragonfly.glb | STRUCTURALLY_VALID; rendering not proven | triangles=10704 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+frog-common-frog.glb | STRUCTURALLY_VALID; rendering not proven | triangles=10608 | images=1
+hedgehog-european-hedgehog.glb | STRUCTURALLY_VALID; rendering not proven | triangles=8102 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+ladybird-seven-spot.glb | STRUCTURALLY_VALID; rendering not proven | triangles=10940 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+other-african-elephant.glb | STRUCTURALLY_VALID; rendering not proven | triangles=18408 | images=1
+other-african-lion.glb | STRUCTURALLY_VALID; rendering not proven | triangles=23368 | images=1
+other-african-lioness.glb | STRUCTURALLY_VALID; rendering not proven | triangles=20488 | images=1
+other-bat.glb | STRUCTURALLY_VALID; rendering not proven | triangles=4356 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+other-bengal-tiger.glb | STRUCTURALLY_VALID; rendering not proven | triangles=20068 | images=1
+other-black-rhinoceros.glb | STRUCTURALLY_VALID; rendering not proven | triangles=19048 | images=1
+other-cheetah.glb | STRUCTURALLY_VALID; rendering not proven | triangles=23428 | images=1
+other-chimpanzee.glb | STRUCTURALLY_VALID; rendering not proven | triangles=15888 | images=2
+other-deer.glb | STRUCTURALLY_VALID; rendering not proven | triangles=20128 | images=1
+  ISSUE: DEGRADED_FALLBACK: fallback lost one or more original textures/PBR materials
+other-dromedary-camel.glb | STRUCTURALLY_VALID; rendering not proven | triangles=19864 | images=1
+other-fish.glb | STRUCTURALLY_VALID; rendering not proven | triangles=3096 | images=2
+other-fox.glb | STRUCTURALLY_VALID; rendering not proven | triangles=20184 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+other-giant-anteater.glb | STRUCTURALLY_VALID; rendering not proven | triangles=21900 | images=1
+other-grey-wolf.glb | STRUCTURALLY_VALID; rendering not proven | triangles=20068 | images=1
+other-grizzly-bear.glb | STRUCTURALLY_VALID; rendering not proven | triangles=19780 | images=1
+other-hippopotamus.glb | STRUCTURALLY_VALID; rendering not proven | triangles=18952 | images=1
+other-jaguar.glb | STRUCTURALLY_VALID; rendering not proven | triangles=23706 | images=1
+other-komodo-dragon.glb | STRUCTURALLY_VALID; rendering not proven | triangles=16682 | images=2
+other-lizard.glb | STRUCTURALLY_VALID; rendering not proven | triangles=8128 | images=2
+other-meerkat.glb | STRUCTURALLY_VALID; rendering not proven | triangles=13388 | images=1
+other-mouse.glb | STRUCTURALLY_VALID; rendering not proven | triangles=21992 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+other-orangutan.glb | STRUCTURALLY_VALID; rendering not proven | triangles=16032 | images=2
+other-plains-zebra.glb | STRUCTURALLY_VALID; rendering not proven | triangles=18076 | images=1
+other-polar-bear.glb | STRUCTURALLY_VALID; rendering not proven | triangles=19060 | images=1
+other-red-kangaroo.glb | STRUCTURALLY_VALID; rendering not proven | triangles=16792 | images=1
+other-red-panda.glb | STRUCTURALLY_VALID; rendering not proven | triangles=20984 | images=1
+other-reticulated-giraffe.glb | STRUCTURALLY_VALID; rendering not proven | triangles=20090 | images=1
+other-ring-tailed-lemur.glb | STRUCTURALLY_VALID; rendering not proven | triangles=13358 | images=1
+other-silverback-gorilla.glb | STRUCTURALLY_VALID; rendering not proven | triangles=16812 | images=2
+other-slug.glb | STRUCTURALLY_VALID; rendering not proven | triangles=12980 | images=3
+other-snow-leopard.glb | STRUCTURALLY_VALID; rendering not proven | triangles=23284 | images=1
+other-tortoise.glb | STRUCTURALLY_VALID; rendering not proven | triangles=13364 | images=2
+rabbit-wild-rabbit.glb | STRUCTURALLY_VALID; rendering not proven | triangles=11906 | images=1
+snail-amber-snail.glb | STRUCTURALLY_VALID; rendering not proven | triangles=34032 | images=4
+snail-garden-snail.glb | STRUCTURALLY_VALID; rendering not proven | triangles=34032 | images=4
+spider-garden-spider.glb | STRUCTURALLY_VALID; rendering not proven | triangles=16368 | images=4
+squirrel-grey-squirrel.glb | STRUCTURALLY_VALID; rendering not proven | triangles=8128 | images=0
+  WARNING: NO_IMAGE_TEXTURES: flat-looking fallback likely
+  WARNING: NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent
+
+2 / 61 models have structural issues or potentially degraded fallbacks.
+Use the original GLB for Filament; do not replace it with an unverified simplified fallback.
+WebP review copies stay in HushHunt_PBR_Review_Only, NOT in the app asset folder.
+If a model does not render in AR, capture Logcat messages tagged HushFilament.
+For visible anatomy / missing eyes / fur problems, inspect original GLB in Blender or a glTF-compatible viewer.

@@ -1,0 +1,2402 @@
+{
+  "title": "Hush Hunt original-versus-fallback GLB inspection",
+  "original_dir": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt\\Resources\\Raw\\ar_models",
+  "note": "This is a structural audit, not a visual model QA approval. It never overwrites original GLBs.",
+  "model_count": 61,
+  "models": [
+    {
+      "file": "ant-black-garden-ant.glb",
+      "bytes": 145484,
+      "sha256": "79124eb572417dd4e0aec45a13956c31332b89d1c3dad9d813d34fb72a7ecd18",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 7064,
+      "meshes": 6,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "bee-honeybee.glb",
+      "bytes": 141900,
+      "sha256": "b070e242ad0b8a0a4cd383feadfad9ccffcbfc6e08940037748e7e140f2797fe",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 7168,
+      "meshes": 8,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 8,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "beetle-stag-beetle.glb",
+      "bytes": 122772,
+      "sha256": "5d4f62a929aaa8cd9a7aef4195373509762822cc686b494c1630373ca3db8686",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 5516,
+      "meshes": 5,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "bird-owl.glb",
+      "bytes": 511976,
+      "sha256": "84d5d894ba0c93d40102a9b3053b9a6af2459198c4ce189bba2c249fcfae376a",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 16972,
+      "meshes": 4,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 763716,
+        "triangles": 16972,
+        "images": 2,
+        "materials": 4,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "bird-parakeet.glb",
+      "bytes": 202316,
+      "sha256": "d85b05a7d46f598167e0013f830c7675425f56cad60deca1565fb2fe5b75f2f7",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 2332,
+      "meshes": 7,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 7,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "bird-robin.glb",
+      "bytes": 477832,
+      "sha256": "606b5c8d2b4282573440344276318ddaeda92bf04a5f5c7556775cbbb0d21f61",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 14328,
+      "meshes": 7,
+      "images": 2,
+      "image_formats": [
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 5,
+      "materials": 7,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 694276,
+        "triangles": 14328,
+        "images": 5,
+        "materials": 7,
+        "pbr_base_color_textured_materials": 5,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "butterfly-peacock.glb",
+      "bytes": 158740,
+      "sha256": "dd2e36ff984bd1c3d85c51eba5dafb9f7266c2b8ee8580f5f2e6dfa15382e3b7",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 8392,
+      "meshes": 7,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 7,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "cat-calico.glb",
+      "bytes": 327404,
+      "sha256": "e44b92d3ece46abbabb94750d8835092605e9b0bbff8e2663bec074653f98eea",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 3840,
+      "meshes": 4,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "cat-domestic-shorthair.glb",
+      "bytes": 452828,
+      "sha256": "39fc5edc628360b0d17acf8be61417aeb51d0557b3974d87b640bb07a6b0ca8f",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 15282,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 664456,
+        "triangles": 15282,
+        "images": 3,
+        "materials": 6,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "cat-ginger-tabby.glb",
+      "bytes": 430940,
+      "sha256": "c0eb4e02232d27143f7157cf2353ba0fab336900fd718e541c7e3f1f15452748",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 18904,
+      "meshes": 7,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 7,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "cat-ginger.glb",
+      "bytes": 328436,
+      "sha256": "af0674c0cea96b6a371275d9402e0de42816bc2f897e0d1debe9c54b9cafa69a",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 3840,
+      "meshes": 5,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "cat-grey.glb",
+      "bytes": 299120,
+      "sha256": "647bf742a3d1adb1eaf64e9d4008fde33a88483a56d77413b48e246cc57899de",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 3504,
+      "meshes": 4,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "cat-tabby.glb",
+      "bytes": 327424,
+      "sha256": "53769bba25a07dac64c0b36df7f2d8cd3066302a61762ff28f5067585112f0da",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 3840,
+      "meshes": 4,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "cat-tuxedo.glb",
+      "bytes": 326260,
+      "sha256": "f556760d2d698128e5cb323ee788a0f4a270268d31e0779760b0315a5089067a",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 3840,
+      "meshes": 3,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 3,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "dog-bulldog.glb",
+      "bytes": 334572,
+      "sha256": "b04a98b81b8c7404a70bb268fdcc6fe34e05a2bb95228e70715c594392763b85",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 3940,
+      "meshes": 3,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 3,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "dog-dachshund.glb",
+      "bytes": 632200,
+      "sha256": "765c90994326381399c3865167bd83f255eadf0c577c00026309b9756e788d5f",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [],
+      "triangles": 15422,
+      "meshes": 3,
+      "images": 2,
+      "image_formats": [
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 3,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "dog-golden-retriever.glb",
+      "bytes": 290868,
+      "sha256": "7c908435a54e950d15e7b9e71e7f7c2551b9fd448728cca04bef2ad34e273258",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 3420,
+      "meshes": 3,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 3,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "dog-labrador.glb",
+      "bytes": 444876,
+      "sha256": "2b3d3ff424b5c7b1ba96942df3428b8dbd3ed5c5802390e222fac6f6adbb9bd2",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [
+        "DEGRADED_FALLBACK: fallback lost one or more original textures/PBR materials"
+      ],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 15906,
+      "meshes": 3,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 1,
+      "materials": 3,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 206928,
+        "triangles": 8376,
+        "images": 0,
+        "materials": 5,
+        "pbr_base_color_textured_materials": 0,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": [
+          "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+          "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+        ]
+      }
+    },
+    {
+      "file": "dog-spaniel.glb",
+      "bytes": 307324,
+      "sha256": "164e5f8339645f8240eb9f1844f15c04c721fc32180bcca5639601cd752a9968",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 3616,
+      "meshes": 3,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 3,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "dog-terrier.glb",
+      "bytes": 335084,
+      "sha256": "2d97751a49fcf1af4da2c5881609377959cd3bc5af2218d7a1e385c95d8ef7e9",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 3932,
+      "meshes": 4,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "dragonfly-emperor-dragonfly.glb",
+      "bytes": 263624,
+      "sha256": "3737c61679452530d303d8d67cdc630cbb716b812b8c28173687026c230374c8",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 10704,
+      "meshes": 6,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "frog-common-frog.glb",
+      "bytes": 369804,
+      "sha256": "4ffaafd2a760f7bedf8cfc163f136b89f00c928f4b16b4c3b4effd4b5023cedd",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 10608,
+      "meshes": 4,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 521236,
+        "triangles": 10608,
+        "images": 2,
+        "materials": 4,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "hedgehog-european-hedgehog.glb",
+      "bytes": 207532,
+      "sha256": "98d132874b436622a60afd9157cb1b12386de10b462c7263c68372b323856a36",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 8102,
+      "meshes": 6,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "ladybird-seven-spot.glb",
+      "bytes": 226524,
+      "sha256": "ae08b8626e36655733a776ea9ce22097914ebbb015193dea8858a22035390bf0",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 10940,
+      "meshes": 9,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 9,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "other-african-elephant.glb",
+      "bytes": 1530240,
+      "sha256": "fb35cb79f37abd55bac1abf68c0655497c8271bc802a5b9bac04fd02b7fd82a5",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 18408,
+      "meshes": 4,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 1567968,
+        "triangles": 18408,
+        "images": 2,
+        "materials": 4,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-african-lion.glb",
+      "bytes": 572144,
+      "sha256": "fe0041ea4d37df3b261353c1216a989fdb3d751c50894f60e58a1b3fdd03f7ff",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 23368,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 873244,
+        "triangles": 23368,
+        "images": 3,
+        "materials": 6,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-african-lioness.glb",
+      "bytes": 523864,
+      "sha256": "f400091c0d3b7e548123983f4c508751f6997b861a5baffdeec53c52943cbbdf",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 20488,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 789112,
+        "triangles": 20488,
+        "images": 3,
+        "materials": 6,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-bat.glb",
+      "bytes": 109924,
+      "sha256": "05990857aa90ff91bd5ab3f8f942fad3a3fc9c19cb4c4aebbb0002b3dad4c1ee",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 4356,
+      "meshes": 5,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "other-bengal-tiger.glb",
+      "bytes": 563556,
+      "sha256": "0546d19c0f6870ce839ff3a0782270c006e510f12e0583714b55de6393ecb107",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 20068,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 851660,
+        "triangles": 20068,
+        "images": 3,
+        "materials": 6,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-black-rhinoceros.glb",
+      "bytes": 1536016,
+      "sha256": "e9e952a357057d308a8a35c4443e355d12a5560ee029cf9cad271e0d1c15c440",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 19048,
+      "meshes": 3,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 1,
+      "materials": 3,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 1578480,
+        "triangles": 19048,
+        "images": 1,
+        "materials": 3,
+        "pbr_base_color_textured_materials": 1,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-cheetah.glb",
+      "bytes": 679212,
+      "sha256": "93f0f018ed201975c6217e877f720b0446ad0cf95453eda659d01a5c1e2be919",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 23428,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 1044776,
+        "triangles": 23428,
+        "images": 3,
+        "materials": 6,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-chimpanzee.glb",
+      "bytes": 1647856,
+      "sha256": "79c5d06b4f5237c1d414447d8ff25088fcacdeeffaa9cf73d6bacc18d6bf8870",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 15888,
+      "meshes": 4,
+      "images": 2,
+      "image_formats": [
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 1656612,
+        "triangles": 15888,
+        "images": 2,
+        "materials": 4,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-deer.glb",
+      "bytes": 512152,
+      "sha256": "330d47057b666c8f5505c7f77f6abe8650c5d11977abe1690532b153202f3815",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [
+        "DEGRADED_FALLBACK: fallback lost one or more original textures/PBR materials"
+      ],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 20128,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 210576,
+        "triangles": 8520,
+        "images": 0,
+        "materials": 5,
+        "pbr_base_color_textured_materials": 0,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": [
+          "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+          "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+        ]
+      }
+    },
+    {
+      "file": "other-dromedary-camel.glb",
+      "bytes": 504032,
+      "sha256": "f00419f7c917a0a394821d2d3db7d59e48eb40a157faaa670d50ac59c76110ba",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 19864,
+      "meshes": 4,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 1,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 757884,
+        "triangles": 19864,
+        "images": 1,
+        "materials": 4,
+        "pbr_base_color_textured_materials": 1,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-fish.glb",
+      "bytes": 258528,
+      "sha256": "a1bf8dc1b7563c8a1f862995413e1b27d8b1e5702161187bed5e78a8f6ddcf72",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [],
+      "triangles": 3096,
+      "meshes": 4,
+      "images": 2,
+      "image_formats": [
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "other-fox.glb",
+      "bytes": 492552,
+      "sha256": "6ea4b1c7d65a0ebdaf97e3257a3c3f7576d3b466a8931c43ef7cfad64ed6b6d9",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 20184,
+      "meshes": 7,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 7,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "other-giant-anteater.glb",
+      "bytes": 540824,
+      "sha256": "81039a0a89df1d80670c9bdd04344b7fd1190b72d522b3c56465276781d26542",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 21900,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 819612,
+        "triangles": 21900,
+        "images": 3,
+        "materials": 6,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-grey-wolf.glb",
+      "bytes": 515240,
+      "sha256": "f72f75f7c0681907537deeec50e85f77f8e7a7b48d23f5a4d49c20ae5b2d9518",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 20068,
+      "meshes": 5,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 774508,
+        "triangles": 20068,
+        "images": 2,
+        "materials": 5,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-grizzly-bear.glb",
+      "bytes": 503548,
+      "sha256": "3ffbbe1b901444e69057a176075312270a6b2112c68629428d62efe3f1e5e42b",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 19780,
+      "meshes": 5,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 754996,
+        "triangles": 19780,
+        "images": 2,
+        "materials": 5,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-hippopotamus.glb",
+      "bytes": 1544396,
+      "sha256": "52a7290d9ef360aa026ff3820dd48d813d02189623d699539943b29c65bd4e9b",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 18952,
+      "meshes": 3,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 3,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 1592640,
+        "triangles": 18952,
+        "images": 2,
+        "materials": 3,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-jaguar.glb",
+      "bytes": 684092,
+      "sha256": "b931504ec162e6180bc208e93cd7e292a453c9771cf1b2f60cc0212d7cc14379",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 23706,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 1053264,
+        "triangles": 23706,
+        "images": 3,
+        "materials": 6,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-komodo-dragon.glb",
+      "bytes": 1695636,
+      "sha256": "07c8c9261c953a13671e1e96a0b8338c6ed3a0100d21087e59f66f9c624e7cfd",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 16682,
+      "meshes": 5,
+      "images": 2,
+      "image_formats": [
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 1733244,
+        "triangles": 16682,
+        "images": 3,
+        "materials": 5,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-lizard.glb",
+      "bytes": 397720,
+      "sha256": "d9ee7917a5005db50f01f1911e96f7ef5b85211df97a03c5b234ced7c6d0a3c6",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [],
+      "triangles": 8128,
+      "meshes": 4,
+      "images": 2,
+      "image_formats": [
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "other-meerkat.glb",
+      "bytes": 407452,
+      "sha256": "5915170728c27c9463f5d68de6d4bab3216e5563bb8af14bf9caf07975b53ce9",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 13388,
+      "meshes": 5,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 588072,
+        "triangles": 13388,
+        "images": 3,
+        "materials": 5,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-mouse.glb",
+      "bytes": 504992,
+      "sha256": "ef6427f3ce4dfb607571c402ed53adc4bdef3d6b6979df0ec7c6876af9bbc321",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 21992,
+      "meshes": 7,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 7,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "other-orangutan.glb",
+      "bytes": 1651672,
+      "sha256": "4fc54d531d04153c4a1c0f2ba3de9322c3fc731d81ec60ca5746b15389d4df4d",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 16032,
+      "meshes": 4,
+      "images": 2,
+      "image_formats": [
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 1663056,
+        "triangles": 16032,
+        "images": 2,
+        "materials": 4,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-plains-zebra.glb",
+      "bytes": 528984,
+      "sha256": "fc461ee7540ecddaca21d5f64adf5fee68931504e24a0c9a18f09248ab529516",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 18076,
+      "meshes": 5,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 792736,
+        "triangles": 18076,
+        "images": 2,
+        "materials": 5,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-polar-bear.glb",
+      "bytes": 489776,
+      "sha256": "22c63b95ceacd6e79c782fb9c5510cfe82e1119600698fc878c3c19b1d26674c",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 19060,
+      "meshes": 4,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 1,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 731464,
+        "triangles": 19060,
+        "images": 1,
+        "materials": 4,
+        "pbr_base_color_textured_materials": 1,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-red-kangaroo.glb",
+      "bytes": 458172,
+      "sha256": "fc59e31f98c20afa1d481c3f8992615aa6a0029d2d7e0c54fa9f43e63f05a16e",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 16792,
+      "meshes": 5,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 677268,
+        "triangles": 16792,
+        "images": 2,
+        "materials": 5,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-red-panda.glb",
+      "bytes": 538208,
+      "sha256": "0f09ad4a91c6d1972a0f20a6c0f5f55b5f83d5255fc9b82814b407e9a36288b8",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 20984,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 813272,
+        "triangles": 20984,
+        "images": 3,
+        "materials": 6,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-reticulated-giraffe.glb",
+      "bytes": 541076,
+      "sha256": "dc561902b806f3b327b012ed916d7ec1782ef9ae89381af3aa84bb0b16c7b91f",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 20090,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 816660,
+        "triangles": 20090,
+        "images": 3,
+        "materials": 6,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-ring-tailed-lemur.glb",
+      "bytes": 407976,
+      "sha256": "f97198dc77abde5e3d4ecea483693a900dd0f9c407d780a0a56abd7189992fbc",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 13358,
+      "meshes": 4,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 589316,
+        "triangles": 13358,
+        "images": 3,
+        "materials": 4,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-silverback-gorilla.glb",
+      "bytes": 1665684,
+      "sha256": "9c351393ab0ae2f8963da90fc463eeac33f08a9ef912dfeec5de18042baef965",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 16812,
+      "meshes": 5,
+      "images": 2,
+      "image_formats": [
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 1687064,
+        "triangles": 16812,
+        "images": 3,
+        "materials": 5,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-slug.glb",
+      "bytes": 820672,
+      "sha256": "328aca641a4145799b938232073a1ef3824dcea9ba5270aec18724fd37730438",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [],
+      "triangles": 12980,
+      "meshes": 18,
+      "images": 3,
+      "image_formats": [
+        "image/png",
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 3,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "other-snow-leopard.glb",
+      "bytes": 664712,
+      "sha256": "96e565e0c99fddf236b66f4e2e1fa3b1a6f0823a198fd60c3b154f76cdaf4dd7",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 23284,
+      "meshes": 6,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 3,
+      "materials": 6,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 1021180,
+        "triangles": 23284,
+        "images": 3,
+        "materials": 6,
+        "pbr_base_color_textured_materials": 3,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "other-tortoise.glb",
+      "bytes": 431480,
+      "sha256": "dcc5e4669c6bc2162dbdafaf31edf2628c830ff8eaa45d1f9b6614a71134fac4",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 13364,
+      "meshes": 4,
+      "images": 2,
+      "image_formats": [
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 616640,
+        "triangles": 13364,
+        "images": 2,
+        "materials": 4,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "rabbit-wild-rabbit.glb",
+      "bytes": 382544,
+      "sha256": "a7436511c9f8d94772bccf16ec58bc06439336901a42956c447f85930d780e0a",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [
+        "Quantised mesh: normal glTF 2.0 extension; not supported by Hush Hunt legacy renderer"
+      ],
+      "triangles": 11906,
+      "meshes": 4,
+      "images": 1,
+      "image_formats": [
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 2,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [
+        "KHR_mesh_quantization"
+      ],
+      "extensions_used": [
+        "KHR_mesh_quantization"
+      ],
+      "fallback": {
+        "status": "STRUCTURALLY_VALID; rendering not proven",
+        "bytes": 544448,
+        "triangles": 11906,
+        "images": 2,
+        "materials": 4,
+        "pbr_base_color_textured_materials": 2,
+        "skins": 0,
+        "animations": 0,
+        "issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "file": "snail-amber-snail.glb",
+      "bytes": 1882228,
+      "sha256": "ddb7c1bc9b17680276e6cfe47b6d06a3945b0cd9c3b728ff4449cfe2ca18c952",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [],
+      "triangles": 34032,
+      "meshes": 20,
+      "images": 4,
+      "image_formats": [
+        "image/png",
+        "image/png",
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 4,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "snail-garden-snail.glb",
+      "bytes": 1877948,
+      "sha256": "5fb6935a832ade1e1cf217dabb3cbee93f856b7a0a82f752bce8843a2594b9b6",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [],
+      "triangles": 34032,
+      "meshes": 20,
+      "images": 4,
+      "image_formats": [
+        "image/png",
+        "image/png",
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 4,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "spider-garden-spider.glb",
+      "bytes": 915016,
+      "sha256": "a71f4c7367060e3c258f7b37979233631b56a419c9871ac24d5bb87a00d2d446",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [],
+      "notes": [],
+      "triangles": 16368,
+      "meshes": 33,
+      "images": 4,
+      "image_formats": [
+        "image/png",
+        "image/png",
+        "image/png",
+        "image/png"
+      ],
+      "pbr_base_color_textured_materials": 4,
+      "materials": 4,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    },
+    {
+      "file": "squirrel-grey-squirrel.glb",
+      "bytes": 201008,
+      "sha256": "dac11d6ec815af42bf73966207b2446a7d2e78530463918f6dfd43af5017eebd",
+      "valid_glb": true,
+      "status": "STRUCTURALLY_VALID; rendering not proven",
+      "issues": [],
+      "warnings": [
+        "NO_IMAGE_TEXTURES: flat-looking fallback likely",
+        "NO_PBR_BASE_COLOR_TEXTURE: coat/eye detail may be absent"
+      ],
+      "notes": [],
+      "triangles": 8128,
+      "meshes": 5,
+      "images": 0,
+      "image_formats": [],
+      "pbr_base_color_textured_materials": 0,
+      "materials": 5,
+      "alpha_modes": [
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE",
+        "OPAQUE"
+      ],
+      "skins": 0,
+      "animations": 0,
+      "extensions_required": [],
+      "extensions_used": []
+    }
+  ],
+  "models_with_issues": 2
+}

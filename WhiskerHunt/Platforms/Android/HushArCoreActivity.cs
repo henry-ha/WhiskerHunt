@@ -109,6 +109,8 @@ public sealed class HushArCoreActivity : Activity
         catch { FinishWith("fallback", $"Missing 3D wildlife asset: {filename}"); return; }
         bool hasLegacyMesh = HushGlbAnimal3D.TryLoad(this, _model, _species, _animalName,
             out _animal, out var loadMessage);
+        Android.Util.Log.Info("HushHuntAR", "3D catalogue " + _animalName +
+            " -> ar_models/" + filename + "; selection: " + loadMessage);
         string name = _animalName;
 
         _root = new FrameLayout(this) { Background = new ColorDrawable(AndroidColor.Black) };
@@ -179,29 +181,67 @@ public sealed class HushArCoreActivity : Activity
         _root.AddView(close, closeParams);
 
 
-        // Small animal zoom controls float beside the scene, clear of both camera and action buttons.
-        // They change the 3D animal's display scale, not the rear-camera field of view.
-        var sizeTray = new LinearLayout(this) { Orientation = Orientation.Vertical };
-        sizeTray.SetGravity(GravityFlags.Center);
-        sizeTray.SetPadding(Dp(5), Dp(7), Dp(5), Dp(7));
-        var sizeBackground = new GradientDrawable();
-        sizeBackground.SetColor(AndroidColor.Argb(218, 12, 23, 43));
-        sizeBackground.SetCornerRadius(Dp(23));
-        sizeTray.Background = sizeBackground;
-        var bigger = new AndroidButton(this) { Text = "+", TextSize = 23, ContentDescription = "Make 3D animal bigger" };
-        var smaller = new AndroidButton(this) { Text = "−", TextSize = 23, ContentDescription = "Make 3D animal smaller" };
-        StyleCaptureToken(bigger, AndroidColor.Rgb(37, 79, 89));
-        StyleCaptureToken(smaller, AndroidColor.Rgb(37, 79, 89));
-        _sizeLabel = new TextView(this) { Text = "1×", TextSize = 13, Gravity = GravityFlags.Center };
+        // One floating, compact 3D navigation control: rotate | resize | rotate.
+        // Circular, high-contrast touch targets; no dark navy enclosure or tilt controls.
+        // Kept at camera mid-height, away from the bottom Safari actions.
+        AndroidButton FloatingAnimalControl(string glyph, string hint)
+        {
+            var control = new AndroidButton(this)
+            {
+                Text = glyph, TextSize = (glyph == "↶" || glyph == "↷") ? 29f : 22f,
+                Gravity = GravityFlags.Center,
+                ContentDescription = hint
+            };
+            control.SetMinimumHeight(0);
+            control.SetMinimumWidth(0);
+            control.SetAllCaps(false);
+            control.SetIncludeFontPadding(false);
+            control.SetTextColor(AndroidColor.White);
+            // Typeface baselines put the curved-arrow glyphs visually low.
+            // Apply bottom padding to lift only the icon about 3dp while keeping
+            // the 48dp circular hit area, layout and other icons unchanged.
+            bool isRotation = glyph == "↶" || glyph == "↷";
+            control.SetPadding(0, 0, 0, isRotation ? Dp(6) : 0);
+            var circle = new GradientDrawable();
+            circle.SetShape(ShapeType.Oval);
+            // Neutral, translucent controls; retain the existing 48dp touch area.
+            // The background is intentionally see-through so wildlife and surroundings remain visible.
+            circle.SetColor(AndroidColor.Argb(142, 72, 79, 86));
+            circle.SetStroke(Dp(1), AndroidColor.Argb(165, 239, 244, 244));
+            control.Background = circle;
+            control.Elevation = Dp(4);
+            return control;
+        }
+        var resizeControls = new LinearLayout(this) { Orientation = Orientation.Vertical };
+        resizeControls.SetGravity(GravityFlags.Center);
+        var bigger = FloatingAnimalControl("+", "Make animal larger");
+        var smaller = FloatingAnimalControl("−", "Make animal smaller");
+        _sizeLabel = new TextView(this) { Text = "1×", TextSize = 14, Gravity = GravityFlags.Center };
         _sizeLabel.SetTextColor(AndroidColor.White);
-        sizeTray.AddView(bigger, new LinearLayout.LayoutParams(Dp(46), Dp(46)));
-        sizeTray.AddView(_sizeLabel, new LinearLayout.LayoutParams(Dp(46), Dp(31)));
-        sizeTray.AddView(smaller, new LinearLayout.LayoutParams(Dp(46), Dp(46)));
+        _sizeLabel.SetShadowLayer(Dp(2), 0f, Dp(1), AndroidColor.Black);
+        resizeControls.AddView(bigger, new LinearLayout.LayoutParams(Dp(48), Dp(48)));
+        resizeControls.AddView(_sizeLabel, new LinearLayout.LayoutParams(Dp(48), Dp(33)));
+        resizeControls.AddView(smaller, new LinearLayout.LayoutParams(Dp(48), Dp(48)));
         bigger.Click += (_, _) => AdjustAnimalSize(1.25f);
         smaller.Click += (_, _) => AdjustAnimalSize(0.8f);
-        var sizeParams = new LayoutParams(Dp(58), -2, GravityFlags.Right | GravityFlags.CenterVertical);
-        sizeParams.RightMargin = Dp(12);
-        _root.AddView(sizeTray, sizeParams);
+
+        var rotateLeft = FloatingAnimalControl("↶", "Rotate animal left");
+        var rotateRight = FloatingAnimalControl("↷", "Rotate animal right");
+        rotateLeft.Click += (_, _) => RotateAnimal(25f, 0f);
+        rotateRight.Click += (_, _) => RotateAnimal(-25f, 0f);
+        var controls = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        controls.SetGravity(GravityFlags.Center);
+        var sideButtonParams = new LinearLayout.LayoutParams(Dp(48), Dp(48));
+        sideButtonParams.RightMargin = Dp(6);
+        controls.AddView(rotateLeft, sideButtonParams);
+        controls.AddView(resizeControls, new LinearLayout.LayoutParams(Dp(48), Dp(129)));
+        var rightButtonParams = new LinearLayout.LayoutParams(Dp(48), Dp(48));
+        rightButtonParams.LeftMargin = Dp(6);
+        controls.AddView(rotateRight, rightButtonParams);
+        var controlsParams = new LayoutParams(-2, -2, GravityFlags.Right | GravityFlags.CenterVertical);
+        controlsParams.RightMargin = Dp(12);
+        controlsParams.TopMargin = Dp(-50);
+        _root.AddView(controls, controlsParams);
 
         // A tiny, non-interactive acknowledgment replaces extra game controls.
         _petFeedback = new TextView(this)
@@ -222,7 +262,7 @@ public sealed class HushArCoreActivity : Activity
         var bottom = new LinearLayout(this) { Orientation = Orientation.Horizontal };
         bottom.SetGravity(GravityFlags.Center);
         bottom.SetPadding(Dp(14), Dp(10), Dp(14), Dp(10));
-        bottom.SetBackgroundColor(AndroidColor.Argb(130, 12, 17, 36));
+        bottom.SetBackgroundColor(AndroidColor.Transparent);
         var back = new AndroidButton(this) { Text = "2D", ContentDescription = "Switch to 2D Safari" };
         back.Click += (_, _) => FinishWith("2d", "2D Safari selected.");
         _place = new AndroidButton(this) { Text = "Place", Enabled = false, ContentDescription = "Place animal on tracked floor or table" };
@@ -243,26 +283,6 @@ public sealed class HushArCoreActivity : Activity
         var trayParams = new LayoutParams(-1, -2, GravityFlags.Bottom);
         trayParams.BottomMargin = Dp(62);
         _root.AddView(bottom, trayParams);
-        // Yaw-only controls: tilt buttons were confused with walking controls.
-        var rotationTray = new LinearLayout(this) { Orientation = Orientation.Horizontal };
-        rotationTray.SetGravity(GravityFlags.Center);
-        foreach (var (symbol, yaw, pitch) in new (string text, float yaw, float pitch)[]
-        {
-            ("↶", 25f, 0f), ("↷", -25f, 0f)
-        })
-        {
-            var btn = new AndroidButton(this) { Text = symbol, TextSize = 19,
-                ContentDescription = yaw > 0 ? "Rotate animal left" : "Rotate animal right" };
-            btn.SetTextColor(AndroidColor.White);
-            btn.SetBackgroundColor(AndroidColor.Argb(220, 30, 60, 69));
-            btn.Click += (_, _) => RotateAnimal(yaw, pitch);
-            var bp = new LinearLayout.LayoutParams(Dp(70), Dp(44));
-            bp.LeftMargin = Dp(4); bp.RightMargin = Dp(4);
-            rotationTray.AddView(btn, bp);
-        }
-        var rotationParams = new LayoutParams(-1, -2, GravityFlags.Bottom);
-        rotationParams.BottomMargin = Dp(134);
-        _root.AddView(rotationTray, rotationParams);
         SetContentView(_root);
         _surface.Touch += (_, e) =>
         {
