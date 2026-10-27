@@ -1,0 +1,31 @@
+{
+  "slot": "other-grizzly-bear.glb",
+  "species": "Grizzly Bear",
+  "status": "STAGED_NEEDS_VISUAL_APPROVAL",
+  "source": "1DesignTool",
+  "source_url": "https://1designtool.com/3d/models/brown-bear",
+  "license": "1DesignTool: embedding in apps allowed; raw model-pack redistribution restricted",
+  "exact_species_match": true,
+  "sha256": "1891306fcec1760b1781f1d989b1227d1831c30e31b6bd13fb7628852423a42d",
+  "comparison_original_sha256": "e7ef627e646558f651f9f1a04906aa6477869a959705e29dc4eab0beccd9fe75",
+  "quality_notes": [
+    "No animation: WALK would glide"
+  ],
+  "inspection": {
+    "bytes": 7975004,
+    "sha256": "1891306fcec1760b1781f1d989b1227d1831c30e31b6bd13fb7628852423a42d",
+    "triangles": 112718,
+    "images": 4,
+    "materials": 5,
+    "skins": 0,
+    "animations": 0,
+    "extensions_required": [],
+    "warnings": [
+      "STATIC model; no natural walking animation",
+      "1 alpha material(s); verify fur cards render correctly"
+    ]
+  },
+  "staged_utc": "2026-10-27T21:09:14.247044+00:00",
+  "approved": false,
+  "visual_review_method": "OPEN GLB in Blender or Windows 3D viewer, check eyes, paws, coats, cutout fur, model scale, props"
+}

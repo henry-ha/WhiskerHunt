@@ -1,0 +1,87 @@
+[
+  {
+    "species": "red-panda",
+    "model_slot": "other-red-panda.glb",
+    "audit": {
+      "path": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt\\Resources\\Raw\\ar_models\\other-red-panda.glb",
+      "bytes": 926076,
+      "sha256": "42e67acac86308e5a82dbc56201a6f3afafafb59a13ed86347548b8568b78793",
+      "triangles": 20984,
+      "images": 1,
+      "materials": 6,
+      "animations": 0,
+      "skins": 0,
+      "extensionsRequired": [],
+      "eye_nodes": [],
+      "transparent_materials": []
+    }
+  },
+  {
+    "species": "zebra",
+    "model_slot": "other-plains-zebra.glb",
+    "audit": {
+      "path": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt\\Resources\\Raw\\ar_models\\other-plains-zebra.glb",
+      "bytes": 932388,
+      "sha256": "c2c48fd424fa2fdb21eecede3d1d6f8c2367de0a148d63be4c356c469f597a59",
+      "triangles": 18076,
+      "images": 1,
+      "materials": 5,
+      "animations": 0,
+      "skins": 0,
+      "extensionsRequired": [],
+      "eye_nodes": [],
+      "transparent_materials": []
+    }
+  },
+  {
+    "species": "wolf",
+    "model_slot": "other-grey-wolf.glb",
+    "audit": {
+      "path": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt\\Resources\\Raw\\ar_models\\other-grey-wolf.glb",
+      "bytes": 876472,
+      "sha256": "2eda2f0f347fcf41a88f52d74f6426d719e0065c09344128da0974723c2e614e",
+      "triangles": 20068,
+      "images": 1,
+      "materials": 5,
+      "animations": 0,
+      "skins": 0,
+      "extensionsRequired": [],
+      "eye_nodes": [],
+      "transparent_materials": []
+    }
+  },
+  {
+    "species": "fox",
+    "model_slot": "other-fox.glb",
+    "audit": {
+      "path": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt\\Resources\\Raw\\ar_models\\other-fox.glb",
+      "bytes": 492552,
+      "sha256": "6ea4b1c7d65a0ebdaf97e3257a3c3f7576d3b466a8931c43ef7cfad64ed6b6d9",
+      "triangles": 20184,
+      "images": 0,
+      "materials": 7,
+      "animations": 0,
+      "skins": 0,
+      "extensionsRequired": [],
+      "eye_nodes": [],
+      "transparent_materials": []
+    }
+  },
+  {
+    "species": "kangaroo",
+    "model_slot": "other-red-kangaroo.glb",
+    "audit": {
+      "path": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt\\Resources\\Raw\\ar_models\\other-red-kangaroo.glb",
+      "bytes": 761440,
+      "sha256": "970e27d99ebea80930412fd1b045ad97a972769164496814c5236f3e099ac270",
+      "triangles": 16792,
+      "images": 1,
+      "materials": 5,
+      "animations": 0,
+      "skins": 0,
+      "extensionsRequired": [],
+      "eye_nodes": [],
+      "transparent_materials": []
+    }
+  }
+]

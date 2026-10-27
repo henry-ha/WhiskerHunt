@@ -1,0 +1,10 @@
+Local tests executed 27 October 2026:
+- 61-slot manifest uniqueness and source slot naming checked against installed archive.
+- Python syntax check succeeded.
+- Parsed original GLB sample Red Panda and Plains Zebra from Hush Hunt archive.
+- Staged alternative model with source/licence metadata; audited 61-slot progress.
+- Explicitly approved a sample staged model for workflow testing only.
+- Dry-run showed the intended SHA256 change.
+- Installed test GLB with timestamped backup, then rolled back with byte-for-byte SHA256 match.
+- No Android build or on-device Filament visual test was run here.
+- The eight external downloads remain untested from this environment (no DNS).

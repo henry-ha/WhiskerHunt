@@ -1,0 +1,62 @@
+[
+  {
+    "animal": "Sumpitueslag Cat",
+    "file": "cat-sumpitueslag-cat.glb",
+    "status": "VALID",
+    "bytes": 586268,
+    "materials": 3,
+    "embedded_images": 4,
+    "meshes": 3,
+    "animations": 0,
+    "required_extensions": "",
+    "large_model_warning": false
+  },
+  {
+    "animal": "Cat in Motion",
+    "file": "cat-cat-in-motion.glb",
+    "status": "VALID",
+    "bytes": 31335532,
+    "materials": 1,
+    "embedded_images": 4,
+    "meshes": 4,
+    "animations": 0,
+    "required_extensions": "",
+    "large_model_warning": true
+  },
+  {
+    "animal": "Bald Eagle Catching Fish",
+    "file": "bird-bald-eagle-catching-fish.glb",
+    "status": "VALID",
+    "bytes": 15429724,
+    "materials": 1,
+    "embedded_images": 1,
+    "meshes": 1,
+    "animations": 0,
+    "required_extensions": "",
+    "large_model_warning": false
+  },
+  {
+    "animal": "Jack Russell Puppy",
+    "file": "dog-jack-russell-puppy.glb",
+    "status": "VALID",
+    "bytes": 38856332,
+    "materials": 1,
+    "embedded_images": 3,
+    "meshes": 7,
+    "animations": 0,
+    "required_extensions": "",
+    "large_model_warning": true
+  },
+  {
+    "animal": "Phoenix Bird",
+    "file": "fantasy-phoenix-bird.glb",
+    "status": "VALID",
+    "bytes": 1046992,
+    "materials": 2,
+    "embedded_images": 4,
+    "meshes": 2,
+    "animations": 0,
+    "required_extensions": "",
+    "large_model_warning": false
+  }
+]

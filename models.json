@@ -1,0 +1,67 @@
+[
+  {
+    "key": "wildlife-fantasy-phoenix-bird",
+    "file": "fantasy-phoenix-bird.glb",
+    "name": "Phoenix Bird",
+    "species": "Fantasy",
+    "icon": "🔥",
+    "picker": "Phoenix Bird (Fantasy)",
+    "source": "real-time_bones_demo_phoenix_bird.glb",
+    "performance": "Normal",
+    "animations": 0,
+    "bytes": 1046992,
+    "sha256": "82e6fd36a1f937eab88cac8fbec22453a7e233545c386b26573875d2282df97c"
+  },
+  {
+    "key": "wildlife-cat-sumpitueslag-cat",
+    "file": "cat-sumpitueslag-cat.glb",
+    "name": "Sumpitueslag Cat",
+    "species": "Cat",
+    "icon": "🐈",
+    "picker": "Sumpitueslag Cat",
+    "source": "cat_by_sumpitueslag.glb",
+    "performance": "Normal",
+    "animations": 0,
+    "bytes": 586268,
+    "sha256": "da1e9597fa664b94075c678bc3b8f1ee20078e23761c5ac1a7b984aa859ab233"
+  },
+  {
+    "key": "wildlife-cat-cat-in-motion",
+    "file": "cat-cat-in-motion.glb",
+    "name": "Cat in Motion",
+    "species": "Cat",
+    "icon": "🐈",
+    "picker": "Cat in Motion (Static)",
+    "source": "cat_in_motion_3d_model_free.glb",
+    "performance": "Heavy — 389k triangles",
+    "animations": 0,
+    "bytes": 31335532,
+    "sha256": "b55ee44086d29b5ba78da559bd10946161a71f877a498a6b889e77518e6aa7e7"
+  },
+  {
+    "key": "wildlife-bird-bald-eagle-catching-fish",
+    "file": "bird-bald-eagle-catching-fish.glb",
+    "name": "Bald Eagle Catching Fish",
+    "species": "Bird",
+    "icon": "🦅",
+    "picker": "Bald Eagle Catching Fish",
+    "source": "bald_eagle_catching_fish.glb",
+    "performance": "Normal",
+    "animations": 0,
+    "bytes": 15429724,
+    "sha256": "257ced5bf14739cffeee6f9b0157470d801b78a372bb33818188254aec9804e8"
+  },
+  {
+    "key": "wildlife-dog-jack-russell-puppy",
+    "file": "dog-jack-russell-puppy.glb",
+    "name": "Jack Russell Puppy",
+    "species": "Dog",
+    "icon": "🐕",
+    "picker": "Jack Russell Puppy",
+    "source": "stylized_puppy__jack_russell_cute_3d_character.glb",
+    "performance": "Very heavy — 674k triangles",
+    "animations": 0,
+    "bytes": 38856332,
+    "sha256": "31beeb0c47d3c9ee05793ff0f0f1d036961e972c7cf043413314b728a1d21d79"
+  }
+]

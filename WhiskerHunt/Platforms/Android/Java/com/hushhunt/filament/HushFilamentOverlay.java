@@ -70,6 +70,12 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
     private volatile boolean visibleAnimalPixels;
     private long lastPixelValidationNanos;
     private long lastRenderedNanos;
+    // Draw the animal only against an actual ARCore camera update. This avoids
+    // rendering a stale pose in a second TextureView while the background moves.
+    private long frameGeneration;
+    private long renderedGeneration;
+    private long frameBudgetNanos = 16_000_000L;
+    private int packagedGlbBytes;
     private int unsuccessfulPixelChecks;
     private boolean textureVisibilityWarned;
 
@@ -177,6 +183,7 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
             item.projectionSnapshot = projection.clone();
             item.anchorSnapshot = anchor.clone();
             item.animalScale = Math.max(.5f, Math.min(3f, scale));
+            item.frameGeneration++;
         }
         // Read the estimate while its ARCore Frame is still current.
         if (arFrame != null && (++item.lightReadFrameCounter % 8) == 0) {
@@ -215,8 +222,12 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
             scene = engine.createScene();
             cameraEntity = EntityManager.get().create();
             camera = engine.createCamera(cameraEntity);
-            // The previous outdoor photographic exposure made indoor animals almost black.
-            camera.setExposure(2.8f, 1f / 60f, 250f);
+            // Colour-fidelity correction (B99): the old f/4 at 1/80 s exposure
+            // (EV100 ~10.3), combined with a 30,000 lux sun and 16,000 lux
+            // ambient fill, badly clipped normal baseColor textures. f/8 at
+            // 1/125 s (EV100 13) uses a physically compatible exposure for
+            // daylight-strength lights. Avoid reintroducing a bright ISO.
+            camera.setExposure(8.0f, 1f / 125f, 100f);
             view = engine.createView();
             view.setScene(scene);
             view.setCamera(camera);
@@ -235,14 +246,15 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
             sunEntity = EntityManager.get().create();
             new LightManager.Builder(LightManager.Type.DIRECTIONAL)
                 .direction(.35f, -1f, -.4f)
-                .intensity(45000f)
+                .intensity(24000f)
                 .castShadows(false)
                 .build(engine, sunEntity);
             scene.addEntity(sunEntity);
-            // Safe neutral ambient until ARCore has produced its first HDR estimate.
+            // Conservative neutral fill: the old 16,000 lux ambient washed out
+            // light fur. Keep the fill stable while honouring the source colour.
             ambientLight = new IndirectLight.Builder()
                 .irradiance(1, new float[] { .9f, .9f, .9f })
-                .intensity(25000f).build(engine);
+                .intensity(6500f).build(engine);
             scene.setIndirectLight(ambientLight);
 
             stage("gltfio.loader.create");
@@ -251,6 +263,13 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
             resourceLoader = new ResourceLoader(engine);
             stage("asset.read:" + assetName);
             byte[] bytes = readAsset("ar_models/" + assetName);
+            packagedGlbBytes = bytes.length;
+            // A dense mesh may still be slow; keep camera and animal updates in
+            // sync rather than drawing stale poses at an artificial frame rate.
+            frameBudgetNanos = bytes.length > 24 * 1024 * 1024
+                ? 30_000_000L : (bytes.length > 12 * 1024 * 1024 ? 22_000_000L : 16_000_000L);
+            Log.i(TAG, "HD GLB=" + assetName + " bytes=" + packagedGlbBytes +
+                " frameBudgetNs=" + frameBudgetNanos);
             verifyGlbHeader(bytes);
             stage("asset.create:" + assetName + " (" + bytes.length + " bytes)");
             ByteBuffer bb = ByteBuffer.allocateDirect(bytes.length).order(ByteOrder.nativeOrder());
@@ -316,7 +335,11 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
             byte[] buffer = new byte[16384]; int n;
             while ((n = in.read(buffer)) != -1) {
                 out.write(buffer, 0, n);
-                if (out.size() > 24 * 1024 * 1024) throw new IllegalStateException("GLB too large");
+                // The former 24 MiB cap silently rejected Cat in Motion
+                // (~31.3 MB) and the Jack Russell puppy (~38.9 MB).
+                // Keep a finite bound for mobile safety, but admit both assets.
+                if (out.size() > 64 * 1024 * 1024)
+                    throw new IllegalStateException("GLB exceeds mobile 64 MiB safety limit: " + path);
             }
             return out.toByteArray();
         }
@@ -331,9 +354,9 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
     @Override public void doFrame(long nanos) {
         frameScheduled = false;
         if (destroyed || !modelReady || swapChain == null) return;
-        // Limit the transparent Filament overlay to ~30fps while ARCore's camera
-        // keeps running independently. Avoid unnecessary dual-GPU 60fps work.
-        if (lastRenderedNanos != 0 && nanos - lastRenderedNanos < 30_000_000L) {
+        // Small models follow ARCore at display cadence; heavier models are
+        // budgeted to protect the camera thread from GPU starvation.
+        if (lastRenderedNanos != 0 && nanos - lastRenderedNanos < frameBudgetNanos) {
             scheduleFrame();
             return;
         }
@@ -341,10 +364,17 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
         try {
             float[] v, p, a, d, intensity;
             float scale;
+            long generation;
             synchronized (snapshotLock) {
                 v = viewSnapshot; p = projectionSnapshot; a = anchorSnapshot;
                 d = lightDirection; intensity = lightIntensity; scale = animalScale;
+                generation = frameGeneration;
             }
+            if (generation == renderedGeneration || v == null || p == null || a == null) {
+                scheduleFrame();
+                return;
+            }
+            renderedGeneration = generation;
             if (v != null && p != null && a != null) {
                 float[] cameraWorld = new float[16];
                 if (Matrix.invertM(cameraWorld, 0, v, 0)) {
@@ -374,9 +404,9 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
                         LightManager lm = engine.getLightManager();
                         int li = lm.getInstance(sunEntity);
                         lm.setDirection(li, -d[0], -d[1], -d[2]);
-                        float magnitude = Math.max(.25f, Math.min(2.0f,
+                        float magnitude = Math.max(.35f, Math.min(1.35f,
                             (intensity[0] + intensity[1] + intensity[2]) / 3.0f));
-                        lm.setIntensity(li, 35000f * magnitude);
+                        lm.setIntensity(li, 15000f * magnitude);
                     }
                 }
             }
@@ -400,7 +430,10 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
                 // A submitted GPU frame is NOT evidence that the GLB is
                 // actually visible. Verify there are lit, non-transparent
                 // pixels before hiding the reliable legacy renderer.
-                if (nanos - lastPixelValidationNanos > 1_000_000_000L) {
+                // TextureView.getBitmap() forces a GPU-to-CPU synchronisation.
+                // Do it only until a model has actually shown pixels; doing it
+                // every second for the lifetime of AR Safari causes stuttering.
+                if (!visibleAnimalPixels && nanos - lastPixelValidationNanos > 1_200_000_000L) {
                     lastPixelValidationNanos = nanos;
                     inspectVisibleAnimalPixels();
                 }

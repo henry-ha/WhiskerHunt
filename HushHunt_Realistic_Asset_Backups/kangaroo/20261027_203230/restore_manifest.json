@@ -1,0 +1,10 @@
+{
+  "species": "kangaroo",
+  "slot": "other-red-kangaroo.glb",
+  "original_sha256": "970e27d99ebea80930412fd1b045ad97a972769164496814c5236f3e099ac270",
+  "installed_sha256": "af32719cece0383c04bf5e87dfbe89999c421d7282f4c1632ada298634e73947",
+  "source_page": "https://1designtool.com/3d/models/red-kangaroo",
+  "installed_at": "2026-10-27T20:32:30.317351",
+  "limitations": "Static standing pose. Not suitable for hopping without rigging.",
+  "license": "https://1designtool.com/3d/license"
+}

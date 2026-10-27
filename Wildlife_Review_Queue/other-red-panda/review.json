@@ -1,0 +1,26 @@
+{
+  "slot": "other-red-panda.glb",
+  "species": "Red Panda",
+  "source": "1DesignTool",
+  "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+  "page": "https://1designtool.com/3d/models/red-panda",
+  "notes": "STATIC; includes log. Not safe for WALK without removing scenery and rigging",
+  "file_sha256": "11154c7e6ea62833a38e67c40f9372a893d9d2db588297755ebc1dee7ea86ca5",
+  "quality_review_approved": true,
+  "inspected": {
+    "bytes": 8594624,
+    "sha256": "11154c7e6ea62833a38e67c40f9372a893d9d2db588297755ebc1dee7ea86ca5",
+    "triangles": 111432,
+    "images": 9,
+    "materials": 8,
+    "skins": 0,
+    "animations": 0,
+    "extensions_required": [],
+    "warnings": [
+      "STATIC model; no natural walking animation",
+      "2 alpha material(s); verify fur cards render correctly"
+    ]
+  },
+  "staged_utc": "2026-10-27T20:46:14.662358Z",
+  "approved_at_utc": "2026-10-27T20:53:27.758778Z"
+}

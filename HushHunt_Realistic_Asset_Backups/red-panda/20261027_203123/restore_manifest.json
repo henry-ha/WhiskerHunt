@@ -1,0 +1,10 @@
+{
+  "species": "red-panda",
+  "slot": "other-red-panda.glb",
+  "original_sha256": "42e67acac86308e5a82dbc56201a6f3afafafb59a13ed86347548b8568b78793",
+  "installed_sha256": "11154c7e6ea62833a38e67c40f9372a893d9d2db588297755ebc1dee7ea86ca5",
+  "source_page": "https://1designtool.com/3d/models/red-panda",
+  "installed_at": "2026-10-27T20:31:23.672651",
+  "limitations": "Static; contains a mossy log. Do NOT use for walk animation without removing log/rigging.",
+  "license": "https://1designtool.com/3d/license"
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "source": "cat_in_motion_3d_model_free.glb",
+    "installed": "cat-cat-in-motion.glb",
+    "corrected_materials": 1,
+    "emissive_strength": 0.0,
+    "original_bytes": 31335532,
+    "repaired_bytes": 31335532,
+    "sha256": "1c825d9158b2dc3e5fa82190ac0a0c65d8422f80a80fb2836833fc00c0ea17d8"
+  },
+  {
+    "source": "real-time_bones_demo_phoenix_bird.glb",
+    "installed": "fantasy-phoenix-bird.glb",
+    "corrected_materials": 2,
+    "emissive_strength": 0.05,
+    "original_bytes": 1046992,
+    "repaired_bytes": 1047000,
+    "sha256": "e8ddcf5ba6c93627071ec94c688649aa1bf32073ce8e337920138d31fd3a7d93"
+  }
+]

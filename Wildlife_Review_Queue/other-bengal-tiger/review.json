@@ -1,0 +1,26 @@
+{
+  "slot": "other-bengal-tiger.glb",
+  "species": "Bengal Tiger",
+  "source": "1DesignTool",
+  "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+  "page": "https://1designtool.com/3d/models/bengal-tiger",
+  "notes": "STATIC posed mid-stride; fur cards/striping may need alpha support",
+  "file_sha256": "2ecc6e0cca1563f728a28f0a0b51e8dcf58970f7a6b477856843a66f88bbe84d",
+  "quality_review_approved": true,
+  "inspected": {
+    "bytes": 4954168,
+    "sha256": "2ecc6e0cca1563f728a28f0a0b51e8dcf58970f7a6b477856843a66f88bbe84d",
+    "triangles": 116644,
+    "images": 5,
+    "materials": 5,
+    "skins": 0,
+    "animations": 0,
+    "extensions_required": [],
+    "warnings": [
+      "STATIC model; no natural walking animation",
+      "1 alpha material(s); verify fur cards render correctly"
+    ]
+  },
+  "staged_utc": "2026-10-27T20:45:23.694725Z",
+  "approved_at_utc": "2026-10-27T20:51:11.063234Z"
+}

@@ -1,0 +1,340 @@
+[
+  {
+    "key": "wildlife-snail-garden-snail",
+    "file": "snail-garden-snail.glb",
+    "name": "Garden Snail",
+    "species": "Snail"
+  },
+  {
+    "key": "wildlife-snail-amber-snail",
+    "file": "snail-amber-snail.glb",
+    "name": "Amber Snail",
+    "species": "Snail"
+  },
+  {
+    "key": "wildlife-ladybird-seven-spot",
+    "file": "ladybird-seven-spot.glb",
+    "name": "Seven-spot",
+    "species": "Ladybird"
+  },
+  {
+    "key": "wildlife-spider-garden-spider",
+    "file": "spider-garden-spider.glb",
+    "name": "Garden Spider",
+    "species": "Spider"
+  },
+  {
+    "key": "wildlife-other-slug",
+    "file": "other-slug.glb",
+    "name": "Slug",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-other-fox",
+    "file": "other-fox.glb",
+    "name": "Fox",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-rabbit-wild-rabbit",
+    "file": "rabbit-wild-rabbit.glb",
+    "name": "Wild Rabbit",
+    "species": "Rabbit"
+  },
+  {
+    "key": "wildlife-squirrel-grey-squirrel",
+    "file": "squirrel-grey-squirrel.glb",
+    "name": "Grey Squirrel",
+    "species": "Squirrel"
+  },
+  {
+    "key": "wildlife-hedgehog-european-hedgehog",
+    "file": "hedgehog-european-hedgehog.glb",
+    "name": "European Hedgehog",
+    "species": "Hedgehog"
+  },
+  {
+    "key": "wildlife-frog-common-frog",
+    "file": "frog-common-frog.glb",
+    "name": "Common Frog",
+    "species": "Frog"
+  },
+  {
+    "key": "wildlife-dog-labrador",
+    "file": "dog-labrador.glb",
+    "name": "Labrador",
+    "species": "Dog"
+  },
+  {
+    "key": "ginger-tabby",
+    "file": "cat-ginger-tabby.glb",
+    "name": "Ginger Tabby",
+    "species": "Cat"
+  },
+  {
+    "key": "wildlife-bird-robin",
+    "file": "bird-robin.glb",
+    "name": "Robin",
+    "species": "Bird"
+  },
+  {
+    "key": "wildlife-bird-owl",
+    "file": "bird-owl.glb",
+    "name": "Owl",
+    "species": "Bird"
+  },
+  {
+    "key": "wildlife-butterfly-peacock",
+    "file": "butterfly-peacock.glb",
+    "name": "Peacock",
+    "species": "Butterfly"
+  },
+  {
+    "key": "wildlife-bee-honeybee",
+    "file": "bee-honeybee.glb",
+    "name": "Honeybee",
+    "species": "Bee"
+  },
+  {
+    "key": "wildlife-beetle-stag-beetle",
+    "file": "beetle-stag-beetle.glb",
+    "name": "Stag Beetle",
+    "species": "Beetle"
+  },
+  {
+    "key": "wildlife-dragonfly-emperor-dragonfly",
+    "file": "dragonfly-emperor-dragonfly.glb",
+    "name": "Emperor Dragonfly",
+    "species": "Dragonfly"
+  },
+  {
+    "key": "wildlife-ant-black-garden-ant",
+    "file": "ant-black-garden-ant.glb",
+    "name": "Black Garden Ant",
+    "species": "Ant"
+  },
+  {
+    "key": "wildlife-other-deer",
+    "file": "other-deer.glb",
+    "name": "Deer",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-other-mouse",
+    "file": "other-mouse.glb",
+    "name": "Mouse",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-other-tortoise",
+    "file": "other-tortoise.glb",
+    "name": "Tortoise",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-other-bat",
+    "file": "other-bat.glb",
+    "name": "Bat",
+    "species": "Other"
+  },
+  {
+    "key": "wildlife-cat-domestic-shorthair",
+    "file": "cat-domestic-shorthair.glb",
+    "name": "Domestic Shorthair",
+    "species": "Cat",
+    "source": "https://3dassets.dev/assets/pets-and-companions-hd-domestic-shorthair-sitting-b1cd877a",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-african-lion",
+    "file": "other-african-lion.glb",
+    "name": "African Lion",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-african-lion-male-4417c586",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-african-lioness",
+    "file": "other-african-lioness.glb",
+    "name": "African Lioness",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-african-lioness-6090dd62",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-bengal-tiger",
+    "file": "other-bengal-tiger.glb",
+    "name": "Bengal Tiger",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-bengal-tiger-cbb738df",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-cheetah",
+    "file": "other-cheetah.glb",
+    "name": "Cheetah",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-cheetah-c33fc992",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-jaguar",
+    "file": "other-jaguar.glb",
+    "name": "Jaguar",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-jaguar-f6217166",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-grey-wolf",
+    "file": "other-grey-wolf.glb",
+    "name": "Grey Wolf",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-grey-wolf-6a9c06f3",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-grizzly-bear",
+    "file": "other-grizzly-bear.glb",
+    "name": "Grizzly Bear",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-grizzly-bear-0638d906",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-polar-bear",
+    "file": "other-polar-bear.glb",
+    "name": "Polar Bear",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-polar-bear-db2f86b3",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-plains-zebra",
+    "file": "other-plains-zebra.glb",
+    "name": "Plains Zebra",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-plains-zebra-5dea27b5",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-reticulated-giraffe",
+    "file": "other-reticulated-giraffe.glb",
+    "name": "Reticulated Giraffe",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-reticulated-giraffe-7a2678a4",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-black-rhinoceros",
+    "file": "other-black-rhinoceros.glb",
+    "name": "Black Rhinoceros",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-black-rhinoceros-70fcb957",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-hippopotamus",
+    "file": "other-hippopotamus.glb",
+    "name": "Hippopotamus",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-hippopotamus-9d28fbee",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-snow-leopard",
+    "file": "other-snow-leopard.glb",
+    "name": "Snow Leopard",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-snow-leopard-76abf232",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-dromedary-camel",
+    "file": "other-dromedary-camel.glb",
+    "name": "Dromedary Camel",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-dromedary-camel-c0ad7d89",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-red-panda",
+    "file": "other-red-panda.glb",
+    "name": "Red Panda",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-red-panda-8b3fba67",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-giant-anteater",
+    "file": "other-giant-anteater.glb",
+    "name": "Giant Anteater",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-giant-anteater-6624b776",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-african-elephant",
+    "file": "other-african-elephant.glb",
+    "name": "African Elephant",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-african-elephant-bull-29d8c02f",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-silverback-gorilla",
+    "file": "other-silverback-gorilla.glb",
+    "name": "Silverback Gorilla",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-silverback-gorilla-57a5e6e1",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-chimpanzee",
+    "file": "other-chimpanzee.glb",
+    "name": "Chimpanzee",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-chimpanzee-06bf45b0",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-orangutan",
+    "file": "other-orangutan.glb",
+    "name": "Orangutan",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-orangutan-ead39ac5",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-ring-tailed-lemur",
+    "file": "other-ring-tailed-lemur.glb",
+    "name": "Ring-tailed Lemur",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-ring-tailed-lemur-dee1ff36",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-meerkat",
+    "file": "other-meerkat.glb",
+    "name": "Meerkat",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-meerkat-sentry-b676c244",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-red-kangaroo",
+    "file": "other-red-kangaroo.glb",
+    "name": "Red Kangaroo",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-red-kangaroo-14d31816",
+    "license": "CC0-1.0"
+  },
+  {
+    "key": "wildlife-other-komodo-dragon",
+    "file": "other-komodo-dragon.glb",
+    "name": "Komodo Dragon",
+    "species": "Other",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-komodo-dragon-a6ddad7b",
+    "license": "CC0-1.0"
+  }
+]

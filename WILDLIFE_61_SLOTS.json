@@ -1,0 +1,733 @@
+{
+  "updated": "2026-10-27",
+  "total_slots": 61,
+  "note": "Slots are project asset files, not a claim of 61 distinct species. No automatic model quality approval.",
+  "animals": [
+    {
+      "slot": "ant-black-garden-ant.glb",
+      "species": "Black Garden Ant",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "bee-honeybee.glb",
+      "species": "Honeybee",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "beetle-stag-beetle.glb",
+      "species": "Stag Beetle",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "bird-owl.glb",
+      "species": "Owl (species to verify)",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "bird-parakeet.glb",
+      "species": "Parakeet",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "bird-robin.glb",
+      "species": "Robin",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "butterfly-peacock.glb",
+      "species": "Peacock Butterfly",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "cat-calico.glb",
+      "species": "Calico",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "cat-domestic-shorthair.glb",
+      "species": "Domestic Shorthair",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "cat-ginger-tabby.glb",
+      "species": "Ginger Tabby",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "cat-ginger.glb",
+      "species": "Ginger",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "cat-grey.glb",
+      "species": "Grey",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "cat-tabby.glb",
+      "species": "Tabby",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "cat-tuxedo.glb",
+      "species": "Tuxedo",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "dog-bulldog.glb",
+      "species": "Bulldog",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "dog-dachshund.glb",
+      "species": "Dachshund",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "dog-golden-retriever.glb",
+      "species": "Golden Retriever",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "dog-labrador.glb",
+      "species": "Labrador",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "dog-spaniel.glb",
+      "species": "Spaniel",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "dog-terrier.glb",
+      "species": "Terrier",
+      "type": "domestic",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "dragonfly-emperor-dragonfly.glb",
+      "species": "Emperor Dragonfly",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "frog-common-frog.glb",
+      "species": "Common Frog",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "hedgehog-european-hedgehog.glb",
+      "species": "European Hedgehog",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "ladybird-seven-spot.glb",
+      "species": "Seven-spot Ladybird",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-african-elephant.glb",
+      "species": "African Elephant",
+      "type": "wildlife",
+      "direct_candidate": {
+        "url": "https://assets.stoicsoft.com/1designtool/3d/models/african-elephant/cbb576f04f/model.glb",
+        "page": "https://1designtool.com/3d/models/african-elephant",
+        "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+        "notes": "STATIC African bush elephant; 117k triangles; verify PBR and eyes"
+      },
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-african-lion.glb",
+      "species": "African Lion",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-african-lioness.glb",
+      "species": "African Lioness",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-bat.glb",
+      "species": "Bat (species to verify)",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-bengal-tiger.glb",
+      "species": "Bengal Tiger",
+      "type": "wildlife",
+      "direct_candidate": {
+        "url": "https://assets.stoicsoft.com/1designtool/3d/models/bengal-tiger/75cccc9904/model.glb",
+        "page": "https://1designtool.com/3d/models/bengal-tiger",
+        "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+        "notes": "STATIC posed mid-stride; fur cards/striping may need alpha support"
+      },
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-black-rhinoceros.glb",
+      "species": "Black Rhinoceros",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-cheetah.glb",
+      "species": "Cheetah",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-chimpanzee.glb",
+      "species": "Chimpanzee",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-deer.glb",
+      "species": "Red Deer",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-dromedary-camel.glb",
+      "species": "Dromedary Camel",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-fish.glb",
+      "species": "Fish (species to verify)",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-fox.glb",
+      "species": "Red Fox",
+      "type": "wildlife",
+      "direct_candidate": {
+        "url": "https://assets.stoicsoft.com/1designtool/3d/models/red-fox/ef36760168/model.glb",
+        "page": "https://1designtool.com/3d/models/red-fox",
+        "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+        "notes": "STATIC sitting fox; not suitable for natural WALK"
+      },
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-giant-anteater.glb",
+      "species": "Giant Anteater",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-grey-wolf.glb",
+      "species": "Grey Wolf",
+      "type": "wildlife",
+      "direct_candidate": {
+        "url": "https://assets.stoicsoft.com/1designtool/3d/models/gray-wolf/86f3f0dfb8/model.glb",
+        "page": "https://1designtool.com/3d/models/gray-wolf",
+        "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+        "notes": "STATIC; fur cards require correct alpha mode"
+      },
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-grizzly-bear.glb",
+      "species": "Grizzly Bear",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-hippopotamus.glb",
+      "species": "Hippopotamus",
+      "type": "wildlife",
+      "direct_candidate": {
+        "url": "https://assets.stoicsoft.com/1designtool/3d/models/hippopotamus/1eca4f36c1/model.glb",
+        "page": "https://1designtool.com/3d/models/hippopotamus",
+        "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+        "notes": "STATIC adult common hippopotamus, mouth open; verify proportions, placement, lighting"
+      },
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-jaguar.glb",
+      "species": "Jaguar",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-komodo-dragon.glb",
+      "species": "Komodo Dragon",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-lizard.glb",
+      "species": "Lizard (species to verify)",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-meerkat.glb",
+      "species": "Meerkat",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-mouse.glb",
+      "species": "Mouse (species to verify)",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-orangutan.glb",
+      "species": "Orangutan",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-plains-zebra.glb",
+      "species": "Plains Zebra",
+      "type": "wildlife",
+      "direct_candidate": {
+        "url": "https://assets.stoicsoft.com/1designtool/3d/models/plains-zebra/5a3fc109e4/model.glb",
+        "page": "https://1designtool.com/3d/models/plains-zebra",
+        "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+        "notes": "STATIC; inspect transparency/stripes on device"
+      },
+      "research_only": [
+        {
+          "page": "https://sketchfab.com/3d-models/zebra-rigged-5d6ff2749afc438b9989f91ecb242574",
+          "license": "CC BY, attribution required; authenticated download"
+        }
+      ],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-polar-bear.glb",
+      "species": "Polar Bear",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-red-kangaroo.glb",
+      "species": "Red Kangaroo",
+      "type": "wildlife",
+      "direct_candidate": {
+        "url": "https://assets.stoicsoft.com/1designtool/3d/models/red-kangaroo/55373afdfe/model.glb",
+        "page": "https://1designtool.com/3d/models/red-kangaroo",
+        "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+        "notes": "STATIC; hopping needs rigging"
+      },
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-red-panda.glb",
+      "species": "Red Panda",
+      "type": "wildlife",
+      "direct_candidate": {
+        "url": "https://assets.stoicsoft.com/1designtool/3d/models/red-panda/b6d19ad658/model.glb",
+        "page": "https://1designtool.com/3d/models/red-panda",
+        "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+        "notes": "STATIC; includes log. Not safe for WALK without removing scenery and rigging"
+      },
+      "research_only": [
+        {
+          "page": "https://www.fab.com/listings/7088dc2e-ee62-45b1-a5ef-a29d65f4120e",
+          "license": "Paid/marketplace terms; authenticated purchase"
+        }
+      ],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-reticulated-giraffe.glb",
+      "species": "Reticulated Giraffe",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-ring-tailed-lemur.glb",
+      "species": "Ring Tailed Lemur",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-silverback-gorilla.glb",
+      "species": "Silverback Gorilla",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [
+        {
+          "page": "https://sketchfab.com/3d-models/free-gorilla-ad28003205884841a028e80edb4089ef",
+          "license": "CC BY; creator attribution required; authenticated download"
+        }
+      ],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-slug.glb",
+      "species": "Slug (species to verify)",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-snow-leopard.glb",
+      "species": "Snow Leopard",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "other-tortoise.glb",
+      "species": "Tortoise (species to verify)",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "rabbit-wild-rabbit.glb",
+      "species": "Wild Rabbit",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "snail-amber-snail.glb",
+      "species": "Amber Snail",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "snail-garden-snail.glb",
+      "species": "Garden Snail",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "spider-garden-spider.glb",
+      "species": "Garden Spider",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    },
+    {
+      "slot": "squirrel-grey-squirrel.glb",
+      "species": "Grey Squirrel",
+      "type": "wildlife",
+      "direct_candidate": null,
+      "research_only": [],
+      "review_status": "NOT_REVIEWED",
+      "model_source": "",
+      "licence_verified": false,
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "slot": "other-fox.glb",
+  "species": "Red Fox",
+  "source": "1DesignTool",
+  "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+  "page": "https://1designtool.com/3d/models/red-fox",
+  "notes": "STATIC sitting fox; not suitable for natural WALK",
+  "file_sha256": "2e7dea8d845ac7d23242aaaf30945dbe0824601ec32ec14b2212bbd95db11be2",
+  "quality_review_approved": true,
+  "inspected": {
+    "bytes": 9320812,
+    "sha256": "2e7dea8d845ac7d23242aaaf30945dbe0824601ec32ec14b2212bbd95db11be2",
+    "triangles": 116808,
+    "images": 6,
+    "materials": 7,
+    "skins": 0,
+    "animations": 0,
+    "extensions_required": [],
+    "warnings": [
+      "STATIC model; no natural walking animation",
+      "1 alpha material(s); verify fur cards render correctly"
+    ]
+  },
+  "staged_utc": "2026-10-27T20:45:26.196969Z",
+  "approved_at_utc": "2026-10-27T20:51:39.776182Z"
+}

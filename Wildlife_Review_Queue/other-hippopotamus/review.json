@@ -1,0 +1,25 @@
+{
+  "slot": "other-hippopotamus.glb",
+  "species": "Hippopotamus",
+  "source": "1DesignTool",
+  "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+  "page": "https://1designtool.com/3d/models/hippopotamus",
+  "notes": "STATIC adult common hippopotamus, mouth open; verify proportions, placement, lighting",
+  "file_sha256": "5598aae17b098d9a486efa0b247b3dce1d94cd20896985556dc0f214fba5f895",
+  "quality_review_approved": true,
+  "inspected": {
+    "bytes": 5118992,
+    "sha256": "5598aae17b098d9a486efa0b247b3dce1d94cd20896985556dc0f214fba5f895",
+    "triangles": 112996,
+    "images": 4,
+    "materials": 6,
+    "skins": 0,
+    "animations": 0,
+    "extensions_required": [],
+    "warnings": [
+      "STATIC model; no natural walking animation"
+    ]
+  },
+  "staged_utc": "2026-10-27T20:45:30.598694Z",
+  "approved_at_utc": "2026-10-27T20:52:28.893377Z"
+}

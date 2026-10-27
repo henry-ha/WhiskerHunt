@@ -1,0 +1,10 @@
+{
+  "species": "wolf",
+  "slot": "other-grey-wolf.glb",
+  "original_sha256": "2eda2f0f347fcf41a88f52d74f6426d719e0065c09344128da0974723c2e614e",
+  "installed_sha256": "81302bb748e9da41bc0fb4c8b1e9ffab869b3766fa80c96fd3e3a2951c61e6c3",
+  "source_page": "https://1designtool.com/3d/models/gray-wolf",
+  "installed_at": "2026-10-27T20:32:59.294600",
+  "limitations": "Static; fur cards; may require correct alpha MASK handling.",
+  "license": "https://1designtool.com/3d/license"
+}

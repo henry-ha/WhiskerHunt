@@ -1,0 +1,25 @@
+{
+  "slot": "other-african-elephant.glb",
+  "species": "African Elephant",
+  "source": "1DesignTool",
+  "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+  "page": "https://1designtool.com/3d/models/african-elephant",
+  "notes": "STATIC African bush elephant; 117k triangles; verify PBR and eyes",
+  "file_sha256": "950bd3099da630844273e6ea810f927abd69e5055b08fed2a7de6e0a05c73f30",
+  "quality_review_approved": true,
+  "inspected": {
+    "bytes": 5887452,
+    "sha256": "950bd3099da630844273e6ea810f927abd69e5055b08fed2a7de6e0a05c73f30",
+    "triangles": 117032,
+    "images": 6,
+    "materials": 5,
+    "skins": 0,
+    "animations": 0,
+    "extensions_required": [],
+    "warnings": [
+      "STATIC model; no natural walking animation"
+    ]
+  },
+  "staged_utc": "2026-10-27T20:45:14.724776Z",
+  "approved_at_utc": "2026-10-27T20:50:29.925304Z"
+}

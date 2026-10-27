@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27T21:32:15.359534",
+  "project": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt",
+  "assets": [
+    {
+      "file": "fantasy-phoenix-bird.glb",
+      "key": "wildlife-fantasy-phoenix-bird",
+      "sha256": "82e6fd36a1f937eab88cac8fbec22453a7e233545c386b26573875d2282df97c",
+      "original_filename": "real-time_bones_demo_phoenix_bird.glb",
+      "licence": "verify on original Sketchfab listing"
+    },
+    {
+      "file": "cat-sumpitueslag-cat.glb",
+      "key": "wildlife-cat-sumpitueslag-cat",
+      "sha256": "da1e9597fa664b94075c678bc3b8f1ee20078e23761c5ac1a7b984aa859ab233",
+      "original_filename": "cat_by_sumpitueslag.glb",
+      "licence": "verify on original Sketchfab listing"
+    },
+    {
+      "file": "cat-cat-in-motion.glb",
+      "key": "wildlife-cat-cat-in-motion",
+      "sha256": "b55ee44086d29b5ba78da559bd10946161a71f877a498a6b889e77518e6aa7e7",
+      "original_filename": "cat_in_motion_3d_model_free.glb",
+      "licence": "verify on original Sketchfab listing"
+    },
+    {
+      "file": "bird-bald-eagle-catching-fish.glb",
+      "key": "wildlife-bird-bald-eagle-catching-fish",
+      "sha256": "257ced5bf14739cffeee6f9b0157470d801b78a372bb33818188254aec9804e8",
+      "original_filename": "bald_eagle_catching_fish.glb",
+      "licence": "verify on original Sketchfab listing"
+    },
+    {
+      "file": "dog-jack-russell-puppy.glb",
+      "key": "wildlife-dog-jack-russell-puppy",
+      "sha256": "31beeb0c47d3c9ee05793ff0f0f1d036961e972c7cf043413314b728a1d21d79",
+      "original_filename": "stylized_puppy__jack_russell_cute_3d_character.glb",
+      "licence": "verify on original Sketchfab listing"
+    }
+  ],
+  "backup_files": []
+}

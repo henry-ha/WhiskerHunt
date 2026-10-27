@@ -1,0 +1,26 @@
+{
+  "slot": "other-red-kangaroo.glb",
+  "species": "Red Kangaroo",
+  "source": "1DesignTool",
+  "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+  "page": "https://1designtool.com/3d/models/red-kangaroo",
+  "notes": "STATIC; hopping needs rigging",
+  "file_sha256": "af32719cece0383c04bf5e87dfbe89999c421d7282f4c1632ada298634e73947",
+  "quality_review_approved": true,
+  "inspected": {
+    "bytes": 5637340,
+    "sha256": "af32719cece0383c04bf5e87dfbe89999c421d7282f4c1632ada298634e73947",
+    "triangles": 104260,
+    "images": 8,
+    "materials": 6,
+    "skins": 0,
+    "animations": 0,
+    "extensions_required": [],
+    "warnings": [
+      "STATIC model; no natural walking animation",
+      "1 alpha material(s); verify fur cards render correctly"
+    ]
+  },
+  "staged_utc": "2026-10-27T20:45:33.048213Z",
+  "approved_at_utc": "2026-10-27T20:53:07.698533Z"
+}

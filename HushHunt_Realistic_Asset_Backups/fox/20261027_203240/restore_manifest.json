@@ -1,0 +1,10 @@
+{
+  "species": "fox",
+  "slot": "other-fox.glb",
+  "original_sha256": "6ea4b1c7d65a0ebdaf97e3257a3c3f7576d3b466a8931c43ef7cfad64ed6b6d9",
+  "installed_sha256": "2e7dea8d845ac7d23242aaaf30945dbe0824601ec32ec14b2212bbd95db11be2",
+  "source_page": "https://1designtool.com/3d/models/red-fox",
+  "installed_at": "2026-10-27T20:32:40.419133",
+  "limitations": "Static sitting fox. Not suitable for walking without new animation/rig.",
+  "license": "https://1designtool.com/3d/license"
+}

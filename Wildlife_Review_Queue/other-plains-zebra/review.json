@@ -1,0 +1,26 @@
+{
+  "slot": "other-plains-zebra.glb",
+  "species": "Plains Zebra",
+  "source": "1DesignTool",
+  "license": "1DesignTool app-embedded permitted; standalone redistribution restricted",
+  "page": "https://1designtool.com/3d/models/plains-zebra",
+  "notes": "STATIC; inspect transparency/stripes on device",
+  "file_sha256": "07f62313cf8981273a3fa56aa890cfa7a565f837231eae2ff52f39c1309737c4",
+  "quality_review_approved": true,
+  "inspected": {
+    "bytes": 5012684,
+    "sha256": "07f62313cf8981273a3fa56aa890cfa7a565f837231eae2ff52f39c1309737c4",
+    "triangles": 91656,
+    "images": 4,
+    "materials": 5,
+    "skins": 0,
+    "animations": 0,
+    "extensions_required": [],
+    "warnings": [
+      "STATIC model; no natural walking animation",
+      "1 alpha material(s); verify fur cards render correctly"
+    ]
+  },
+  "staged_utc": "2026-10-27T20:45:31.389415Z",
+  "approved_at_utc": "2026-10-27T20:52:50.572158Z"
+}
