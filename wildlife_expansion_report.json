@@ -1,0 +1,143 @@
+{
+  "date": "2026-10-27",
+  "entries": [
+    {
+      "species": "Domestic Shorthair",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/pets-and-companions-hd-domestic-shorthair-sitting-b1cd877a"
+    },
+    {
+      "species": "African Lion",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-african-lion-male-4417c586"
+    },
+    {
+      "species": "African Lioness",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-african-lioness-6090dd62"
+    },
+    {
+      "species": "Bengal Tiger",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-bengal-tiger-cbb738df"
+    },
+    {
+      "species": "Cheetah",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-cheetah-c33fc992"
+    },
+    {
+      "species": "Jaguar",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-jaguar-f6217166"
+    },
+    {
+      "species": "Grey Wolf",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-grey-wolf-6a9c06f3"
+    },
+    {
+      "species": "Grizzly Bear",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-grizzly-bear-0638d906"
+    },
+    {
+      "species": "Polar Bear",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-polar-bear-db2f86b3"
+    },
+    {
+      "species": "Plains Zebra",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-plains-zebra-5dea27b5"
+    },
+    {
+      "species": "Reticulated Giraffe",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-reticulated-giraffe-7a2678a4"
+    },
+    {
+      "species": "Black Rhinoceros",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-black-rhinoceros-70fcb957"
+    },
+    {
+      "species": "Hippopotamus",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-hippopotamus-9d28fbee"
+    },
+    {
+      "species": "Snow Leopard",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-snow-leopard-76abf232"
+    },
+    {
+      "species": "Dromedary Camel",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-dromedary-camel-c0ad7d89"
+    },
+    {
+      "species": "Red Panda",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-red-panda-8b3fba67"
+    },
+    {
+      "species": "Giant Anteater",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-giant-anteater-6624b776"
+    },
+    {
+      "species": "African Elephant",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-african-elephant-bull-29d8c02f"
+    },
+    {
+      "species": "Silverback Gorilla",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-silverback-gorilla-57a5e6e1"
+    },
+    {
+      "species": "Chimpanzee",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-chimpanzee-06bf45b0"
+    },
+    {
+      "species": "Orangutan",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-orangutan-ead39ac5"
+    },
+    {
+      "species": "Ring-tailed Lemur",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-ring-tailed-lemur-dee1ff36"
+    },
+    {
+      "species": "Meerkat",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-meerkat-sentry-b676c244"
+    },
+    {
+      "species": "Red Kangaroo",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-red-kangaroo-14d31816"
+    },
+    {
+      "species": "Komodo Dragon",
+      "status": "imported_not_visual_approved",
+      "url": "https://3dassets.dev/assets/exotic-wildlife-hd-komodo-dragon-a6ddad7b"
+    },
+    {
+      "species": "Bearded Dragon",
+      "status": "failed_validation"
+    },
+    {
+      "species": "Leopard Gecko",
+      "status": "failed_validation"
+    },
+    {
+      "species": "Veiled Chameleon",
+      "status": "failed_validation"
+    }
+  ],
+  "note": "Images not visually inspected; installed source assets need on-device approval."
+}

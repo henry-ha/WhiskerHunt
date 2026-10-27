@@ -18,8 +18,19 @@
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <!-- MAUI-compatible bindings for native Google Play Services for AR; Android only. -->
     <PackageReference Include="XPACE.Google.ARCore" Version="1.41.0" />
+    <!-- Native Google Filament/gltfio: published together on Maven Central (1.77.3, Oct 2026). -->
+    <!-- Bound=false: Java bridge avoids generating hundreds of redundant C# bindings. -->
+    <AndroidMavenLibrary Include="com.google.android.filament:filament-android" Version="1.77.3" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="com.google.android.filament:gltfio-android" Version="1.77.3" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="androidx.annotation:annotation" Version="1.9.1" Repository="Google" Bind="false" VerifyDependencies="false" />
     <MauiIcon Include="Resources\AppIcon\hushhunt_bunny_v63.png" Color="#0765DC" />
     <MauiSplashScreen Include="Resources\Splash\hushhunt_bunny_splash_v63.png" Color="#0765DC" BaseSize="256,256" />
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- Ensure the JNI entry point is compiled into classes.dex. A metadata-only Update
+         can leave this application without the renderer class when no Java item
+         exists in the evaluated MAUI project. Remove the default item first to
+         avoid duplicate Java source entries on .NET SDKs with implicit globs. -->
+    <AndroidJavaSource Remove="Platforms\Android\Java\com\hushhunt\filament\HushFilamentOverlay.java" />
+    <AndroidJavaSource Include="Platforms\Android\Java\com\hushhunt\filament\HushFilamentOverlay.java" Bind="false" />
   </ItemGroup>
 </Project>

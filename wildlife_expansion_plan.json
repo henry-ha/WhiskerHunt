@@ -1,0 +1,299 @@
+{
+  "updated": "2026-10-27",
+  "baseline_installable_existing_slots": 23,
+  "new_curated_candidates": 28,
+  "new_glb_bytes_downloaded_in_this_environment": 0,
+  "status": "Windows download/import and visual approval required",
+  "existing_species": [
+    {
+      "name": "Garden Snail",
+      "file": "snail-garden-snail.glb"
+    },
+    {
+      "name": "Amber Snail",
+      "file": "snail-amber-snail.glb"
+    },
+    {
+      "name": "Seven-spot",
+      "file": "ladybird-seven-spot.glb"
+    },
+    {
+      "name": "Garden Spider",
+      "file": "spider-garden-spider.glb"
+    },
+    {
+      "name": "Slug",
+      "file": "other-slug.glb"
+    },
+    {
+      "name": "Fox",
+      "file": "other-fox.glb"
+    },
+    {
+      "name": "Wild Rabbit",
+      "file": "rabbit-wild-rabbit.glb"
+    },
+    {
+      "name": "Grey Squirrel",
+      "file": "squirrel-grey-squirrel.glb"
+    },
+    {
+      "name": "European Hedgehog",
+      "file": "hedgehog-european-hedgehog.glb"
+    },
+    {
+      "name": "Common Frog",
+      "file": "frog-common-frog.glb"
+    },
+    {
+      "name": "Labrador",
+      "file": "dog-labrador.glb"
+    },
+    {
+      "name": "Ginger Tabby",
+      "file": "cat-ginger-tabby.glb"
+    },
+    {
+      "name": "Robin",
+      "file": "bird-robin.glb"
+    },
+    {
+      "name": "Owl",
+      "file": "bird-owl.glb"
+    },
+    {
+      "name": "Peacock",
+      "file": "butterfly-peacock.glb"
+    },
+    {
+      "name": "Honeybee",
+      "file": "bee-honeybee.glb"
+    },
+    {
+      "name": "Stag Beetle",
+      "file": "beetle-stag-beetle.glb"
+    },
+    {
+      "name": "Emperor Dragonfly",
+      "file": "dragonfly-emperor-dragonfly.glb"
+    },
+    {
+      "name": "Black Garden Ant",
+      "file": "ant-black-garden-ant.glb"
+    },
+    {
+      "name": "Deer",
+      "file": "other-deer.glb"
+    },
+    {
+      "name": "Mouse",
+      "file": "other-mouse.glb"
+    },
+    {
+      "name": "Tortoise",
+      "file": "other-tortoise.glb"
+    },
+    {
+      "name": "Bat",
+      "file": "other-bat.glb"
+    }
+  ],
+  "additional_candidates": [
+    {
+      "name": "Domestic Shorthair",
+      "key": "domestic-shorthair",
+      "pack": "pets-and-companions-hd",
+      "source": "https://3dassets.dev/packs/pets-and-companions-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "African Lion",
+      "key": "african-lion",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "African Lioness",
+      "key": "lioness",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Bengal Tiger",
+      "key": "bengal-tiger",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Cheetah",
+      "key": "cheetah",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Jaguar",
+      "key": "jaguar",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Grey Wolf",
+      "key": "grey-wolf",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Grizzly Bear",
+      "key": "grizzly-bear",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Polar Bear",
+      "key": "polar-bear",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Plains Zebra",
+      "key": "plains-zebra",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Reticulated Giraffe",
+      "key": "giraffe",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Black Rhinoceros",
+      "key": "black-rhinoceros",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Hippopotamus",
+      "key": "hippopotamus",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Snow Leopard",
+      "key": "snow-leopard",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Dromedary Camel",
+      "key": "dromedary-camel",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Red Panda",
+      "key": "red-panda",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Giant Anteater",
+      "key": "giant-anteater",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "African Elephant",
+      "key": "african-elephant",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Silverback Gorilla",
+      "key": "gorilla",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Chimpanzee",
+      "key": "chimpanzee",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Orangutan",
+      "key": "orangutan",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Ring-tailed Lemur",
+      "key": "ring-tailed-lemur",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Meerkat",
+      "key": "meerkat",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Red Kangaroo",
+      "key": "red-kangaroo",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Komodo Dragon",
+      "key": "komodo-dragon",
+      "pack": "exotic-wildlife-hd",
+      "source": "https://3dassets.dev/packs/exotic-wildlife-hd",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Bearded Dragon",
+      "key": "bearded-dragon",
+      "pack": "reptiles-amphibians-and-minibeasts",
+      "source": "https://3dassets.dev/packs/reptiles-amphibians-and-minibeasts",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Leopard Gecko",
+      "key": "leopard-gecko",
+      "pack": "reptiles-amphibians-and-minibeasts",
+      "source": "https://3dassets.dev/packs/reptiles-amphibians-and-minibeasts",
+      "status": "not_downloaded_in_source_zip"
+    },
+    {
+      "name": "Veiled Chameleon",
+      "key": "chameleon",
+      "pack": "reptiles-amphibians-and-minibeasts",
+      "source": "https://3dassets.dev/packs/reptiles-amphibians-and-minibeasts",
+      "status": "not_downloaded_in_source_zip"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+﻿Hush Hunt crash logger v2 - diagnostic status
+Files will be saved in: E:\inetpub\wwwroot\WhiskerHunt
+Searching for Android Debug Bridge (adb.exe)...
+ADB found: C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe
+List of devices attached
+ffe6858b               device product:CPH2449EEA model:CPH2449 device:OP594DL1 transport_id:1
+
+
+Taking a snapshot of existing logs (nothing has been cleared yet)...
+Existing logs saved: HushHunt_AR_Log_Existing_Filtered.txt
+SUCCESS: New filtered crash log created: HushHunt_AR_Log_Filtered.txt
+New full log created: HushHunt_AR_Log_Full.txt
+Send the filtered log after reviewing it for sensitive information.

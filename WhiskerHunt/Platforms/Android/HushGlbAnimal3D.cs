@@ -57,7 +57,7 @@ internal sealed class HushGlbAnimal3D
     // ar_models/cat-ginger-tabby.glb, while other animals use wildlife-<group>-<variety>.
     // Deliberately no generic or other-species substitute: a missing American
     // Shorthair GLB is not the same thing as the installed Ginger Tabby.
-    private static string? ResolveBundledFilename(string modelKey, string group, string variety)
+    internal static string? ResolveBundledFilename(string modelKey, string group, string variety)
     {
         var groupSlug = Slug(group);
         var varietySlug = Slug(variety);
@@ -71,6 +71,62 @@ internal sealed class HushGlbAnimal3D
         return null;
     }
 
+    /// <summary>
+    /// The legacy OpenGL parser accepts only an unquantized, static subset of glTF.
+    /// Do not send modern PBR / animated GLBs through it merely to check if they work:
+    /// that raises first-chance InvalidDataException in Visual Studio, can allocate
+    /// very large temporary meshes, and obscures the *actual* Filament error.
+    /// </summary>
+    internal static bool IsLegacyCompatible(byte[] data)
+    {
+        try
+        {
+            if (data.Length < 28 ||
+                BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(0, 4)) != 0x46546C67 ||
+                BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(4, 4)) != 2 ||
+                BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(8, 4)) != (uint)data.Length)
+                return false;
+            int jsonSize = checked((int)BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(12, 4)));
+            if (BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(16, 4)) != 0x4E4F534A ||
+                jsonSize <= 0 || jsonSize > data.Length - 20) return false;
+            using var parsed = JsonDocument.Parse(data.AsMemory(20, jsonSize));
+            var root = parsed.RootElement;
+            if (Has(root, "extensionsRequired") && root.GetProperty("extensionsRequired").GetArrayLength() > 0) return false;
+            if (Has(root, "extensionsUsed") && root.GetProperty("extensionsUsed").GetArrayLength() > 0) return false;
+            if (Has(root, "skins")) return false;
+            if (!Has(root, "accessors") || !Has(root, "meshes") || !Has(root, "nodes")) return false;
+            var accessors = root.GetProperty("accessors");
+            foreach (var node in root.GetProperty("nodes").EnumerateArray())
+                if (Has(node, "skin")) return false;
+            foreach (var mesh in root.GetProperty("meshes").EnumerateArray())
+            foreach (var primitive in mesh.GetProperty("primitives").EnumerateArray())
+            {
+                if (Int(primitive, "mode", 4) != 4) continue;
+                if (!Has(primitive, "attributes")) return false;
+                var attributes = primitive.GetProperty("attributes");
+                if (!Has(attributes, "POSITION")) return false;
+                foreach (var name in new[] { "POSITION", "NORMAL", "TEXCOORD_0" })
+                {
+                    if (!Has(attributes, name)) continue;
+                    int index = attributes.GetProperty(name).GetInt32();
+                    if (index < 0 || index >= accessors.GetArrayLength() ||
+                        Int(accessors[index], "componentType") != 5126 ||
+                        !Has(accessors[index], "bufferView")) return false;
+                }
+                if (Has(primitive, "indices"))
+                {
+                    var a = accessors[primitive.GetProperty("indices").GetInt32()];
+                    int type = Int(a, "componentType");
+                    if ((type != 5121 && type != 5123 && type != 5125) || !Has(a, "bufferView")) return false;
+                }
+            }
+            return true;
+        }
+        catch (Exception) { return false; }
+    }
+
+    // Modern GLBs always go unchanged to Filament. A compatible backup is
+    // preferred solely for the original OpenGL renderer; HD files remain intact.
     public static bool TryLoad(Context context, string modelKey, string group, string variety,
         out HushGlbAnimal3D? result, out string message)
     {
@@ -78,52 +134,48 @@ internal sealed class HushGlbAnimal3D
         var filename = ResolveBundledFilename(modelKey, group, variety);
         if (filename is null || filename.Length > 125)
         {
-            message = "No matching 3D model is installed for " + variety + ". This animal is still available in 2D Safari.";
+            message = "No installed 3D model for " + variety + ".";
             return false;
         }
-        try
+        foreach (string assetPath in new[] { "ar_fallback/" + filename, "ar_models/" + filename })
         {
-            // Explicitly check the exact bundled asset rather than silently trying
-            // another animal. An absent model or damaged GLB must be reported.
-            using var file = context.Assets!.Open("ar_models/" + filename);
-            using var ms = new MemoryStream();
-            file.CopyTo(ms);
-            if (ms.Length > 24 * 1024 * 1024) throw new InvalidDataException("The 3D model exceeds 24 MB.");
-            // Large enough to inspect but deliberately scaled for accessibility;
-            // adult animals should use individually calibrated physical dimensions.
-            float scale = group.ToLowerInvariant() switch
+            try
             {
-                "snail" => .22f, "ladybird" or "spider" or "bee" or "butterfly" or "ant" or "beetle" => .13f,
-                "cat" => .47f, "dog" => .65f, "rabbit" => .35f, "bird" => .32f,
-                "squirrel" => .31f, "hedgehog" => .24f, "frog" => .20f,
-                "other" when variety.Equals("Deer", StringComparison.OrdinalIgnoreCase) => 1.05f,
-                "other" when variety.Equals("Fox", StringComparison.OrdinalIgnoreCase) => .65f,
-                "other" when variety.Equals("Tortoise", StringComparison.OrdinalIgnoreCase) => .35f,
-                _ => .30f
-            };
-            var model = new HushGlbAnimal3D(variety, scale);
-            model.Parse(ms.ToArray());
-            if (model._parts.Count == 0) throw new InvalidDataException("No supported triangular geometry in this model.");
-            result = model;
-            message = "Textured 3D " + variety + " model ready.";
-            return true;
+                using var file = context.Assets!.Open(assetPath);
+                using var ms = new MemoryStream();
+                file.CopyTo(ms);
+                if (ms.Length > 24 * 1024 * 1024) continue;
+                byte[] data = ms.ToArray();
+                if (!IsLegacyCompatible(data))
+                {
+                    Android.Util.Log.Info("HushHuntAR", "Skipping modern GLB in legacy renderer: " + assetPath);
+                    continue;
+                }
+                float scale = group.ToLowerInvariant() switch
+                {
+                    "snail" => .22f, "ladybird" or "spider" or "bee" or "butterfly" or "ant" or "beetle" => .13f,
+                    "cat" => .47f, "dog" => .65f, "rabbit" => .35f, "bird" => .32f,
+                    "squirrel" => .31f, "hedgehog" => .24f, "frog" => .20f,
+                    "other" when variety.Equals("Deer", StringComparison.OrdinalIgnoreCase) => 1.05f,
+                    "other" when variety.Equals("Fox", StringComparison.OrdinalIgnoreCase) => .65f,
+                    "other" when variety.Equals("Tortoise", StringComparison.OrdinalIgnoreCase) => .35f,
+                    _ => .30f
+                };
+                var model = new HushGlbAnimal3D(variety, scale);
+                model.Parse(data);
+                if (model._parts.Count == 0) continue;
+                result = model;
+                message = "Legacy preview available.";
+                return true;
+            }
+            catch (Java.IO.FileNotFoundException) { /* An optional fallback can be absent. */ }
+            catch (Exception error)
+            {
+                Android.Util.Log.Warn("HushHuntAR", "Legacy model unavailable: " + assetPath + " (" + error.GetType().Name + ")");
+            }
         }
-        catch (Java.IO.FileNotFoundException)
-        {
-            message = "The bundled 3D file for " + variety + " is missing (" + filename + "). Please install the complete Hush Hunt source/build.";
-            return false;
-        }
-        catch (FileNotFoundException)
-        {
-            message = "The bundled 3D file for " + variety + " is missing (" + filename + "). Use 2D Safari until the full app is installed.";
-            return false;
-        }
-        catch (Exception e)
-        {
-            Android.Util.Log.Warn("HushHuntAR", "Could not decode ar_models/" + filename + ": " + e);
-            message = "The " + variety + " 3D model could not load (" + e.GetType().Name + ", " + filename + "). Try 2D Safari.";
-            return false;
-        }
+        message = "This HD animal requires Filament; the legacy renderer is intentionally skipped.";
+        return false;
     }
 
     private static string Slug(string value)
@@ -348,7 +400,7 @@ internal sealed class HushGlbAnimal3D
             "void main(){vec3 n=normalize(vNormal);vec3 key=normalize(vec3(-0.55,0.90,0.75));vec3 fill=normalize(vec3(0.45,0.35,0.95));"+
             "float keyDiffuse=max(0.0,dot(n,key));float fillDiffuse=max(0.0,dot(n,fill));float up=max(0.0,n.y);"+
             "float rim=pow(1.0-max(0.0,n.z),2.0)*0.18;vec4 albedo=texture2D(uTex,vec2(vUV.x,1.0-vUV.y))*uTint;"+
-            "float shade=0.34+0.46*keyDiffuse+0.16*fillDiffuse+0.10*up;vec3 lit=albedo.rgb*shade + albedo.rgb*rim;"+
+            "float shade=0.47+0.34*keyDiffuse+0.15*fillDiffuse+0.09*up;vec3 lit=albedo.rgb*shade + albedo.rgb*rim;"+
             "gl_FragColor=vec4(lit,albedo.a);}";
         int v=Shader(GLES.GlVertexShader,vs),f=Shader(GLES.GlFragmentShader,fs);
         _program=GLES.GlCreateProgram();GLES.GlAttachShader(_program,v);GLES.GlAttachShader(_program,f);GLES.GlLinkProgram(_program);
@@ -414,7 +466,7 @@ internal sealed class HushGlbAnimal3D
         return 1f;
     }
 
-    public void Draw(float[] view,float[] projection,float[] anchor,float animalScale=1f,float petProgress=1f,float idleSeconds=0f)
+    public void Draw(float[] view,float[] projection,float[] anchor,float animalScale=1f,float petProgress=1f,float idleSeconds=0f,bool shadowOnly=false, float yawDegrees=0f, float pitchDegrees=0f)
     {
         if(_program==0)return;
         float maxExtent=Math.Max(_max[0]-_min[0],Math.Max(_max[1]-_min[1],_max[2]-_min[2]));
@@ -439,17 +491,18 @@ internal sealed class HushGlbAnimal3D
         float pulse = 1f + .055f * envelope + .004f * MathF.Sin(idleSeconds * 2.1f) + (bobMultiplier - 1f) * .01f * envelope;
         GlMatrix.SetIdentityM(_model,0);
         GlMatrix.TranslateM(_model,0,anchor[0],anchor[1] + bounce,anchor[2]);
-        GlMatrix.RotateM(_model,0,swayDegrees + idleTurn,0f,1f,0f);
+        GlMatrix.RotateM(_model,0,yawDegrees + swayDegrees + idleTurn,0f,1f,0f);
+        GlMatrix.RotateM(_model,0,pitchDegrees,1f,0f,0f);
         GlMatrix.ScaleM(_model,0,s*pulse,s*pulse,s*pulse);
         GlMatrix.TranslateM(_model,0,-(_min[0]+_max[0])*.5f,-_min[1],-(_min[2]+_max[2])*.5f);
         GlMatrix.MultiplyMM(_vm,0,view,0,_model,0);GlMatrix.MultiplyMM(_mvp,0,projection,0,_vm,0);
         var pv = new float[16];
         GlMatrix.MultiplyMM(pv,0,projection,0,view,0);
 
-        float extentX = Math.Max(.08f, (_max[0] - _min[0]) * s * .38f);
-        float extentZ = Math.Max(.08f, (_max[2] - _min[2]) * s * .38f);
+        float extentX = Math.Max(.06f, (_max[0] - _min[0]) * s * .34f);
+        float extentZ = Math.Max(.06f, (_max[2] - _min[2]) * s * .34f);
         float shadowY = anchor[1] + .0035f;
-        float shadowAlpha = flying ? .16f : .28f;
+        float shadowAlpha = flying ? .055f : .09f;
         var shadowCenterX = anchor[0];
         var shadowCenterZ = anchor[2];
 
@@ -467,6 +520,12 @@ internal sealed class HushGlbAnimal3D
         GLES.GlVertexAttribPointer(_shadowVertex,2,GLES.GlFloat,false,0,_shadowQuad);
         GLES.GlDrawArrays(GLES.GlTriangleStrip,0,4);
         GLES.GlDisableVertexAttribArray(_shadowVertex);
+        if (shadowOnly)
+        {
+            GLES.GlDepthMask(true);
+            GLES.GlDisable(GLES.GlBlend);
+            return;
+        }
 
         GLES.GlEnable(GLES.GlDepthTest);GLES.GlDepthMask(true);
         GLES.GlDisable(0x0B44); // GL_CULL_FACE: disable face culling for imported GLB meshes.

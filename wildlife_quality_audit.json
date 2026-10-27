@@ -1,0 +1,603 @@
+{
+  "summary": {
+    "slots": 48,
+    "missing": 0,
+    "textured": 36,
+    "untextured": 12,
+    "upgrades": 7
+  },
+  "models": [
+    {
+      "species": "Garden Snail",
+      "file": "snail-garden-snail.glb",
+      "installed": true,
+      "triangles": 34032,
+      "images": 4,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "5fb6935a832a",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Amber Snail",
+      "file": "snail-amber-snail.glb",
+      "installed": true,
+      "triangles": 34032,
+      "images": 4,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "ddb7c1bc9b17",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Seven-spot",
+      "file": "ladybird-seven-spot.glb",
+      "installed": true,
+      "triangles": 10940,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "ae08b8626e36",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Garden Spider",
+      "file": "spider-garden-spider.glb",
+      "installed": true,
+      "triangles": 16368,
+      "images": 4,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "a71f4c736706",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Slug",
+      "file": "other-slug.glb",
+      "installed": true,
+      "triangles": 12980,
+      "images": 3,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "328aca641a41",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Fox",
+      "file": "other-fox.glb",
+      "installed": true,
+      "triangles": 20184,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "6ea4b1c7d65a",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Wild Rabbit",
+      "file": "rabbit-wild-rabbit.glb",
+      "installed": true,
+      "triangles": 11906,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "a7436511c9f8",
+      "licenceSource": "https://3dassets.dev/assets/pets-and-companions-hd-house-rabbit-3a1d4032"
+    },
+    {
+      "species": "Grey Squirrel",
+      "file": "squirrel-grey-squirrel.glb",
+      "installed": true,
+      "triangles": 8128,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "dac11d6ec815",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "European Hedgehog",
+      "file": "hedgehog-european-hedgehog.glb",
+      "installed": true,
+      "triangles": 8102,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "98d132874b43",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Common Frog",
+      "file": "frog-common-frog.glb",
+      "installed": true,
+      "triangles": 10608,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "4ffaafd2a760",
+      "licenceSource": "https://3dassets.dev/assets/birds-and-reptiles-hd-poison-dart-frog-6d3a9c17"
+    },
+    {
+      "species": "Labrador",
+      "file": "dog-labrador.glb",
+      "installed": true,
+      "triangles": 15906,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "2b3d3ff424b5",
+      "licenceSource": "https://3dassets.dev/assets/pets-and-companions-hd-labrador-retriever-927d54b7"
+    },
+    {
+      "species": "Ginger Tabby",
+      "file": "cat-ginger-tabby.glb",
+      "installed": true,
+      "triangles": 18904,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "c0eb4e02232d",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Robin",
+      "file": "bird-robin.glb",
+      "installed": true,
+      "triangles": 14328,
+      "images": 2,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "606b5c8d2b42",
+      "licenceSource": "https://3dassets.dev/assets/birds-and-reptiles-hd-european-robin-1680b450"
+    },
+    {
+      "species": "Owl",
+      "file": "bird-owl.glb",
+      "installed": true,
+      "triangles": 16972,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "84d5d894ba0c",
+      "licenceSource": "https://3dassets.dev/assets/birds-and-reptiles-hd-snowy-owl-257f670d"
+    },
+    {
+      "species": "Peacock",
+      "file": "butterfly-peacock.glb",
+      "installed": true,
+      "triangles": 8392,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "dd2e36ff984b",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Honeybee",
+      "file": "bee-honeybee.glb",
+      "installed": true,
+      "triangles": 7168,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "b070e242ad0b",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Stag Beetle",
+      "file": "beetle-stag-beetle.glb",
+      "installed": true,
+      "triangles": 5516,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "5d4f62a929aa",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Emperor Dragonfly",
+      "file": "dragonfly-emperor-dragonfly.glb",
+      "installed": true,
+      "triangles": 10704,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "3737c6167945",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Black Garden Ant",
+      "file": "ant-black-garden-ant.glb",
+      "installed": true,
+      "triangles": 7064,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "79124eb57241",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Deer",
+      "file": "other-deer.glb",
+      "installed": true,
+      "triangles": 20128,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "330d47057b66",
+      "licenceSource": "https://3dassets.dev/assets/exotic-wildlife-hd-red-deer-stag-82f8d92a"
+    },
+    {
+      "species": "Mouse",
+      "file": "other-mouse.glb",
+      "installed": true,
+      "triangles": 21992,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "ef6427f3ce4d",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Tortoise",
+      "file": "other-tortoise.glb",
+      "installed": true,
+      "triangles": 13364,
+      "images": 2,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "dcc5e4669c6b",
+      "licenceSource": "https://3dassets.dev/assets/birds-and-reptiles-hd-galapagos-giant-tortoise-311cd2ce"
+    },
+    {
+      "species": "Bat",
+      "file": "other-bat.glb",
+      "installed": true,
+      "triangles": 4356,
+      "images": 0,
+      "animations": 0,
+      "requiredExtensions": [],
+      "hash": "05990857aa90",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Domestic Shorthair",
+      "file": "cat-domestic-shorthair.glb",
+      "installed": true,
+      "triangles": 15282,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "39fc5edc6283",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "African Lion",
+      "file": "other-african-lion.glb",
+      "installed": true,
+      "triangles": 23368,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "fe0041ea4d37",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "African Lioness",
+      "file": "other-african-lioness.glb",
+      "installed": true,
+      "triangles": 20488,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "f400091c0d3b",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Bengal Tiger",
+      "file": "other-bengal-tiger.glb",
+      "installed": true,
+      "triangles": 20068,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "0546d19c0f68",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Cheetah",
+      "file": "other-cheetah.glb",
+      "installed": true,
+      "triangles": 23428,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "93f0f018ed20",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Jaguar",
+      "file": "other-jaguar.glb",
+      "installed": true,
+      "triangles": 23706,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "b931504ec162",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Grey Wolf",
+      "file": "other-grey-wolf.glb",
+      "installed": true,
+      "triangles": 20068,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "f72f75f7c068",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Grizzly Bear",
+      "file": "other-grizzly-bear.glb",
+      "installed": true,
+      "triangles": 19780,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "3ffbbe1b9014",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Polar Bear",
+      "file": "other-polar-bear.glb",
+      "installed": true,
+      "triangles": 19060,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "22c63b95ceac",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Plains Zebra",
+      "file": "other-plains-zebra.glb",
+      "installed": true,
+      "triangles": 18076,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "fc461ee7540e",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Reticulated Giraffe",
+      "file": "other-reticulated-giraffe.glb",
+      "installed": true,
+      "triangles": 20090,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "dc561902b806",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Black Rhinoceros",
+      "file": "other-black-rhinoceros.glb",
+      "installed": true,
+      "triangles": 19048,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "e9e952a35705",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Hippopotamus",
+      "file": "other-hippopotamus.glb",
+      "installed": true,
+      "triangles": 18952,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "52a7290d9ef3",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Snow Leopard",
+      "file": "other-snow-leopard.glb",
+      "installed": true,
+      "triangles": 23284,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "96e565e0c99f",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Dromedary Camel",
+      "file": "other-dromedary-camel.glb",
+      "installed": true,
+      "triangles": 19864,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "f00419f7c917",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Red Panda",
+      "file": "other-red-panda.glb",
+      "installed": true,
+      "triangles": 20984,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "0f09ad4a91c6",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Giant Anteater",
+      "file": "other-giant-anteater.glb",
+      "installed": true,
+      "triangles": 21900,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "81039a0a89df",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "African Elephant",
+      "file": "other-african-elephant.glb",
+      "installed": true,
+      "triangles": 18408,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "fb35cb79f37a",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Silverback Gorilla",
+      "file": "other-silverback-gorilla.glb",
+      "installed": true,
+      "triangles": 16812,
+      "images": 2,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "9c351393ab0a",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Chimpanzee",
+      "file": "other-chimpanzee.glb",
+      "installed": true,
+      "triangles": 15888,
+      "images": 2,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "79c5d06b4f52",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Orangutan",
+      "file": "other-orangutan.glb",
+      "installed": true,
+      "triangles": 16032,
+      "images": 2,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "4fc54d531d04",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Ring-tailed Lemur",
+      "file": "other-ring-tailed-lemur.glb",
+      "installed": true,
+      "triangles": 13358,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "f97198dc77ab",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Meerkat",
+      "file": "other-meerkat.glb",
+      "installed": true,
+      "triangles": 13388,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "5915170728c2",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Red Kangaroo",
+      "file": "other-red-kangaroo.glb",
+      "installed": true,
+      "triangles": 16792,
+      "images": 1,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "fc59e31f98c2",
+      "licenceSource": "unverified original"
+    },
+    {
+      "species": "Komodo Dragon",
+      "file": "other-komodo-dragon.glb",
+      "installed": true,
+      "triangles": 16682,
+      "images": 2,
+      "animations": 0,
+      "requiredExtensions": [
+        "KHR_mesh_quantization"
+      ],
+      "hash": "07c8c9261c95",
+      "licenceSource": "unverified original"
+    }
+  ]
+}

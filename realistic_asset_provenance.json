@@ -1,0 +1,93 @@
+[
+  {
+    "target": "wild-rabbit",
+    "file": "rabbit-wild-rabbit.glb",
+    "source": "https://3dassets.dev/assets/pets-and-companions-hd-house-rabbit-3a1d4032",
+    "license": "CC0-1.0",
+    "triangles": 11906,
+    "materials": 4,
+    "images": 1,
+    "animations": 0,
+    "sha256": "a7436511c9f8d94772bccf16ec58bc06439336901a42956c447f85930d780e0a",
+    "backup": "RealisticAssetBackups\\rabbit-wild-rabbit.glb",
+    "detail": "Original licensed GLB retained for Google Filament PBR, skins and animation"
+  },
+  {
+    "target": "common-frog",
+    "file": "frog-common-frog.glb",
+    "source": "https://3dassets.dev/assets/birds-and-reptiles-hd-poison-dart-frog-6d3a9c17",
+    "license": "CC0-1.0",
+    "triangles": 10608,
+    "materials": 4,
+    "images": 1,
+    "animations": 0,
+    "sha256": "4ffaafd2a760f7bedf8cfc163f136b89f00c928f4b16b4c3b4effd4b5023cedd",
+    "backup": "RealisticAssetBackups\\frog-common-frog.glb",
+    "detail": "Original licensed GLB retained for Google Filament PBR, skins and animation"
+  },
+  {
+    "target": "labrador",
+    "file": "dog-labrador.glb",
+    "source": "https://3dassets.dev/assets/pets-and-companions-hd-labrador-retriever-927d54b7",
+    "license": "CC0-1.0",
+    "triangles": 15906,
+    "materials": 3,
+    "images": 1,
+    "animations": 0,
+    "sha256": "2b3d3ff424b5c7b1ba96942df3428b8dbd3ed5c5802390e222fac6f6adbb9bd2",
+    "backup": "RealisticAssetBackups\\dog-labrador.glb",
+    "detail": "Original licensed GLB retained for Google Filament PBR, skins and animation"
+  },
+  {
+    "target": "robin",
+    "file": "bird-robin.glb",
+    "source": "https://3dassets.dev/assets/birds-and-reptiles-hd-european-robin-1680b450",
+    "license": "CC0-1.0",
+    "triangles": 14328,
+    "materials": 7,
+    "images": 2,
+    "animations": 0,
+    "sha256": "606b5c8d2b4282573440344276318ddaeda92bf04a5f5c7556775cbbb0d21f61",
+    "backup": "RealisticAssetBackups\\bird-robin.glb",
+    "detail": "Original licensed GLB retained for Google Filament PBR, skins and animation"
+  },
+  {
+    "target": "owl",
+    "file": "bird-owl.glb",
+    "source": "https://3dassets.dev/assets/birds-and-reptiles-hd-snowy-owl-257f670d",
+    "license": "CC0-1.0",
+    "triangles": 16972,
+    "materials": 4,
+    "images": 1,
+    "animations": 0,
+    "sha256": "84d5d894ba0c93d40102a9b3053b9a6af2459198c4ce189bba2c249fcfae376a",
+    "backup": "RealisticAssetBackups\\bird-owl.glb",
+    "detail": "Original licensed GLB retained for Google Filament PBR, skins and animation"
+  },
+  {
+    "target": "deer",
+    "file": "other-deer.glb",
+    "source": "https://3dassets.dev/assets/exotic-wildlife-hd-red-deer-stag-82f8d92a",
+    "license": "CC0-1.0",
+    "triangles": 20128,
+    "materials": 6,
+    "images": 1,
+    "animations": 0,
+    "sha256": "330d47057b666c8f5505c7f77f6abe8650c5d11977abe1690532b153202f3815",
+    "backup": "RealisticAssetBackups\\other-deer.glb",
+    "detail": "Original licensed GLB retained for Google Filament PBR, skins and animation"
+  },
+  {
+    "target": "tortoise",
+    "file": "other-tortoise.glb",
+    "source": "https://3dassets.dev/assets/birds-and-reptiles-hd-galapagos-giant-tortoise-311cd2ce",
+    "license": "CC0-1.0",
+    "triangles": 13364,
+    "materials": 4,
+    "images": 2,
+    "animations": 0,
+    "sha256": "dcc5e4669c6bc2162dbdafaf31edf2628c830ff8eaa45d1f9b6614a71134fac4",
+    "backup": "RealisticAssetBackups\\other-tortoise.glb",
+    "detail": "Original licensed GLB retained for Google Filament PBR, skins and animation"
+  }
+]

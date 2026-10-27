@@ -1,0 +1,190 @@
+{
+  "converted": [
+    {
+      "name": "bird-owl.glb",
+      "triangles": 16972,
+      "bytes": 763716
+    },
+    {
+      "name": "bird-robin.glb",
+      "triangles": 14328,
+      "bytes": 694276
+    },
+    {
+      "name": "cat-domestic-shorthair.glb",
+      "triangles": 15282,
+      "bytes": 664456
+    },
+    {
+      "name": "frog-common-frog.glb",
+      "triangles": 10608,
+      "bytes": 521236
+    },
+    {
+      "name": "other-african-elephant.glb",
+      "triangles": 18408,
+      "bytes": 1567968
+    },
+    {
+      "name": "other-african-lion.glb",
+      "triangles": 23368,
+      "bytes": 873244
+    },
+    {
+      "name": "other-african-lioness.glb",
+      "triangles": 20488,
+      "bytes": 789112
+    },
+    {
+      "name": "other-bengal-tiger.glb",
+      "triangles": 20068,
+      "bytes": 851660
+    },
+    {
+      "name": "other-black-rhinoceros.glb",
+      "triangles": 19048,
+      "bytes": 1578480
+    },
+    {
+      "name": "other-cheetah.glb",
+      "triangles": 23428,
+      "bytes": 1044776
+    },
+    {
+      "name": "other-chimpanzee.glb",
+      "triangles": 15888,
+      "bytes": 1656612
+    },
+    {
+      "name": "other-dromedary-camel.glb",
+      "triangles": 19864,
+      "bytes": 757884
+    },
+    {
+      "name": "other-giant-anteater.glb",
+      "triangles": 21900,
+      "bytes": 819612
+    },
+    {
+      "name": "other-grey-wolf.glb",
+      "triangles": 20068,
+      "bytes": 774508
+    },
+    {
+      "name": "other-grizzly-bear.glb",
+      "triangles": 19780,
+      "bytes": 754996
+    },
+    {
+      "name": "other-hippopotamus.glb",
+      "triangles": 18952,
+      "bytes": 1592640
+    },
+    {
+      "name": "other-jaguar.glb",
+      "triangles": 23706,
+      "bytes": 1053264
+    },
+    {
+      "name": "other-komodo-dragon.glb",
+      "triangles": 16682,
+      "bytes": 1733244
+    },
+    {
+      "name": "other-meerkat.glb",
+      "triangles": 13388,
+      "bytes": 588072
+    },
+    {
+      "name": "other-orangutan.glb",
+      "triangles": 16032,
+      "bytes": 1663056
+    },
+    {
+      "name": "other-plains-zebra.glb",
+      "triangles": 18076,
+      "bytes": 792736
+    },
+    {
+      "name": "other-polar-bear.glb",
+      "triangles": 19060,
+      "bytes": 731464
+    },
+    {
+      "name": "other-red-kangaroo.glb",
+      "triangles": 16792,
+      "bytes": 677268
+    },
+    {
+      "name": "other-red-panda.glb",
+      "triangles": 20984,
+      "bytes": 813272
+    },
+    {
+      "name": "other-reticulated-giraffe.glb",
+      "triangles": 20090,
+      "bytes": 816660
+    },
+    {
+      "name": "other-ring-tailed-lemur.glb",
+      "triangles": 13358,
+      "bytes": 589316
+    },
+    {
+      "name": "other-silverback-gorilla.glb",
+      "triangles": 16812,
+      "bytes": 1687064
+    },
+    {
+      "name": "other-snow-leopard.glb",
+      "triangles": 23284,
+      "bytes": 1021180
+    },
+    {
+      "name": "other-tortoise.glb",
+      "triangles": 13364,
+      "bytes": 616640
+    },
+    {
+      "name": "rabbit-wild-rabbit.glb",
+      "triangles": 11906,
+      "bytes": 544448
+    }
+  ],
+  "already_compatible": [
+    "ant-black-garden-ant.glb",
+    "bee-honeybee.glb",
+    "beetle-stag-beetle.glb",
+    "bird-parakeet.glb",
+    "butterfly-peacock.glb",
+    "cat-calico.glb",
+    "cat-ginger-tabby.glb",
+    "cat-ginger.glb",
+    "cat-grey.glb",
+    "cat-tabby.glb",
+    "cat-tuxedo.glb",
+    "dog-bulldog.glb",
+    "dog-dachshund.glb",
+    "dog-golden-retriever.glb",
+    "dog-spaniel.glb",
+    "dog-terrier.glb",
+    "dragonfly-emperor-dragonfly.glb",
+    "hedgehog-european-hedgehog.glb",
+    "ladybird-seven-spot.glb",
+    "other-bat.glb",
+    "other-fish.glb",
+    "other-fox.glb",
+    "other-lizard.glb",
+    "other-mouse.glb",
+    "other-slug.glb",
+    "snail-amber-snail.glb",
+    "snail-garden-snail.glb",
+    "spider-garden-spider.glb",
+    "squirrel-grey-squirrel.glb"
+  ],
+  "skipped": [
+    "dog-labrador.glb (existing fallback preserved)",
+    "other-deer.glb (existing fallback preserved)"
+  ],
+  "failed": []
+}

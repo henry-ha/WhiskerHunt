@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Camera body silhouette, cut with a bright lens outline and subtle flash. -->
+    <path android:fillColor="#28394B"
+        android:pathData="M16,8 L13,12 L8,12 C5.2,12 3,14.3 3,17 L3,37 C3,39.8 5.2,42 8,42 L40,42 C42.8,42 45,39.8 45,37 L45,17 C45,14.3 42.8,12 40,12 L35,12 L32,8 Z" />
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M24,14 C16.8,14 11,19.8 11,27 C11,34.2 16.8,40 24,40 C31.2,40 37,34.2 37,27 C37,19.8 31.2,14 24,14 Z" />
+    <path android:fillColor="#28394B"
+        android:pathData="M24,19 C19.6,19 16,22.6 16,27 C16,31.4 19.6,35 24,35 C28.4,35 32,31.4 32,27 C32,22.6 28.4,19 24,19 Z" />
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M37,16 C35.9,16 35,16.9 35,18 C35,19.1 35.9,20 37,20 C38.1,20 39,19.1 39,18 C39,16.9 38.1,16 37,16 Z" />
+</vector>

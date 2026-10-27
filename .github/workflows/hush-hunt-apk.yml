@@ -42,6 +42,10 @@ jobs:
             exit 1
           fi
           echo 'Note: GitHub builds only the GLB files committed into the repository.'
+          test -f WhiskerHunt/Platforms/Android/HushFilamentBridge.cs || { echo '::error::Filament C# bridge is missing'; exit 1; }
+          test -f WhiskerHunt/Platforms/Android/Java/com/hushhunt/filament/HushFilamentOverlay.java || { echo '::error::Filament Java bridge is missing'; exit 1; }
+          grep -q 'AndroidMavenLibrary Include="com.google.android.filament:filament-android"' WhiskerHunt/WhiskerHunt.csproj || { echo '::error::Filament dependency missing'; exit 1; }
+          echo 'Filament source bridge and Maven dependencies are present.'
 
       - name: Install Java 17
         uses: actions/setup-java@v4
@@ -124,8 +128,8 @@ jobs:
             exit 1
           fi
           mkdir -p dist
-          cp "${signed_apks[0]}" "dist/HushHunt-v3.10.33-ci${HUSH_BUILD_CODE}-Signed.apk"
-          unzip -tqq "dist/HushHunt-v3.10.33-ci${HUSH_BUILD_CODE}-Signed.apk"
+          cp "${signed_apks[0]}" "dist/HushHunt-v3.10.36-ci${HUSH_BUILD_CODE}-Signed.apk"
+          unzip -tqq "dist/HushHunt-v3.10.36-ci${HUSH_BUILD_CODE}-Signed.apk"
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
           ls -lh dist/
           {

@@ -1521,3 +1521,24 @@ body:has(.hush-home-v87) .bottom-nav{
 .hush-3d-search{font-size:15px!important;margin:8px 0 4px!important;background:#202b40!important;border-color:#6b9d99!important}
 .hush-ar-species-picks [hidden]{display:none!important}
 .hush-ar-species-picks button{touch-action:manipulation}
+
+/* Build99 Safari repair: show entire source picture with internal air around it.
+   This solves UI clipping; it cannot reconstruct anatomy cropped in the source PNG. */
+.sheet.ar-sheet .ar-model-target {
+    width:184px!important;height:184px!important;overflow:visible!important;
+    max-width:min(50vw,184px)!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+}
+.sheet.ar-sheet .encounter-ar-cat {
+    width:160px!important;height:160px!important;
+    max-width:160px!important;max-height:160px!important;
+    overflow:visible!important;contain:none!important;
+}
+.sheet.ar-sheet .encounter-ar-cat img.ar-wildlife-art {
+    box-sizing:border-box!important;
+    display:block!important;object-fit:contain!important;object-position:center!important;
+    width:100%!important;height:100%!important;
+    padding:12px!important;max-width:100%!important;max-height:100%!important;
+    border:0!important;box-shadow:none!important;clip-path:none!important;
+}
+.sheet.ar-sheet .encounter-cat-ring{width:174px!important;height:174px!important;}

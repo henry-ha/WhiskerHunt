@@ -1,0 +1,717 @@
+{
+  "title": "Hush Hunt wildlife GLB candidate review",
+  "created": "2026-10-27",
+  "scope": "23 bundled AR slots (not the entire 200+ catalogue)",
+  "external_glb_files_examined": 0,
+  "directly_downloaded_models": 0,
+  "note": "External candidates were screened from published listing metadata, not mesh bytes. Do not install automatically without QA.",
+  "licensing_notice": "CC BY requires attribution. NonCommercial prohibits commercial use. Unverified or third-party reuploads must not be shipped without permission.",
+  "entries": [
+    {
+      "priority": 1,
+      "species": "Deer",
+      "current_asset": "other-deer.glb",
+      "current": {
+        "triangles": 8520,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Red deer stag – Realistic Wild Animals HD",
+        "url": "https://3dassets.dev/assets/exotic-wildlife-hd-red-deer-stag-82f8d92a",
+        "license_claimed": "CC0",
+        "listed_triangles": 20128,
+        "status": "Strong candidate, installed on PC",
+        "assessment": "Static; WebP→PNG conversion; check pose and underside; already installed separately on user's Windows PC"
+      },
+      "alternatives": [
+        {
+          "title": "Realistic red deer – user-installed GLB",
+          "url": "https://cdn.3dassets.dev/assets/30203/v1/model.glb",
+          "license_claimed": "CC0",
+          "assessment": "Same verified HD asset direct binary URL; not a second design"
+        },
+        {
+          "title": "Animal Mesh pack comparison",
+          "url": "https://sketchfab.com/search?type=models&q=red%20deer%20realistic%20rigged",
+          "license_claimed": "Check licence",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 2,
+      "species": "Labrador",
+      "current_asset": "dog-labrador.glb",
+      "current": {
+        "triangles": 8376,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Labrador Retriever – Pets and Companions HD",
+        "url": "https://3dassets.dev/assets/pets-and-companions-hd-labrador-retriever-sitting-001a11cb",
+        "license_claimed": "CC0",
+        "listed_triangles": 15906,
+        "status": "Strong candidate, installed on PC",
+        "assessment": "Sitting-pose alternative confirmed; user's installer previously fetched standing version; static PBR; inspect face and coat"
+      },
+      "alternatives": [
+        {
+          "title": "Labrador Retriever Sitting",
+          "url": "https://3dassets.dev/assets/pets-and-companions-hd-labrador-retriever-sitting-001a11cb",
+          "license_claimed": "CC0",
+          "assessment": "Different static pose, not animated"
+        },
+        {
+          "title": "Retriever Sitting 3.6k stylized",
+          "url": "https://3dassets.dev/assets/companion-animals-and-pet-home-dog-retriever-sit-0c4a26d8",
+          "license_claimed": "CC0",
+          "assessment": "Reject: stylized / less detailed"
+        }
+      ]
+    },
+    {
+      "priority": 3,
+      "species": "Ginger Tabby",
+      "current_asset": "cat-ginger-tabby.glb",
+      "current": {
+        "triangles": 18904,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Domestic Shorthair Cat – Pets and Companions HD",
+        "url": "https://3dassets.dev/assets/pets-and-companions-hd-domestic-shorthair-sitting-b1cd877a",
+        "license_claimed": "CC0",
+        "listed_triangles": 15282,
+        "status": "Candidate needs stripe review",
+        "assessment": "Higher detail sitting cat; other HD standing variant has mackerel-tabby coat but ginger stripes not verified; reject 3.8k flat ginger version"
+      },
+      "alternatives": [
+        {
+          "title": "Cat Standing Ginger Tabby 3.8k",
+          "url": "https://3dassets.dev/assets/companion-animals-and-pet-home-cat-standing-f166d717",
+          "license_claimed": "CC0",
+          "assessment": "Reject: explicitly untextured cartoon model"
+        },
+        {
+          "title": "Ginger cat breed accurate search",
+          "url": "https://sketchfab.com/search?type=models&q=ginger%20tabby%20cat%20photorealistic%20textured%20standing",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 4,
+      "species": "Grey Squirrel",
+      "current_asset": "squirrel-grey-squirrel.glb",
+      "current": {
+        "triangles": 8128,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Eastern gray squirrel – animalica",
+        "url": "https://sketchfab.com/models/91ca2c3da40e47508fd223d45409980d/embed",
+        "license_claimed": "Unverified",
+        "listed_triangles": "",
+        "status": "Exact species listing; licence unknown",
+        "assessment": "Correct species, but confirm full-body textured geometry, download availability and licence"
+      },
+      "alternatives": [
+        {
+          "title": "Realistic squirrel – WildMesh demo",
+          "url": "https://sketchfab.com/3d-models/realistic-squirrel-3d-model-f4237da3b07344febf50c3fd36187638",
+          "license_claimed": "Unverified",
+          "assessment": "Rights and download unclear; not approved"
+        },
+        {
+          "title": "Grey squirrel accurate search",
+          "url": "https://sketchfab.com/search?type=models&q=eastern%20grey%20squirrel%20realistic%20game%20ready",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 5,
+      "species": "Fox",
+      "current_asset": "other-fox.glb",
+      "current": {
+        "triangles": 20184,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Red Fox Standing Pose Realistic – Pigcraft",
+        "url": "https://sketchfab.com/3d-models/red-fox-standing-pose-realistic-3278bddb17024f3287aa374cc1e9f6f6",
+        "license_claimed": "CC BY",
+        "listed_triangles": 659900,
+        "status": "Downloadable but too heavy",
+        "assessment": "High realism listing, but ~660k triangles unsuitable as-is for mobile; decimate first"
+      },
+      "alternatives": [
+        {
+          "title": "Animated Fox – AnimalMesh3D",
+          "url": "https://sketchfab.com/3d-models/animated-fox-3d-model-7b7d4f07d47a444ab6c08b62adfd4aff",
+          "license_claimed": "Unverified",
+          "assessment": "19.5k tris and 60 animation clips advertised; purchase/export terms unclear"
+        },
+        {
+          "title": "3DRT fox preview",
+          "url": "https://sketchfab.com/3d-models/3drt-wild-animals-fox-b7451d4748b3453f92eaa8590177b4a3",
+          "license_claimed": "Unverified",
+          "assessment": "Strong anatomical reference; verify licensing"
+        }
+      ]
+    },
+    {
+      "priority": 6,
+      "species": "Wild Rabbit",
+      "current_asset": "rabbit-wild-rabbit.glb",
+      "current": {
+        "triangles": 11184,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "European Wild Rabbit – Summer Engine",
+        "url": "https://www.summerengine.com/asset-store/european-wild-rabbit-8a01747a",
+        "license_claimed": "Verify site",
+        "listed_triangles": 4000,
+        "status": "Candidate; realism limited",
+        "assessment": "PBR but described as PS2-era semi-realistic; below target detail"
+      },
+      "alternatives": [
+        {
+          "title": "Realistic Rabbit Demo – WildMesh creator",
+          "url": "https://sketchfab.com/WildMesh_3D",
+          "license_claimed": "Unverified",
+          "assessment": "Source/provenance concerns; not approved"
+        },
+        {
+          "title": "Rabbit source search",
+          "url": "https://sketchfab.com/search?type=models&q=European%20wild%20rabbit%20realistic%20fur%20game%20ready",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 7,
+      "species": "European Hedgehog",
+      "current_asset": "hedgehog-european-hedgehog.glb",
+      "current": {
+        "triangles": 8102,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Species-specific full body search",
+        "url": "https://sketchfab.com/search?type=models&q=European%20hedgehog%20realistic%20textured%20downloadable",
+        "license_claimed": "To verify",
+        "listed_triangles": "",
+        "status": "No acceptable model verified",
+        "assessment": "Reject Mammal Research Institute specimen—it's only a skull, not a living animal"
+      },
+      "alternatives": [
+        {
+          "title": "European Hedgehog skull – museum",
+          "url": "https://sketchfab.com/3d-models/erinaceus-europaeus-european-hedgehog-896f6d316d814184ab195695afb8626a",
+          "license_claimed": "CC BY",
+          "assessment": "Reject: 1.2M-triangle skull only"
+        },
+        {
+          "title": "Hedgehog browse",
+          "url": "https://sketchfab.com/search?type=models&q=European%20hedgehog%20game%20ready%20textured%20full%20body",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 8,
+      "species": "Robin",
+      "current_asset": "bird-robin.glb",
+      "current": {
+        "triangles": 6866,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "European Robin – Perched 3D Bird",
+        "url": "https://sketchfab.com/3d-models/european-robin-perched-3d-bird-7e9bda5d969641618adc24e1edc4cf91",
+        "license_claimed": "Unverified",
+        "listed_triangles": "",
+        "status": "Exact species listing; licence unknown",
+        "assessment": "Preview reportedly realistic; verify licence and export before using"
+      },
+      "alternatives": [
+        {
+          "title": "European Robin – Breadhatred",
+          "url": "https://sketchfab.com/models/88ae218373de4435b04d04ae9680b085/embed",
+          "license_claimed": "Unverified",
+          "assessment": "Exact robin; inspect publisher page and download availability"
+        },
+        {
+          "title": "Robin source search",
+          "url": "https://sketchfab.com/search?type=models&q=European%20robin%20Erithacus%20rubecula%20textured%20download",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 9,
+      "species": "Mouse",
+      "current_asset": "other-mouse.glb",
+      "current": {
+        "triangles": 21992,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Wood mouse model search",
+        "url": "https://sketchfab.com/search?type=models&q=wood%20mouse%20Apodemus%20sylvaticus%20realistic%20downloadable",
+        "license_claimed": "To verify",
+        "listed_triangles": "",
+        "status": "No exact downloadable asset verified",
+        "assessment": "Only a genuine wood mouse with ears, paws and tail; avoid generic cartoon mice"
+      },
+      "alternatives": [
+        {
+          "title": "Wood mouse exact-species browse",
+          "url": "https://sketchfab.com/search?type=models&q=wood%20mouse%20Apodemus%20sylvaticus%20PBR%203d%20model",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 10,
+      "species": "Owl",
+      "current_asset": "bird-owl.glb",
+      "current": {
+        "triangles": 6902,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Realistic Barn Owl 3D Model",
+        "url": "https://sketchfab.com/3d-models/realistic-barn-owl-3d-model-3d5760660cd54ed59ca9fd107f9c1a9b",
+        "license_claimed": "CC BY – check original",
+        "listed_triangles": "",
+        "status": "Species specificity needed",
+        "assessment": "Promising layered-feather sculpt; app uses generic owl label, confirm species & rights"
+      },
+      "alternatives": [
+        {
+          "title": "Eurasian eagle-owl – museum",
+          "url": "https://sketchfab.com/3d-models/eurasian-eagle-owl-bubo-bubo-ace84e9892744faaa7abf99a9cc67366",
+          "license_claimed": "CC BY",
+          "assessment": "Correct taxon for an eagle owl, not barn owl; inspect whether scan is whole body"
+        },
+        {
+          "title": "Owl category search",
+          "url": "https://sketchfab.com/search?type=models&q=owl%20game%20ready%20realistic%20feathers%20downloadable",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 11,
+      "species": "Common Frog",
+      "current_asset": "frog-common-frog.glb",
+      "current": {
+        "triangles": 6884,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Animated common frog – Mieke Roth",
+        "url": "https://sketchfab.com/3d-models/animated-common-frog-c721e297da0d4dbb91f808dfd9001850",
+        "license_claimed": "No download visible",
+        "listed_triangles": 24100,
+        "status": "Very credible reference; not downloadable",
+        "assessment": "Creator model has animation and strong community attention; no direct download, must request licence"
+      },
+      "alternatives": [
+        {
+          "title": "Reptiles Amphibians and Insects – bullfrog",
+          "url": "https://3dassets.dev/packs/reptiles-amphibians-and-minibeasts",
+          "license_claimed": "CC0",
+          "assessment": "Not common frog; reject as species substitute"
+        },
+        {
+          "title": "Common frog licensed search",
+          "url": "https://sketchfab.com/search?type=models&q=Rana%20temporaria%20common%20frog%20textured%20game%20ready",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 12,
+      "species": "Tortoise",
+      "current_asset": "other-tortoise.glb",
+      "current": {
+        "triangles": 10720,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Tortoise Realistic Stylized Animal Character – Pigcraft",
+        "url": "https://sketchfab.com/3d-models/tortoise-realistic-stylized-animal-character-f113a5c650364565aa4bc03d7312abc5",
+        "license_claimed": "CC BY",
+        "listed_triangles": 51400,
+        "status": "Downloadable stylized candidate",
+        "assessment": "Recognisable anatomy, but marketed as stylized; quality bar may still be too low"
+      },
+      "alternatives": [
+        {
+          "title": "Leopard tortoise – Savanna Animals pack",
+          "url": "https://3dassets.dev/packs/savanna-wildlife",
+          "license_claimed": "CC0",
+          "assessment": "Related tortoise species, smooth low detail; only as reference"
+        },
+        {
+          "title": "Tortoise species search",
+          "url": "https://sketchfab.com/search?type=models&q=realistic%20tortoise%20low%20poly%20PBR%20full%20body",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 13,
+      "species": "Garden Snail",
+      "current_asset": "snail-garden-snail.glb",
+      "current": {
+        "triangles": 34032,
+        "images": 4,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Snail – Jungle Jim",
+        "url": "https://sketchfab.com/3d-models/snail-dbf11eaef4574ad8ad8b1b3e57d33bf9",
+        "license_claimed": "CC BY",
+        "listed_triangles": 50000,
+        "status": "Good community-rated candidate",
+        "assessment": "220 likes and downloadable; check garden-snail species and optimize body/texture"
+      },
+      "alternatives": [
+        {
+          "title": "Snail Animated – Viky_3D",
+          "url": "https://sketchfab.com/3d-models/snail-animated-44f4d21cedb74ab0b74eb94c174e524d",
+          "license_claimed": "CC BY-NC-SA",
+          "assessment": "Reject commercial reuse; 5.5k triangles animation"
+        },
+        {
+          "title": "Garden snail species search",
+          "url": "https://sketchfab.com/search?type=models&q=Cornu%20aspersum%20garden%20snail%20photorealistic%20model",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 14,
+      "species": "Amber Snail",
+      "current_asset": "snail-amber-snail.glb",
+      "current": {
+        "triangles": 34032,
+        "images": 4,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Amber snail model search",
+        "url": "https://sketchfab.com/search?type=models&q=amber%20snail%20Succineidae%20realistic%20downloadable",
+        "license_claimed": "To verify",
+        "listed_triangles": "",
+        "status": "No exact species match verified",
+        "assessment": "Do not relabel generic garden snail as amber snail"
+      },
+      "alternatives": [
+        {
+          "title": "Generic garden snail – Jungle Jim",
+          "url": "https://sketchfab.com/3d-models/snail-dbf11eaef4574ad8ad8b1b3e57d33bf9",
+          "license_claimed": "CC BY",
+          "assessment": "Not necessarily amber snail: can't relabel"
+        },
+        {
+          "title": "Amber snail taxonomy search",
+          "url": "https://sketchfab.com/search?type=models&q=Succinea%20putris%20amber%20snail%203D",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 15,
+      "species": "Garden Spider",
+      "current_asset": "spider-garden-spider.glb",
+      "current": {
+        "triangles": 16368,
+        "images": 4,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Orb weaver spider on web – Reptiles, Amphibians and Insects",
+        "url": "https://3dassets.dev/packs/reptiles-amphibians-and-minibeasts",
+        "license_claimed": "CC0",
+        "listed_triangles": "",
+        "status": "Related model pack; mismatch possible",
+        "assessment": "Orb weaver related to common garden spider; pack is stylized, not final realism"
+      },
+      "alternatives": [
+        {
+          "title": "Garden spider match search",
+          "url": "https://sketchfab.com/search?type=models&q=Araneus%20diadematus%20garden%20spider%20realistic%20free%20downloadable",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 16,
+      "species": "Seven-spot",
+      "current_asset": "ladybird-seven-spot.glb",
+      "current": {
+        "triangles": 10940,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Ladybird – Reptiles, Amphibians and Insects",
+        "url": "https://3dassets.dev/packs/reptiles-amphibians-and-minibeasts",
+        "license_claimed": "CC0",
+        "listed_triangles": 3700,
+        "status": "Related model pack only",
+        "assessment": "Check 7 correct spots, elytra colours, legs, antennae; style still rounded"
+      },
+      "alternatives": [
+        {
+          "title": "Seven spot ladybird search",
+          "url": "https://sketchfab.com/search?type=models&q=Coccinella%20septempunctata%20seven%20spot%20ladybird%20realistic%20glb",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 17,
+      "species": "Honeybee",
+      "current_asset": "bee-honeybee.glb",
+      "current": {
+        "triangles": 7168,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Honeybee – Apis mellifera",
+        "url": "https://sketchfab.com/3d-models/honeybee-apis-mellifera-38c955f0c13449969a948bcce107e08a",
+        "license_claimed": "CC BY",
+        "listed_triangles": "",
+        "status": "Species-correct option",
+        "assessment": "Honeybee species matched; confirm mesh rig/textures and size"
+      },
+      "alternatives": [
+        {
+          "title": "Realistic bee – Pasha",
+          "url": "https://sketchfab.com/3d-models/realistic-bee-0ea8f5f4a2a5496aa177faf637868443",
+          "license_claimed": "CC BY",
+          "assessment": "Species specific needs checking; visual review needed"
+        },
+        {
+          "title": "Western honeybee browse",
+          "url": "https://sketchfab.com/search?type=models&q=Apis%20mellifera%20western%20honey%20bee%20PBR%20model",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 18,
+      "species": "Stag Beetle",
+      "current_asset": "beetle-stag-beetle.glb",
+      "current": {
+        "triangles": 5516,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "CC0 Hirata Stag Beetle – ffishAsia",
+        "url": "https://sketchfab.com/3d-models/cc0-hirata-stag-beetle-d-titanus-b4edbf4484244c72bc2d39e67d1dd7da",
+        "license_claimed": "CC0",
+        "listed_triangles": 214900,
+        "status": "Related species only; not approved",
+        "assessment": "High-quality specimen but Asian Dorcus titanus, not European Lucanus cervus; optimization necessary"
+      },
+      "alternatives": [
+        {
+          "title": "Stag Beetle – Paint 3D reupload",
+          "url": "https://sketchfab.com/3d-models/stag-beetle-bf7b0641cb934d59a865113865d3a574",
+          "license_claimed": "CC BY claimed",
+          "assessment": "Reject: uploader says they don't own model"
+        },
+        {
+          "title": "European stag beetle search",
+          "url": "https://sketchfab.com/search?type=models&q=Lucanus%20cervus%20textured%20realistic%203d%20model",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 19,
+      "species": "Emperor Dragonfly",
+      "current_asset": "dragonfly-emperor-dragonfly.glb",
+      "current": {
+        "triangles": 10704,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Emperor dragonfly search",
+        "url": "https://sketchfab.com/search?type=models&q=Anax%20imperator%20emperor%20dragonfly%20realistic%20free%20downloadable",
+        "license_claimed": "To verify",
+        "listed_triangles": "",
+        "status": "No exact model verified",
+        "assessment": "Must match emperor dragonfly wings, blue/green abdomen, legs"
+      },
+      "alternatives": [
+        {
+          "title": "Dragonfly pack browse",
+          "url": "https://3dassets.dev/packs/reptiles-amphibians-and-minibeasts",
+          "license_claimed": "CC0",
+          "assessment": "Current pack has no exact emperor dragonfly confirmed"
+        },
+        {
+          "title": "Emperor dragonfly browse",
+          "url": "https://sketchfab.com/search?type=models&q=Anax%20imperator%20photorealistic%20dragonfly%20GLB",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 20,
+      "species": "Black Garden Ant",
+      "current_asset": "ant-black-garden-ant.glb",
+      "current": {
+        "triangles": 7064,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Black garden ant – Mieke Roth",
+        "url": "https://sketchfab.com/3d-models/black-garden-ant-lasius-niger-DElR4Dk5etVzNVMp0wPzB3Nf6P",
+        "license_claimed": "No download visible",
+        "listed_triangles": 326100,
+        "status": "High quality reference, not downloadable",
+        "assessment": "129 likes; accurate taxon and texture/normal sculpt, too heavy and not downloadable"
+      },
+      "alternatives": [
+        {
+          "title": "Black Garden Ant Worker – Nestaeric",
+          "url": "https://sketchfab.com/3d-models/black-garden-ant-worker-57d8cc9220e44a99802d0e08178e8dca",
+          "license_claimed": "Commercial paid",
+          "assessment": "29.9k triangles, detailed rig; check seller licence"
+        },
+        {
+          "title": "Black Garden Ant 8.8k – nnj3de",
+          "url": "https://sketchfab.com/3d-models/black-garden-ant-f54d1ab2fbc4457b94560e912b824533",
+          "license_claimed": "Unverified",
+          "assessment": "Preview only and not downloadable"
+        }
+      ]
+    },
+    {
+      "priority": 21,
+      "species": "Peacock",
+      "current_asset": "butterfly-peacock.glb",
+      "current": {
+        "triangles": 8392,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Peacock butterfly search",
+        "url": "https://sketchfab.com/search?type=models&q=Aglais%20io%20peacock%20butterfly%20textured%203d%20downloadable",
+        "license_claimed": "To verify",
+        "listed_triangles": "",
+        "status": "No exact candidate verified",
+        "assessment": "Do not substitute a blue peacock bird or another butterfly"
+      },
+      "alternatives": [
+        {
+          "title": "Peacock butterfly species search",
+          "url": "https://sketchfab.com/search?type=models&q=Aglais%20io%20Inachis%20io%20peacock%20butterfly%20glb",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 22,
+      "species": "Slug",
+      "current_asset": "other-slug.glb",
+      "current": {
+        "triangles": 12980,
+        "images": 3,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Garden slug model search",
+        "url": "https://sketchfab.com/search?type=models&q=garden%20slug%20realistic%20textured%203d%20download",
+        "license_claimed": "To verify",
+        "listed_triangles": "",
+        "status": "Unverified replacement",
+        "assessment": "Original slot already contains image textures; visual inspection needed before replacing"
+      },
+      "alternatives": [
+        {
+          "title": "Slug catalogue search",
+          "url": "https://sketchfab.com/search?type=models&q=Deroceras%20reticulatum%20garden%20slug%203D%20textured",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    },
+    {
+      "priority": 23,
+      "species": "Bat",
+      "current_asset": "other-bat.glb",
+      "current": {
+        "triangles": 4356,
+        "images": 0,
+        "animations": 0
+      },
+      "primary": {
+        "title": "Bat Low Poly Animated Rigged – danielvanderkaaden",
+        "url": "https://sketchfab.com/3d-models/bat-low-poly-animated-rigged-3acb8d5ff785414ea5dc17254196d8f5",
+        "license_claimed": "CC BY",
+        "listed_triangles": 7000,
+        "status": "Animated but low detail",
+        "assessment": "Has rig, textured FBX but not instant high-quality GLB; candidate backup only"
+      },
+      "alternatives": [
+        {
+          "title": "Common pipistrelle micro-CT – museum",
+          "url": "https://sketchfab.com/3d-models/pipistrellus-pipistrelluscommon-pipistrelle-bat-a7455bdf557d4dd283991344bd1b9c9d",
+          "license_claimed": "CC BY",
+          "assessment": "Reject: skull-only micro-CT, not living bat"
+        },
+        {
+          "title": "Realistic bat search",
+          "url": "https://sketchfab.com/search?type=models&q=Pipistrellus%20pipistrellus%20game%20ready%203d%20wings",
+          "license_claimed": "Verify",
+          "assessment": "Search only"
+        }
+      ]
+    }
+  ]
+}

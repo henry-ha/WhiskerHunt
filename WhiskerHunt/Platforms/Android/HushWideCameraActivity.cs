@@ -53,12 +53,17 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
     private AndroidView? _flashOverlay;
     private readonly Dictionary<float, AndroidButton> _zoomButtons = new();
     private readonly Handler _handler = new(Looper.MainLooper!);
-    private bool _done, _surfaceReady, _taking;
+    private bool _done, _surfaceReady, _bufferConfigured, _taking;
     private string? _cameraId;
     private float _ratio = 1f, _minZoom = 1f, _maxZoom = 1f;
     private int _jpegOrientation = 90;
     private int _photoWidth = 1920, _photoHeight = 1080;
     private float _previousPinch;
+    // The camera sensor emits landscape frames while our UI is portrait.
+    // Their aspect ratio must be preserved on EVERY zoom setting.
+    private FrameLayout? _previewContainer;
+    private int _previewBufferWidth = 1280, _previewBufferHeight = 720;
+    private int _previewRotationDegrees = 90;
     private DeviceCallback? _deviceCallback;
     private SessionCallback? _sessionCallback;
 
@@ -71,9 +76,11 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
         Window?.AddFlags(WindowManagerFlags.KeepScreenOn);
         var root = new FrameLayout(this);
         root.SetBackgroundColor(AndroidColor.Black);
+        root.SetClipChildren(true); // Center-crop oversize video instead of stretching it.
+        _previewContainer = root;
         _preview = new SurfaceView(this);
         _preview.Holder?.AddCallback(this);
-        root.AddView(_preview, new FrameLayout.LayoutParams(-1, -1));
+        root.AddView(_preview, new FrameLayout.LayoutParams(-1, -1, GravityFlags.Center));
         _preview.Touch += (_, ev) =>
         {
             var pointer = ev.Event;
@@ -163,9 +170,12 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
         _shutter.SetMinimumWidth(0);
         _shutter.SetPadding(0, 0, 0, 0);
         _shutter.SetBackgroundColor(AndroidColor.Transparent);
-        _shutter.SetImageResource(Android.Resource.Drawable.IcMenuCamera);
+        // VectorDrawable is rasterised by Android at the device's actual display
+        // density. Avoid the low-resolution framework IcMenuCamera bitmap.
+        int vectorId = Resources!.GetIdentifier("hush_camera_vector", "drawable", PackageName);
+        _shutter.SetImageResource(vectorId != 0 ? vectorId : Android.Resource.Drawable.IcMenuCamera);
         _shutter.SetScaleType(ImageView.ScaleType.FitCenter);
-        _shutter.SetColorFilter(AndroidColor.Rgb(13, 35, 56));
+        // Do not tint vector layers; the camera lens has separate colors.
         _shutter.ContentDescription = "Capture wildlife photo";
         _shutter.Click += (_, _) => { PlayShutterFlash(); TakePhoto(); };
 
@@ -182,8 +192,9 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
         {
             if (_shutter?.Enabled == true) { PlayShutterFlash(); TakePhoto(); }
         };
-        // The camera glyph is restored to 34dp, with NO artificial upward nudge.
-        var shutterIconParams = new FrameLayout.LayoutParams(Dp(34), Dp(34), GravityFlags.Center);
+        // Enlarged camera icon (46dp) stays centered INSIDE the proven, unclipped
+        // 78dp capture circle. Keep the circle container fixed: only enlarge glyph.
+        var shutterIconParams = new FrameLayout.LayoutParams(Dp(46), Dp(46), GravityFlags.Center);
         shutterShell.AddView(_shutter, shutterIconParams);
         var shellParams = new FrameLayout.LayoutParams(Dp(78), Dp(78), GravityFlags.Center);
         shutterHolder.AddView(shutterShell, shellParams);
@@ -204,6 +215,32 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
         controlsParams.BottomMargin = Dp(118); // The shutter now has explicit measured height and cannot be clipped by the hint.
         root.AddView(controls, controlsParams);
         SetContentView(root);
+        // Root layout bounds become available after the first UI layout.
+        // Recalculated again when camera output dimensions have been selected.
+        root.Post(UpdatePreviewGeometry);
+    }
+
+    /// <summary>
+    /// Camera2 SurfaceView rotates sensor frames but otherwise stretches them
+    /// to the view size. Size the *view* to the rotated buffer using a uniform
+    /// centre-crop scale; any overflow is cropped by the root FrameLayout.
+    /// This deliberately does not modify optical/digital zoom values.
+    /// </summary>
+    private void UpdatePreviewGeometry()
+    {
+        if (_previewContainer is null || _preview is null) return;
+        int screenW = _previewContainer.Width, screenH = _previewContainer.Height;
+        if (screenW <= 0 || screenH <= 0) return;
+        bool swapped = (_previewRotationDegrees % 180) != 0;
+        int imageW = swapped ? _previewBufferHeight : _previewBufferWidth;
+        int imageH = swapped ? _previewBufferWidth : _previewBufferHeight;
+        if (imageW <= 0 || imageH <= 0) return;
+        double fill = Math.Max((double)screenW / imageW, (double)screenH / imageH);
+        int viewW = Math.Max(screenW, (int)Math.Ceiling(imageW * fill));
+        int viewH = Math.Max(screenH, (int)Math.Ceiling(imageH * fill));
+        var layout = new FrameLayout.LayoutParams(viewW, viewH, GravityFlags.Center);
+        _preview.LayoutParameters = layout;
+        Android.Util.Log.Info("HushCamera", $"Preview buffer {_previewBufferWidth}x{_previewBufferHeight}, sensor rotation {_previewRotationDegrees}, screen {screenW}x{screenH}, centre-crop {viewW}x{viewH}");
     }
 
     private GradientDrawable Rounded(AndroidColor color, float radiusDp)
@@ -274,9 +311,27 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
             var selected = candidates.OrderBy(c => c.min).ThenByDescending(c => c.max).First();
             _cameraId = selected.id; _minZoom = Math.Max(.1f, selected.min);
             _maxZoom = Math.Max(1f, selected.max); _jpegOrientation = selected.angle;
+            _previewRotationDegrees = (_jpegOrientation - (int)WindowManager!.DefaultDisplay!.Rotation * 90 + 360) % 360;
             _ratio = 1f;
             var configuration = manager.GetCameraCharacteristics(selected.id)
                 .Get(CameraCharacteristics.ScalerStreamConfigurationMap) as StreamConfigurationMap;
+            // Select an actual supported PRIVATE preview stream size. Previously no
+            // size was specified, so Camera2 chose an arbitrary small buffer and
+            // Android stretched it to our tall full-screen SurfaceView.
+            var previewSizes = configuration?.GetOutputSizes(Java.Lang.Class.FromType(typeof(Android.Graphics.SurfaceTexture)));
+            var previewSize = previewSizes?
+                .Where(s => s.Width > 0 && s.Height > 0 && (long)s.Width * s.Height <= 1920L * 1080L)
+                .OrderBy(s => Math.Abs((double)Math.Max(s.Width, s.Height) / Math.Min(s.Width, s.Height) - 16.0 / 9.0))
+                .ThenByDescending(s => (long)s.Width * s.Height)
+                .FirstOrDefault() ?? previewSizes?
+                .Where(s => s.Width > 0 && s.Height > 0)
+                .OrderBy(s => Math.Abs((double)Math.Max(s.Width, s.Height) / Math.Min(s.Width, s.Height) - 16.0 / 9.0))
+                .FirstOrDefault();
+            if (previewSize is null) throw new InvalidOperationException("No supported camera preview dimensions.");
+            _previewBufferWidth = previewSize.Width;
+            _previewBufferHeight = previewSize.Height;
+            _preview!.Holder?.SetFixedSize(_previewBufferWidth, _previewBufferHeight);
+            _previewContainer?.Post(UpdatePreviewGeometry);
             var supported = configuration?.GetOutputSizes((int)ImageFormatType.Jpeg);
             var size = supported?.Where(s => s.Width > 0 && s.Height > 0 &&
                 (long)s.Width * s.Height <= 16_000_000).OrderByDescending(s => (long)s.Width * s.Height).FirstOrDefault()
@@ -329,7 +384,7 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
     }
     private void OpenPreview()
     {
-        if (_camera is null || !_surfaceReady || _preview?.Holder?.Surface is null || _reader is null || _done) return;
+        if (_camera is null || !_surfaceReady || !_bufferConfigured || _preview?.Holder?.Surface is null || _reader is null || _done || _sessionCallback is not null) return;
         try
         {
             var surface = _preview.Holder.Surface;
@@ -428,9 +483,15 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
         }
         catch (Exception ex) { Complete("error", "Photo processing failed: " + ex.Message); }
     }
-    public void SurfaceCreated(ISurfaceHolder holder) { _surfaceReady = true; OpenPreview(); }
-    public void SurfaceDestroyed(ISurfaceHolder holder) { _surfaceReady = false; }
-    public void SurfaceChanged(ISurfaceHolder holder, Format format, int width, int height) { }
+    public void SurfaceCreated(ISurfaceHolder holder) { _surfaceReady = true; _bufferConfigured = false; }
+    public void SurfaceDestroyed(ISurfaceHolder holder) { _surfaceReady = false; _bufferConfigured = false; }
+    public void SurfaceChanged(ISurfaceHolder holder, Format format, int width, int height)
+    {
+        // Camera session can start only once the buffer has a real size.
+        // Some devices report rotated sizes; do not demand exact w/h equality.
+        _bufferConfigured = width > 0 && height > 0;
+        if (_bufferConfigured) OpenPreview();
+    }
     private sealed class DeviceCallback(HushWideCameraActivity activity) : CameraDevice.StateCallback
     {
         public override void OnOpened(CameraDevice camera) => activity.OnDeviceOpened(camera);
@@ -459,6 +520,8 @@ public sealed class HushWideCameraActivity : Activity, ISurfaceHolderCallback, I
         _camera?.Dispose(); _camera = null;
         _reader?.Dispose(); _reader = null;
         _cameraId = null;
+        _sessionCallback = null;
+        _bufferConfigured = false;
     }
     public override void OnBackPressed() => Complete("cancelled", null);
     protected override void OnPause() { ReleaseCamera(); base.OnPause(); }
