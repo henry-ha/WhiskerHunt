@@ -79,6 +79,23 @@ internal static class HushFilamentBridge
         catch (Exception e) { Warn(e); }
     }
 
+    // HUSH_PET_REACTION_B99_V1: one JNI event per real pet, not a per-frame call.
+    public static void TriggerPetReaction(bool isStroke)
+    {
+        if (!_installed) return;
+        try
+        {
+            var clazz = JNIEnv.FindClass(JavaName);
+            try
+            {
+                var method = JNIEnv.GetStaticMethodID(clazz, "reactToPet", "(Z)V");
+                JNIEnv.CallStaticVoidMethod(clazz, method, new JValue(isStroke));
+            }
+            finally { JNIEnv.DeleteLocalRef(clazz); }
+        }
+        catch (Exception e) { Warn(e); }
+    }
+
     public static void ConfigureHdr(Java.Lang.Object config)
     {
         if (!_installed) return;

@@ -1,0 +1,7 @@
+{
+  "files": [
+    "WhiskerHunt/Platforms/Android/Java/com/hushhunt/filament/HushFilamentOverlay.java",
+    "WhiskerHunt/Platforms/Android/HushFilamentBridge.cs",
+    "WhiskerHunt/Platforms/Android/HushArCoreActivity.cs"
+  ]
+}

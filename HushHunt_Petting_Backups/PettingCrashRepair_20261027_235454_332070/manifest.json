@@ -1,0 +1,8 @@
+{
+  "type": "HushHunt Petting Crash Repair B99",
+  "mode": "frame-synchronised pet reaction",
+  "files": [
+    "WhiskerHunt/Platforms/Android/HushArCoreActivity.cs",
+    "WhiskerHunt/Platforms/Android/Java/com/hushhunt/filament/HushFilamentOverlay.java"
+  ]
+}

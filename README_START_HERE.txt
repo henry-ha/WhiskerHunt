@@ -1,61 +1,43 @@
-HUSH HUNT - FULL-LIBRARY REALISTIC WILDLIFE UPGRADER (27 October 2026)
-===================================================================
+HUSH HUNT B99 — FILAMENT AR FRAME STALL REDUCTION (2026-10-28)
 
-WHAT THIS PACKAGE REALLY DOES
-- Contains a 61-slot catalogue matching Hush Hunt's source GLB filenames.
-- Can automatically fetch EIGHT previously researched, direct-download GLBs
-  (Red Panda, Plains Zebra, Grey Wolf, Fox, Red Kangaroo) onto YOUR Windows PC.
-- Can STAGE any licensed GLB you download for the other 53 slots.
-- VALIDATES GLB header, embedded textures/materials, rough geometry size,
-  extensions and known rendering risks.
-- Requires your explicit visual approval (eyes, anatomy, fur, scale, pose,
-  unwanted scenery) and licence confirmation before ANY replacement.
-- Backs up each installed file by timestamp and SHA256; supports rollback.
-- Writes a CSV report of all 61 slots, including which replacements were made.
+PURPOSE
+The phoenix GLB transparency/depth repair is preserved. This is a conservative
+source-only patch to reduce avoidable rendering work in the *separate* Filament
+animal overlay. Intended for the reported lag when walking around anchored animals.
 
-WHAT IT DOES NOT DO
-- Does NOT include 61 new realistic models. Eight verified candidate URL entries
-  are available to attempt to download; 53 need sourced/licensed individually.
-- Does NOT automatically download from Sketchfab, Fab or CGTrader without
-  authentication or purchase. DO NOT bypass licences or redistribute paid GLBs.
-- Does NOT make static GLBs walk naturally; this requires animation/rigging.
-- Does NOT fix incompatible Android shaders, normals or Filament PBR setup.
-- Does NOT guarantee all animals will LOOK good: viewer and phone review needed.
+CHANGES (depending on actual Java source; CHECK displays exact edits)
+- Filament overlay extra post-processing OFF. PBR colour, textures and depth stay.
+- Redundant Filament directional shadow-map pass OFF. Existing AR contact
+  / silhouette shadow (from ARCore view) is left alone.
+- In old renderer variants, limit repeated GPU->CPU visibility inspection to
+  6 attempts per session (prevents endless readback stalls if it cannot pass).
+- Does not edit anchor placement, rotation, petting, walking, GLB materials,
+  wildlife meshes, ARCore exposure or storage. No reinstall/uninstall needed.
 
-INSTALL
-1. BACK UP E:\inetpub\wwwroot\WhiskerHunt (especially Resources\Raw\ar_models).
-2. Extract ALL this package's files DIRECTLY into your solution folder,
-   such that START_WILDLIFE_UPGRADE.cmd is alongside the WhiskerHunt project folder.
-   It does not overwrite your project C# files or existing GLBs.
-3. Double-click START_WILDLIFE_UPGRADE.cmd (Python 3.9+ needed).
-4. Choose 1 to list all 61 assets, and 2 to fetch the known eight candidates.
-5. Open each staged candidate in Blender or a GLB viewer. Never approve an
-   animal with missing eyes, exploded fur, broken feet or inappropriate props.
-6. Choose 5 to approve one candidate at a time; use 6 to simulate all installs;
-   use 7 to install ONLY those you've individually approved.
-7. In Visual Studio: Clean, Rebuild, Deploy OVER the existing installation.
-   DO NOT uninstall Hush Hunt or clear its app data.
-8. Test Red Panda/Gorilla/Zebra in AR. Option 8 restores a previous asset.
+INSTALL (WINDOWS)
+1. Back up/commit your WhiskerHunt source. Exit Visual Studio debugging.
+2. EXTRACT ALL 4 FILES to E:\inetpub\wwwroot\WhiskerHunt\ (folder containing
+   WhiskerHunt.sln and the inner WhiskerHunt folder).
+3. Run CHECK_AR_FRAME_STALL_FIX.cmd. Proceed only if CHECK PASSED.
+4. Run INSTALL_AR_FRAME_STALL_FIX.cmd. Confirm INSTALL PASSED.
+5. Clean Solution, Rebuild Solution, deploy OVER the existing Android app.
+6. Test Phoenix at 1x: place on floor, walk around SLOWLY (not just rotate).
+   Then test Zebra and Fox in exactly the same location and lighting.
+7. If anything is worse: ROLLBACK_AR_FRAME_STALL_FIX.cmd, rebuild, redeploy.
 
-FOR OTHER REALISTIC MODELS
-- Obtain a compatible, appropriately licensed .glb from a creator or store.
-- Choose 4 in the menu and give the EXACT Hush Hunt asset slot filename.
-- Enter the creator, model page, and precise licence information.
-- Inspect and approve before installation.
-- The provided WILDLIFE_61_SLOTS.json contains all exact filenames plus
-  research leads for Gorilla, Zebra and Red Panda.
+WHEN THIS IS NOT ENOUGH
+This still uses separate ARCore-camera and Filament-animal rendering surfaces.
+They are asynchronously composited. If ARCore camera motion outruns model frame
+updates the animal can appear screen-locked then catch up. The proper longer-term
+fix is a genuinely unified ARCore+Filament rendering path with shared presentation
+timing and one surface, rather than more arbitrary FPS caps or frame readbacks.
 
-COMMAND LINE
-py -3 tools\hush_full_wildlife_upgrade.py list
-py -3 tools\hush_full_wildlife_upgrade.py fetch all
-py -3 tools\hush_full_wildlife_upgrade.py audit
-py -3 tools\hush_full_wildlife_upgrade.py stage other-silverback-gorilla.glb "C:\Assets\gorilla.glb" --source "Creator" --license "CC BY 4.0" --page "https://..."
-py -3 tools\hush_full_wildlife_upgrade.py approve other-silverback-gorilla.glb --yes-i-reviewed-anatomy
-py -3 tools\hush_full_wildlife_upgrade.py install all --dry-run
-py -3 tools\hush_full_wildlife_upgrade.py install all --yes
-py -3 tools\hush_full_wildlife_upgrade.py restore other-silverback-gorilla.glb --yes
+VALIDATION
+The patch script is local-source tested against known B99 Filament Java
+variants. It is NOT compiled in Visual Studio and is NOT device-benchmarked.
+No claims of a tested FPS increase. If CHECK says "No matching actions" or
+an unexpected source revision, do not force replacements.
 
-IMPORTANT LIMITATION
-With marketplace models, rights to use a GLB inside a game/app do not necessarily
-permit republishing the raw downloadable GLBs. The automatic fetches download
-only to your PC, never distribute third-party GLB assets in this ZIP.
+OPTIONAL CUSTOM LOCATION
+  py -3 hush_ar_frame_stall_fix.py --check --root "D:\YourProject"
+  py -3 hush_ar_frame_stall_fix.py --install --root "D:\YourProject"

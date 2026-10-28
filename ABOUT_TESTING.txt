@@ -1,0 +1,7 @@
+COMPATIBILITY TEST RESULTS (source simulation, not on-device):
+- Tested against 2026-10-27 B99 baseline / primary GLB + rotation activity.
+- CHECK -> INSTALL -> CHECK AGAIN -> INSTALL AGAIN -> ROLLBACK -> CHECK: PASS.
+- Separate GLB shadows generated with built-in Python libraries for Fox, Mouse,
+  Cat in Motion, Jack Russell Puppy and Phoenix Bird.
+- Rejected unexpected source anchors; installer writes no source when validation fails.
+- The patch has NOT been built against the user's current local project or run on the OnePlus 11.

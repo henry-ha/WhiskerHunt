@@ -1,0 +1,9 @@
+{
+  "tag": "HUSH_B99_SURFACEVIEW_SILHOUETTE_AR_20261028",
+  "original_sha256": {
+    "WhiskerHunt\\Platforms\\Android\\Java\\com\\hushhunt\\filament\\HushFilamentOverlay.java": "a92236c6953abb3b4a6519e91309eb87246af4747c349ce48c38f89a3871fe24",
+    "WhiskerHunt\\Platforms\\Android\\HushArCoreActivity.cs": "ae41c74e7d12a9582e11ca167801b8a8f521a7d8135002ce8bd4d98c71420153",
+    "WhiskerHunt\\Platforms\\Android\\HushFloorShadow.cs": "3b5efb1eac5f588fb9d904c7bd4b6b4f5f218f88aeebc7eeb65ca0f50b459db0",
+    "WhiskerHunt\\Platforms\\Android\\HushGlbAnimal3D.cs": "d311aa72f85b07c0cce03cb6817464c31c4784d0eec5ddf4487f0e1ee1f02029"
+  }
+}

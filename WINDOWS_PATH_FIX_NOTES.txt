@@ -1,0 +1,5 @@
+Corrected installer for the WinError 123 screenshots.
+Cause: --project "%~dp0" passes a quoted argument ending in a backslash.
+Fix: first cd /d "%~dp0" then pass --project "%CD%".
+There are no GLB replacements in this ZIP.
+No previous project modifications should be required.

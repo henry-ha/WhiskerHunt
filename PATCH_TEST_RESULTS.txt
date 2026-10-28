@@ -1,0 +1,7 @@
+Source-fixture tests completed 2026-10-28:
+- Original B99 source: check/install/idempotence/rollback PASS
+- Modern B99 TextureView source: Java patch compatibility PASS
+- Modern B99 SurfaceView + PixelCopy source: Java patch compatibility PASS
+- Modern B99 SurfaceView + PixelCopy + newer WALK C# source: check/install/idempotence/rollback PASS
+- Windows cmd scripts NOT executed here; avoid trailing backslash with %~dp0.
+- Android/Visual Studio compile and phone frame timing NOT tested.

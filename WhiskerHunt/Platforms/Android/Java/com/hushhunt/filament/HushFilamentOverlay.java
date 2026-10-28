@@ -1,7 +1,7 @@
 package com.hushhunt.filament;
 
 import android.app.Activity;
-import android.graphics.SurfaceTexture;
+import android.graphics.PixelFormat;
 import android.graphics.Bitmap;
 import android.opengl.Matrix;
 import android.os.Handler;
@@ -9,7 +9,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.Choreographer;
 import android.view.Surface;
-import android.view.TextureView;
+import android.view.SurfaceView;
+import android.view.SurfaceHolder;
 import android.widget.FrameLayout;
 
 import com.google.android.filament.Box;
@@ -48,7 +49,8 @@ import java.nio.ByteOrder;
  * Note: Filament is not magically photorealistic: it respects whichever GLB
  * meshes, materials and normal maps have actually been installed.
  */
-public final class HushFilamentOverlay implements TextureView.SurfaceTextureListener,
+// HUSH_B99_POSESYNC_V5_20261028
+public final class HushFilamentOverlay implements SurfaceHolder.Callback,
         Choreographer.FrameCallback {
     private static final String TAG = "HushFilament";
     private static volatile HushFilamentOverlay instance;
@@ -57,7 +59,7 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
     private static volatile String lastStage = "not started";
     private final Activity activity;
     private final FrameLayout container;
-    private final TextureView textureView;
+    private final SurfaceView surfaceView;
     private final String assetName;
     private final float targetSize;
     private final Object snapshotLock = new Object();
@@ -69,6 +71,7 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
     private boolean frameScheduled;
     private volatile boolean visibleAnimalPixels;
     private long lastPixelValidationNanos;
+    private int pixelReadbackAttempts;
     private long lastRenderedNanos;
     // Draw the animal only against an actual ARCore camera update. This avoids
     // rendering a stale pose in a second TextureView while the background moves.
@@ -97,6 +100,9 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
     private volatile float[] ambientCoefficients;
     private long lastAmbientUpdate;
     private int lightReadFrameCounter;
+    private final float[] worldScratch = new float[16];
+    private final float[] lastProjection = new float[16];
+    private long lastLightNanos;
     private float[] viewSnapshot;
     private float[] projectionSnapshot;
     private float[] anchorSnapshot;
@@ -108,24 +114,41 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
     private float unitScale = 1f;
     private float centreX, centreY, centreZ, bottomY;
     private long animationStartNanos;
+    // Filament render calls are confined to the Android UI / Choreographer thread.
+    // Scratch arrays are not shared with the ARCore camera thread; these reduce
+    // 60 Hz allocations that can trigger GC stalls on mobile.
+    private final float[] cameraWorldScratch = new float[16];
+    private final double[] projectionScratch = new double[16];
+    private final float[] modelWorldScratch = new float[16];
+
+    // HUSH_PET_REACTION_B99_V1: tap/stroke feedback for models with no baked animation.
+    // Written by the UI thread and read by Filament's Choreographer thread.
+    private volatile long petReactionStartedMs;
+    private volatile boolean petReactionIsStroke;
+    private int lastPetSignalSequence;
+
 
     private HushFilamentOverlay(Activity activity, FrameLayout container, String assetName, float targetSize) {
         this.activity = activity;
         this.container = container;
         this.assetName = assetName;
         this.targetSize = targetSize;
-        textureView = new TextureView(activity);
-        textureView.setOpaque(false);
+        surfaceView = new SurfaceView(activity);
+        // HUSH_B99_SURFACEVIEW_SILHOUETTE_AR_20261028
+        // Transparent AR overlay above the ARCore camera surface.
+        surfaceView.setZOrderMediaOverlay(true);
+        surfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        
         // Keep the GPU layer compositable from its first frame. An alpha=0
         // TextureView can be optimised out of hardware composition on some
         // Android 16 builds even after a later setAlpha(1).
         // We never render an animal until an ARCore world anchor exists.
-        textureView.setAlpha(1f);
-        textureView.setClickable(false);
-        textureView.setFocusable(false);
-        textureView.setSurfaceTextureListener(this);
+        surfaceView.setAlpha(1f);
+        surfaceView.setClickable(false);
+        surfaceView.setFocusable(false);
+        surfaceView.getHolder().addCallback(this);
         // Under the native UI controls, above the existing ARCore camera GLSurfaceView.
-        container.addView(textureView, Math.min(1, container.getChildCount()),
+        container.addView(surfaceView, Math.min(1, container.getChildCount()),
             new FrameLayout.LayoutParams(-1, -1));
     }
 
@@ -161,6 +184,14 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
         item.orientationPitch = Math.max(-65f, Math.min(65f, pitch));
     }
 
+    /** Request a gentle in-world body reaction without moving the AR anchor. */
+    public static void reactToPet(boolean isStroke) {
+        HushFilamentOverlay item = instance;
+        if (item == null || item.destroyed || !item.modelReady) return;
+        item.petReactionIsStroke = isStroke;
+        item.petReactionStartedMs = android.os.SystemClock.uptimeMillis();
+    }
+
     public static void configureEnvironmentalHdr(Object config) {
         if (config == null) return;
         try {
@@ -178,6 +209,17 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
                                    float scale, Object arFrame) {
         HushFilamentOverlay item = instance;
         if (item == null || item.destroyed || view == null || projection == null || anchor == null) return;
+        // HUSH_PET_REACTION_B99_V2_FRAMESYNC: receive pet events in the same
+        // established ARCore frame stream; NEVER use a second JNI call on tap.
+        if (anchor.length >= 5) {
+            int sequence = (int) anchor[3];
+            if (sequence != 0 && sequence != item.lastPetSignalSequence) {
+                item.lastPetSignalSequence = sequence;
+                item.petReactionIsStroke = anchor[4] > 0.5f;
+                item.petReactionStartedMs = android.os.SystemClock.uptimeMillis();
+                Log.i(TAG, "Pet reaction via AR frame, stroke=" + item.petReactionIsStroke);
+            }
+        }
         synchronized (item.snapshotLock) {
             item.viewSnapshot = view.clone();
             item.projectionSnapshot = projection.clone();
@@ -210,7 +252,8 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
         }
     }
 
-    @Override public void onSurfaceTextureAvailable(SurfaceTexture st, int width, int height) {
+    @Override public void surfaceCreated(SurfaceHolder holder) {
+        int width = Math.max(1, surfaceView.getWidth()), height = Math.max(1, surfaceView.getHeight());
         try {
             stage("filament.init");
             Filament.init();
@@ -232,14 +275,14 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
             view.setScene(scene);
             view.setCamera(camera);
             view.setBlendMode(View.BlendMode.TRANSLUCENT);
-            view.setPostProcessingEnabled(true);
+            view.setPostProcessingEnabled(false); // HUSH_B99_FRAMESTALL_20261028: AR camera is already post-processed
             Renderer.ClearOptions clear = renderer.getClearOptions();
             // Filament 1.77.3 exposes clear colour via setClearColor(...).
             clear.setClearColor(0.0, 0.0, 0.0, 0.0);
             clear.clear = true;
             renderer.setClearOptions(clear);
             stage("swapchain.create");
-            surface = new Surface(st);
+            surface = holder.getSurface();
             swapChain = engine.createSwapChain(surface);
             view.setViewport(new Viewport(0, 0, width, height));
 
@@ -266,8 +309,11 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
             packagedGlbBytes = bytes.length;
             // A dense mesh may still be slow; keep camera and animal updates in
             // sync rather than drawing stale poses at an artificial frame rate.
-            frameBudgetNanos = bytes.length > 24 * 1024 * 1024
-                ? 30_000_000L : (bytes.length > 12 * 1024 * 1024 ? 22_000_000L : 16_000_000L);
+            // HUSH_B99_ARCORE_LATEST_POSE_FILAMENT_PACING_01
+            // Do not hold 12-24 MiB animals at ~45 fps or 24+ MiB at ~33 fps.
+            // Follow the latest ARCore frame at every display VSYNC. Filament's
+            // beginFrame() handles native GPU backlog and may skip when needed.
+            frameBudgetNanos = 0L;
             Log.i(TAG, "HD GLB=" + assetName + " bytes=" + packagedGlbBytes +
                 " frameBudgetNs=" + frameBudgetNanos);
             verifyGlbHeader(bytes);
@@ -308,7 +354,7 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
                 "; legacy renderer will remain active", t);
             modelReady = false;
             shutdownGpu();
-            textureView.setVisibility(android.view.View.GONE);
+            surfaceView.setVisibility(android.view.View.GONE);
         }
     }
 
@@ -354,12 +400,10 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
     @Override public void doFrame(long nanos) {
         frameScheduled = false;
         if (destroyed || !modelReady || swapChain == null) return;
-        // Small models follow ARCore at display cadence; heavier models are
-        // budgeted to protect the camera thread from GPU starvation.
-        if (lastRenderedNanos != 0 && nanos - lastRenderedNanos < frameBudgetNanos) {
-            scheduleFrame();
-            return;
-        }
+        // NO secondary app-level cadence limiter. A slow TextureView is especially
+        // visible during walk-around: its old animal pose trails the live AR video.
+        // The main thread owns all Filament GPU calls. ARCore publishes immutable
+        // same-frame camera/anchor matrices from its own GL thread.
         lastRenderedNanos = nanos;
         try {
             float[] v, p, a, d, intensity;
@@ -374,19 +418,43 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
                 scheduleFrame();
                 return;
             }
-            renderedGeneration = generation;
+            
             if (v != null && p != null && a != null) {
-                float[] cameraWorld = new float[16];
-                if (Matrix.invertM(cameraWorld, 0, v, 0)) {
-                    camera.setModelMatrix(cameraWorld);
-                    double[] proj = new double[16];
-                    for (int i = 0; i < 16; i++) proj[i] = p[i];
-                    camera.setCustomProjection(proj, .1, 80.0);
+                if (Matrix.invertM(cameraWorldScratch, 0, v, 0)) {
+                    camera.setModelMatrix(cameraWorldScratch);
+                    for (int i = 0; i < 16; i++) projectionScratch[i] = p[i];
+                    camera.setCustomProjection(projectionScratch, .1, 80.0);
+                    // Triggered from MAUI touch events. Root-space animation works
+                    // even when a licensed Sketchfab GLB has zero animation clips.
+                    // This is additive to manual yaw and never changes the AR anchor.
+                    float petYaw = 0f;
+                    float petRoll = 0f;
+                    float petBob = 0f;
+                    long reactedAt = petReactionStartedMs;
+                    long petElapsed = android.os.SystemClock.uptimeMillis() - reactedAt;
+                    if (reactedAt > 0L && petElapsed >= 0L && petElapsed < 850L) {
+                        float t = petElapsed / 850f;
+                        float damping = (1f - t) * (1f - t);
+                        boolean stroke = petReactionIsStroke;
+                        float oscillation = (float) Math.sin(t * Math.PI * (stroke ? 7.0 : 5.0));
+                        // Species personalities: cats lean softly, puppies wag
+                        // more enthusiastically, birds give a small feathered sway.
+                        boolean isCat = assetName.startsWith("cat-");
+                        boolean isDog = assetName.startsWith("dog-");
+                        boolean isBird = assetName.startsWith("bird-") || assetName.startsWith("fantasy-");
+                        float personality = isCat ? .72f : (isDog ? 1.28f : (isBird ? .84f : 1f));
+                        petYaw = (stroke ? 12f : 9f) * personality * damping * oscillation;
+                        petRoll = (stroke ? 3.5f : 2.5f) * personality * damping * oscillation;
+                        float bounce = isDog ? 1.3f : (isCat ? .6f : 1f);
+                        petBob = Math.min(.025f, targetSize * .055f) * bounce *
+                            damping * Math.abs(oscillation);
+                    }
                     float s = unitScale * scale;
-                    float[] world = new float[16];
+                    float[] world = modelWorldScratch;
                     Matrix.setIdentityM(world, 0);
-                    Matrix.translateM(world, 0, a[0], a[1], a[2]);
-                    Matrix.rotateM(world, 0, orientationYaw, 0f, 1f, 0f);
+                    Matrix.translateM(world, 0, a[0], a[1] + petBob, a[2]);
+                    Matrix.rotateM(world, 0, orientationYaw + petYaw, 0f, 1f, 0f);
+                    Matrix.rotateM(world, 0, petRoll, 0f, 0f, 1f);
                     Matrix.rotateM(world, 0, orientationPitch, 1f, 0f, 0f);
                     Matrix.scaleM(world, 0, s, s, s);
                     Matrix.translateM(world, 0, -centreX, -bottomY, -centreZ);
@@ -400,7 +468,9 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
                     // coefficients have been validated and converted correctly.
                     // The previous code allocated an HDR environment every second,
                     // creating frame stalls and inverting contrast indoors.
-                    if (d.length >= 3 && intensity.length >= 3) {
+                    if (d.length >= 3 && intensity.length >= 3 &&
+                        nanos - lastLightNanos >= 250_000_000L) {
+                        lastLightNanos = nanos;
                         LightManager lm = engine.getLightManager();
                         int li = lm.getInstance(sunEntity);
                         lm.setDirection(li, -d[0], -d[1], -d[2]);
@@ -423,6 +493,7 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
             if (v != null && p != null && a != null && renderer.beginFrame(swapChain, nanos)) {
                 renderer.render(view);
                 renderer.endFrame();
+                renderedGeneration = generation;
                 if (!hasPresentedAnimalFrame) {
                     hasPresentedAnimalFrame = true;
                     Log.i(TAG, "First anchored GPU frame submitted: " + assetName);
@@ -430,11 +501,11 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
                 // A submitted GPU frame is NOT evidence that the GLB is
                 // actually visible. Verify there are lit, non-transparent
                 // pixels before hiding the reliable legacy renderer.
-                // TextureView.getBitmap() forces a GPU-to-CPU synchronisation.
-                // Do it only until a model has actually shown pixels; doing it
-                // every second for the lifetime of AR Safari causes stuttering.
-                if (!visibleAnimalPixels && nanos - lastPixelValidationNanos > 1_200_000_000L) {
+                // Asynchronous PixelCopy validates the real SurfaceView image.
+                // Stop sampling once the HD animal is visibly rendered.
+                if (!visibleAnimalPixels && pixelReadbackAttempts < 6 && nanos - lastPixelValidationNanos > 1_200_000_000L) {
                     lastPixelValidationNanos = nanos;
+                    pixelReadbackAttempts++;
                     inspectVisibleAnimalPixels();
                 }
             }
@@ -442,15 +513,40 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
             Log.e(TAG, "Filament render failed; restoring legacy model", t);
             modelReady = false;
             hasPresentedAnimalFrame = false;
-            textureView.setVisibility(android.view.View.GONE);
+            surfaceView.setVisibility(android.view.View.GONE);
         }
         scheduleFrame();
     }
 
+    // HUSH_B99_SURFACEVIEW_PIXELCOPY_HOTFIX_20261028: SurfaceView has no getBitmap(). Copy asynchronously instead.
+    private boolean pixelCopyInFlight;
     private void inspectVisibleAnimalPixels() {
-        Bitmap frame = null;
+        if (pixelCopyInFlight || destroyed || !modelReady ||
+            !surfaceView.getHolder().getSurface().isValid()) return;
+        pixelCopyInFlight = true;
+        Bitmap created = null;
         try {
-            frame = textureView.getBitmap(96, 96);
+            // PixelCopy scales the SurfaceView image into this small destination.
+            created = Bitmap.createBitmap(96, 96, Bitmap.Config.ARGB_8888);
+            final Bitmap sample = created;
+            android.view.PixelCopy.request(surfaceView, sample, result -> {
+                pixelCopyInFlight = false;
+                if (result != android.view.PixelCopy.SUCCESS || destroyed ||
+                    !modelReady || asset == null) {
+                    sample.recycle();
+                    return;
+                }
+                inspectCopiedAnimalPixels(sample);
+            }, main);
+        } catch (Throwable t) {
+            pixelCopyInFlight = false;
+            if (created != null && !created.isRecycled()) created.recycle();
+            Log.w(TAG, "PixelCopy visibility request failed: " + t.getMessage());
+        }
+    }
+
+    private void inspectCopiedAnimalPixels(Bitmap frame) {
+        try {
             if (frame == null) return;
             int[] pixels = new int[96 * 96];
             frame.getPixels(pixels, 0, 96, 0, 0, 96, 96);
@@ -487,14 +583,12 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
         }
     }
 
-    @Override public void onSurfaceTextureSizeChanged(SurfaceTexture st, int w, int h) {
+    @Override public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         if (view != null) view.setViewport(new Viewport(0, 0, w, h));
     }
-    @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture st) {
+    @Override public void surfaceDestroyed(SurfaceHolder holder) {
         shutdownGpu();
-        return true;
     }
-    @Override public void onSurfaceTextureUpdated(SurfaceTexture st) {}
 
     public static void dispose() {
         HushFilamentOverlay item = instance; instance = null;
@@ -508,7 +602,7 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
         if (frameScheduled) Choreographer.getInstance().removeFrameCallback(this);
         frameScheduled = false;
         shutdownGpu();
-        if (textureView.getParent() == container) container.removeView(textureView);
+        if (surfaceView.getParent() == container) container.removeView(surfaceView);
     }
     private void shutdownGpu() {
         modelReady = false;
@@ -537,7 +631,8 @@ public final class HushFilamentOverlay implements TextureView.SurfaceTextureList
             if (scene != null) { engine.destroyScene(scene); scene = null; }
             if (renderer != null) { engine.destroyRenderer(renderer); renderer = null; }
             engine.destroy(); engine = null;
-            if (surface != null) { surface.release(); surface = null; }
+            // SurfaceHolder owns its Surface; do not release it here.
+            surface = null;
         } catch (Throwable t) { Log.w(TAG, "Filament cleanup", t); }
     }
 }

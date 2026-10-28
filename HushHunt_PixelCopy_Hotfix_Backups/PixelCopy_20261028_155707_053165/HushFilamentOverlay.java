@@ -1,0 +1,605 @@
+package com.hushhunt.filament;
+
+import android.app.Activity;
+import android.graphics.PixelFormat;
+import android.graphics.Bitmap;
+import android.opengl.Matrix;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.Choreographer;
+import android.view.Surface;
+import android.view.SurfaceView;
+import android.view.SurfaceHolder;
+import android.widget.FrameLayout;
+
+import com.google.android.filament.Box;
+import com.google.android.filament.Camera;
+import com.google.android.filament.Engine;
+import com.google.android.filament.EntityManager;
+import com.google.android.filament.Filament;
+import com.google.android.filament.LightManager;
+import com.google.android.filament.IndirectLight;
+import com.google.android.filament.Renderer;
+import com.google.android.filament.Scene;
+import com.google.android.filament.SwapChain;
+import com.google.android.filament.TransformManager;
+import com.google.android.filament.View;
+import com.google.android.filament.Viewport;
+import com.google.android.filament.gltfio.AssetLoader;
+import com.google.android.filament.gltfio.Animator;
+import com.google.android.filament.gltfio.FilamentAsset;
+import com.google.android.filament.gltfio.Gltfio;
+import com.google.android.filament.gltfio.ResourceLoader;
+import com.google.android.filament.gltfio.UbershaderProvider;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
+/**
+ * Filament PBR animal overlay for Hush Hunt's existing ARCore camera session.
+ * In particular, this DOES NOT start another camera / ARCore session. The C#
+ * camera-background renderer supplies the view and projection matrices and
+ * optional Environmental HDR light estimates. All Filament resources live on
+ * the Android main thread; the ARCore thread only publishes immutable frames.
+ *
+ * Note: Filament is not magically photorealistic: it respects whichever GLB
+ * meshes, materials and normal maps have actually been installed.
+ */
+public final class HushFilamentOverlay implements SurfaceHolder.Callback,
+        Choreographer.FrameCallback {
+    private static final String TAG = "HushFilament";
+    private static volatile HushFilamentOverlay instance;
+    // Last non-native diagnostic. A native SIGABRT cannot be handled in Java,
+    // so stage markers in Logcat are essential for identifying its cause.
+    private static volatile String lastStage = "not started";
+    private final Activity activity;
+    private final FrameLayout container;
+    private final SurfaceView surfaceView;
+    private final String assetName;
+    private final float targetSize;
+    private final Object snapshotLock = new Object();
+    private final Handler main = new Handler(Looper.getMainLooper());
+    private boolean destroyed;
+    private volatile boolean modelReady;
+    private volatile boolean hasPresentedAnimalFrame;
+    private volatile float orientationYaw, orientationPitch;
+    private boolean frameScheduled;
+    private volatile boolean visibleAnimalPixels;
+    private long lastPixelValidationNanos;
+    private long lastRenderedNanos;
+    // Draw the animal only against an actual ARCore camera update. This avoids
+    // rendering a stale pose in a second TextureView while the background moves.
+    private long frameGeneration;
+    private long renderedGeneration;
+    private long frameBudgetNanos = 16_000_000L;
+    private int packagedGlbBytes;
+    private int unsuccessfulPixelChecks;
+    private boolean textureVisibilityWarned;
+
+    private Engine engine;
+    private Renderer renderer;
+    private Scene scene;
+    private View view;
+    private Camera camera;
+    private SwapChain swapChain;
+    private Surface surface;
+    private AssetLoader loader;
+    private UbershaderProvider materialProvider;
+    private ResourceLoader resourceLoader;
+    private FilamentAsset asset;
+    private Animator animator;
+    private int cameraEntity;
+    private int sunEntity;
+    private IndirectLight ambientLight;
+    private volatile float[] ambientCoefficients;
+    private long lastAmbientUpdate;
+    private int lightReadFrameCounter;
+    private float[] viewSnapshot;
+    private float[] projectionSnapshot;
+    private float[] anchorSnapshot;
+    // ARCore returns direction TOWARDS the light. Filament expects the ray
+    // travel direction, so negate these coordinates before setting the lamp.
+    private float[] lightDirection = new float[] { -0.35f, 1f, 0.4f };
+    private float[] lightIntensity = new float[] { 1f, 1f, 1f };
+    private float animalScale = 1f;
+    private float unitScale = 1f;
+    private float centreX, centreY, centreZ, bottomY;
+    private long animationStartNanos;
+    // Filament render calls are confined to the Android UI / Choreographer thread.
+    // Scratch arrays are not shared with the ARCore camera thread; these reduce
+    // 60 Hz allocations that can trigger GC stalls on mobile.
+    private final float[] cameraWorldScratch = new float[16];
+    private final double[] projectionScratch = new double[16];
+    private final float[] modelWorldScratch = new float[16];
+
+    // HUSH_PET_REACTION_B99_V1: tap/stroke feedback for models with no baked animation.
+    // Written by the UI thread and read by Filament's Choreographer thread.
+    private volatile long petReactionStartedMs;
+    private volatile boolean petReactionIsStroke;
+    private int lastPetSignalSequence;
+
+
+    private HushFilamentOverlay(Activity activity, FrameLayout container, String assetName, float targetSize) {
+        this.activity = activity;
+        this.container = container;
+        this.assetName = assetName;
+        this.targetSize = targetSize;
+        surfaceView = new SurfaceView(activity);
+        // HUSH_B99_SURFACEVIEW_SILHOUETTE_AR_20261028
+        // Transparent AR overlay above the ARCore camera surface.
+        surfaceView.setZOrderMediaOverlay(true);
+        surfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        
+        // Keep the GPU layer compositable from its first frame. An alpha=0
+        // TextureView can be optimised out of hardware composition on some
+        // Android 16 builds even after a later setAlpha(1).
+        // We never render an animal until an ARCore world anchor exists.
+        surfaceView.setAlpha(1f);
+        surfaceView.setClickable(false);
+        surfaceView.setFocusable(false);
+        surfaceView.getHolder().addCallback(this);
+        // Under the native UI controls, above the existing ARCore camera GLSurfaceView.
+        container.addView(surfaceView, Math.min(1, container.getChildCount()),
+            new FrameLayout.LayoutParams(-1, -1));
+    }
+
+    /** Install from MAUI. Any failure leaves the existing OpenGL renderer intact. */
+    public static boolean install(Activity activity, FrameLayout container,
+                                  String assetName, float targetSize) {
+        try {
+            if (instance != null) dispose();
+            if (assetName == null || !assetName.matches("[a-z0-9-]{1,110}\\.glb")) return false;
+            try (InputStream check = activity.getAssets().open("ar_models/" + assetName)) {
+                if (check.read() < 0) return false;
+            }
+            instance = new HushFilamentOverlay(activity, container, assetName, targetSize);
+            return true;
+        } catch (Throwable t) {
+            Log.e(TAG, "Filament overlay install failed; using legacy wildlife renderer", t);
+            dispose();
+            return false;
+        }
+    }
+
+    /** True only AFTER the Filament GLB is loaded and the overlay swapchain is usable. */
+    public static boolean isReady() {
+        HushFilamentOverlay item = instance;
+        return item != null && item.hasPresentedAnimalFrame && item.visibleAnimalPixels && item.modelReady && item.swapChain != null && !item.destroyed;
+    }
+
+    /** Rotate an already-placed model. Degrees; independent of ARCore's camera pose. */
+    public static void setOrientation(float yaw, float pitch) {
+        HushFilamentOverlay item = instance;
+        if (item == null) return;
+        item.orientationYaw = yaw;
+        item.orientationPitch = Math.max(-65f, Math.min(65f, pitch));
+    }
+
+    /** Request a gentle in-world body reaction without moving the AR anchor. */
+    public static void reactToPet(boolean isStroke) {
+        HushFilamentOverlay item = instance;
+        if (item == null || item.destroyed || !item.modelReady) return;
+        item.petReactionIsStroke = isStroke;
+        item.petReactionStartedMs = android.os.SystemClock.uptimeMillis();
+    }
+
+    public static void configureEnvironmentalHdr(Object config) {
+        if (config == null) return;
+        try {
+            Class<?> type = Class.forName("com.google.ar.core.Config$LightEstimationMode");
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            Object hdr = Enum.valueOf((Class<? extends Enum>) type, "ENVIRONMENTAL_HDR");
+            config.getClass().getMethod("setLightEstimationMode", type).invoke(config, hdr);
+        } catch (Throwable t) {
+            Log.w(TAG, "Environmental HDR unavailable; Filament will use neutral light", t);
+        }
+    }
+
+    /** Called on ARCore GL thread each frame; no Filament GPU calls are made here. */
+    public static void submitFrame(float[] view, float[] projection, float[] anchor,
+                                   float scale, Object arFrame) {
+        HushFilamentOverlay item = instance;
+        if (item == null || item.destroyed || view == null || projection == null || anchor == null) return;
+        // HUSH_PET_REACTION_B99_V2_FRAMESYNC: receive pet events in the same
+        // established ARCore frame stream; NEVER use a second JNI call on tap.
+        if (anchor.length >= 5) {
+            int sequence = (int) anchor[3];
+            if (sequence != 0 && sequence != item.lastPetSignalSequence) {
+                item.lastPetSignalSequence = sequence;
+                item.petReactionIsStroke = anchor[4] > 0.5f;
+                item.petReactionStartedMs = android.os.SystemClock.uptimeMillis();
+                Log.i(TAG, "Pet reaction via AR frame, stroke=" + item.petReactionIsStroke);
+            }
+        }
+        synchronized (item.snapshotLock) {
+            item.viewSnapshot = view.clone();
+            item.projectionSnapshot = projection.clone();
+            item.anchorSnapshot = anchor.clone();
+            item.animalScale = Math.max(.5f, Math.min(3f, scale));
+            item.frameGeneration++;
+        }
+        // Read the estimate while its ARCore Frame is still current.
+        if (arFrame != null && (++item.lightReadFrameCounter % 8) == 0) {
+            try {
+                Object estimate = arFrame.getClass().getMethod("getLightEstimate").invoke(arFrame);
+                String state = String.valueOf(estimate.getClass().getMethod("getState").invoke(estimate));
+                if (state.equalsIgnoreCase("VALID")) {
+                    float[] d = (float[]) estimate.getClass().getMethod("getEnvironmentalHdrMainLightDirection").invoke(estimate);
+                    float[] i = (float[]) estimate.getClass().getMethod("getEnvironmentalHdrMainLightIntensity").invoke(estimate);
+                    if (d.length >= 3 && i.length >= 3) {
+                        synchronized (item.snapshotLock) {
+                            item.lightDirection = d.clone();
+                            item.lightIntensity = i.clone();
+                        }
+                    }
+                    // ARCore Environmental HDR supplies 3-band ambient spherical
+                    // harmonics as 27 floats (nine RGB coefficients).
+                    float[] harmonics = (float[]) estimate.getClass()
+                        .getMethod("getEnvironmentalHdrAmbientSphericalHarmonics").invoke(estimate);
+                    if (harmonics != null && harmonics.length == 27)
+                        item.ambientCoefficients = harmonics.clone();
+                }
+            } catch (Throwable ignored) { /* ARCore binding may not expose HDR on all devices. */ }
+        }
+    }
+
+    @Override public void surfaceCreated(SurfaceHolder holder) {
+        int width = Math.max(1, surfaceView.getWidth()), height = Math.max(1, surfaceView.getHeight());
+        try {
+            stage("filament.init");
+            Filament.init();
+            stage("gltfio.init");
+            Gltfio.init();
+            stage("engine.create");
+            engine = Engine.create();
+            renderer = engine.createRenderer();
+            scene = engine.createScene();
+            cameraEntity = EntityManager.get().create();
+            camera = engine.createCamera(cameraEntity);
+            // Colour-fidelity correction (B99): the old f/4 at 1/80 s exposure
+            // (EV100 ~10.3), combined with a 30,000 lux sun and 16,000 lux
+            // ambient fill, badly clipped normal baseColor textures. f/8 at
+            // 1/125 s (EV100 13) uses a physically compatible exposure for
+            // daylight-strength lights. Avoid reintroducing a bright ISO.
+            camera.setExposure(8.0f, 1f / 125f, 100f);
+            view = engine.createView();
+            view.setScene(scene);
+            view.setCamera(camera);
+            view.setBlendMode(View.BlendMode.TRANSLUCENT);
+            view.setPostProcessingEnabled(true);
+            Renderer.ClearOptions clear = renderer.getClearOptions();
+            // Filament 1.77.3 exposes clear colour via setClearColor(...).
+            clear.setClearColor(0.0, 0.0, 0.0, 0.0);
+            clear.clear = true;
+            renderer.setClearOptions(clear);
+            stage("swapchain.create");
+            surface = holder.getSurface();
+            swapChain = engine.createSwapChain(surface);
+            view.setViewport(new Viewport(0, 0, width, height));
+
+            sunEntity = EntityManager.get().create();
+            new LightManager.Builder(LightManager.Type.DIRECTIONAL)
+                .direction(.35f, -1f, -.4f)
+                .intensity(24000f)
+                .castShadows(false)
+                .build(engine, sunEntity);
+            scene.addEntity(sunEntity);
+            // Conservative neutral fill: the old 16,000 lux ambient washed out
+            // light fur. Keep the fill stable while honouring the source colour.
+            ambientLight = new IndirectLight.Builder()
+                .irradiance(1, new float[] { .9f, .9f, .9f })
+                .intensity(6500f).build(engine);
+            scene.setIndirectLight(ambientLight);
+
+            stage("gltfio.loader.create");
+            materialProvider = new UbershaderProvider(engine);
+            loader = new AssetLoader(engine, materialProvider, EntityManager.get());
+            resourceLoader = new ResourceLoader(engine);
+            stage("asset.read:" + assetName);
+            byte[] bytes = readAsset("ar_models/" + assetName);
+            packagedGlbBytes = bytes.length;
+            // A dense mesh may still be slow; keep camera and animal updates in
+            // sync rather than drawing stale poses at an artificial frame rate.
+            // HUSH_B99_ARCORE_LATEST_POSE_FILAMENT_PACING_01
+            // Do not hold 12-24 MiB animals at ~45 fps or 24+ MiB at ~33 fps.
+            // Follow the latest ARCore frame at every display VSYNC. Filament's
+            // beginFrame() handles native GPU backlog and may skip when needed.
+            frameBudgetNanos = 0L;
+            Log.i(TAG, "HD GLB=" + assetName + " bytes=" + packagedGlbBytes +
+                " frameBudgetNs=" + frameBudgetNanos);
+            verifyGlbHeader(bytes);
+            stage("asset.create:" + assetName + " (" + bytes.length + " bytes)");
+            ByteBuffer bb = ByteBuffer.allocateDirect(bytes.length).order(ByteOrder.nativeOrder());
+            bb.put(bytes); bb.flip();
+            asset = loader.createAsset(bb);
+            if (asset == null) throw new IllegalStateException("glTF asset parser returned null");
+            stage("resources.load:" + assetName);
+            resourceLoader.loadResources(asset);
+            stage("resources.release:" + assetName);
+            asset.releaseSourceData();
+            scene.addEntities(asset.getEntities());
+            scene.addEntities(asset.getLightEntities());
+            animator = asset.getInstance().getAnimator();
+            int visibleMeshes = asset.getRenderableEntities().length;
+            if (visibleMeshes == 0) throw new IllegalStateException("GLB has no renderable geometry: " + assetName);
+            Log.i(TAG, "GLB renderable entities=" + visibleMeshes + " name=" + assetName);
+
+            Box bounds = asset.getBoundingBox();
+            float[] half = bounds.getHalfExtent();
+            float[] center = bounds.getCenter();
+            float max = Math.max(.001f, 2f * Math.max(half[0], Math.max(half[1], half[2])));
+            unitScale = targetSize / max;
+            centreX = center[0]; centreY = center[1]; centreZ = center[2];
+            bottomY = center[1] - half[1];
+            stage("model.ready:" + assetName);
+            modelReady = true;
+            hasPresentedAnimalFrame = false;
+            visibleAnimalPixels = false;
+            lastPixelValidationNanos = 0;
+            lastRenderedNanos = 0;
+            unsuccessfulPixelChecks = 0;
+            scheduleFrame();
+            Log.i(TAG, "Filament glTF ready: " + assetName + " with PBR materials");
+        } catch (Throwable t) {
+            Log.e(TAG, "Filament failed at " + lastStage + " for " + assetName +
+                "; legacy renderer will remain active", t);
+            modelReady = false;
+            shutdownGpu();
+            surfaceView.setVisibility(android.view.View.GONE);
+        }
+    }
+
+    private void stage(String value) {
+        lastStage = value;
+        Log.i(TAG, "STAGE " + value);
+    }
+
+    private static void verifyGlbHeader(byte[] data) {
+        if (data == null || data.length < 28)
+            throw new IllegalArgumentException("Invalid glTF binary: too short");
+        ByteBuffer header = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
+        if (header.getInt(0) != 0x46546C67 || header.getInt(4) != 2 ||
+            header.getInt(8) != data.length || header.getInt(16) != 0x4E4F534A)
+            throw new IllegalArgumentException("Invalid glTF binary container header");
+        int jsonLength = header.getInt(12);
+        if (jsonLength <= 0 || jsonLength > data.length - 20)
+            throw new IllegalArgumentException("Invalid glTF binary JSON chunk length");
+    }
+
+    private byte[] readAsset(String path) throws Exception {
+        try (InputStream in = activity.getAssets().open(path);
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[16384]; int n;
+            while ((n = in.read(buffer)) != -1) {
+                out.write(buffer, 0, n);
+                // The former 24 MiB cap silently rejected Cat in Motion
+                // (~31.3 MB) and the Jack Russell puppy (~38.9 MB).
+                // Keep a finite bound for mobile safety, but admit both assets.
+                if (out.size() > 64 * 1024 * 1024)
+                    throw new IllegalStateException("GLB exceeds mobile 64 MiB safety limit: " + path);
+            }
+            return out.toByteArray();
+        }
+    }
+
+    private void scheduleFrame() {
+        if (!frameScheduled && !destroyed && modelReady) {
+            frameScheduled = true;
+            Choreographer.getInstance().postFrameCallback(this);
+        }
+    }
+    @Override public void doFrame(long nanos) {
+        frameScheduled = false;
+        if (destroyed || !modelReady || swapChain == null) return;
+        // NO secondary app-level cadence limiter. A slow TextureView is especially
+        // visible during walk-around: its old animal pose trails the live AR video.
+        // The main thread owns all Filament GPU calls. ARCore publishes immutable
+        // same-frame camera/anchor matrices from its own GL thread.
+        lastRenderedNanos = nanos;
+        try {
+            float[] v, p, a, d, intensity;
+            float scale;
+            long generation;
+            synchronized (snapshotLock) {
+                v = viewSnapshot; p = projectionSnapshot; a = anchorSnapshot;
+                d = lightDirection; intensity = lightIntensity; scale = animalScale;
+                generation = frameGeneration;
+            }
+            if (generation == renderedGeneration || v == null || p == null || a == null) {
+                scheduleFrame();
+                return;
+            }
+            renderedGeneration = generation;
+            if (v != null && p != null && a != null) {
+                if (Matrix.invertM(cameraWorldScratch, 0, v, 0)) {
+                    camera.setModelMatrix(cameraWorldScratch);
+                    for (int i = 0; i < 16; i++) projectionScratch[i] = p[i];
+                    camera.setCustomProjection(projectionScratch, .1, 80.0);
+                    // Triggered from MAUI touch events. Root-space animation works
+                    // even when a licensed Sketchfab GLB has zero animation clips.
+                    // This is additive to manual yaw and never changes the AR anchor.
+                    float petYaw = 0f;
+                    float petRoll = 0f;
+                    float petBob = 0f;
+                    long reactedAt = petReactionStartedMs;
+                    long petElapsed = android.os.SystemClock.uptimeMillis() - reactedAt;
+                    if (reactedAt > 0L && petElapsed >= 0L && petElapsed < 850L) {
+                        float t = petElapsed / 850f;
+                        float damping = (1f - t) * (1f - t);
+                        boolean stroke = petReactionIsStroke;
+                        float oscillation = (float) Math.sin(t * Math.PI * (stroke ? 7.0 : 5.0));
+                        // Species personalities: cats lean softly, puppies wag
+                        // more enthusiastically, birds give a small feathered sway.
+                        boolean isCat = assetName.startsWith("cat-");
+                        boolean isDog = assetName.startsWith("dog-");
+                        boolean isBird = assetName.startsWith("bird-") || assetName.startsWith("fantasy-");
+                        float personality = isCat ? .72f : (isDog ? 1.28f : (isBird ? .84f : 1f));
+                        petYaw = (stroke ? 12f : 9f) * personality * damping * oscillation;
+                        petRoll = (stroke ? 3.5f : 2.5f) * personality * damping * oscillation;
+                        float bounce = isDog ? 1.3f : (isCat ? .6f : 1f);
+                        petBob = Math.min(.025f, targetSize * .055f) * bounce *
+                            damping * Math.abs(oscillation);
+                    }
+                    float s = unitScale * scale;
+                    float[] world = modelWorldScratch;
+                    Matrix.setIdentityM(world, 0);
+                    Matrix.translateM(world, 0, a[0], a[1] + petBob, a[2]);
+                    Matrix.rotateM(world, 0, orientationYaw + petYaw, 0f, 1f, 0f);
+                    Matrix.rotateM(world, 0, petRoll, 0f, 0f, 1f);
+                    Matrix.rotateM(world, 0, orientationPitch, 1f, 0f, 0f);
+                    Matrix.scaleM(world, 0, s, s, s);
+                    Matrix.translateM(world, 0, -centreX, -bottomY, -centreZ);
+                    TransformManager tm = engine.getTransformManager();
+                    int instance = tm.getInstance(asset.getRoot());
+                    tm.setTransform(instance, world);
+
+                    // ARCore world-space environmental HDR directional estimate. PBR
+                    // material response is handled by Filament, not a fake tint.
+                    // Keep stable neutral ambient lighting until the ARCore SH
+                    // coefficients have been validated and converted correctly.
+                    // The previous code allocated an HDR environment every second,
+                    // creating frame stalls and inverting contrast indoors.
+                    if (d.length >= 3 && intensity.length >= 3) {
+                        LightManager lm = engine.getLightManager();
+                        int li = lm.getInstance(sunEntity);
+                        lm.setDirection(li, -d[0], -d[1], -d[2]);
+                        float magnitude = Math.max(.35f, Math.min(1.35f,
+                            (intensity[0] + intensity[1] + intensity[2]) / 3.0f));
+                        lm.setIntensity(li, 15000f * magnitude);
+                    }
+                }
+            }
+            if (animator != null && animator.getAnimationCount() > 0) {
+                int index = 0;
+                if (animationStartNanos == 0L) animationStartNanos = nanos;
+                float duration = Math.max(.1f, animator.getAnimationDuration(index));
+                float seconds = ((nanos - animationStartNanos) / 1e9f) % duration;
+                animator.applyAnimation(index, seconds);
+                animator.updateBoneMatrices();
+            }
+            // Never claim model readiness just because bytes parsed. The overlay
+            // becomes visible only after the first anchored frame was submitted.
+            if (v != null && p != null && a != null && renderer.beginFrame(swapChain, nanos)) {
+                renderer.render(view);
+                renderer.endFrame();
+                if (!hasPresentedAnimalFrame) {
+                    hasPresentedAnimalFrame = true;
+                    Log.i(TAG, "First anchored GPU frame submitted: " + assetName);
+                }
+                // A submitted GPU frame is NOT evidence that the GLB is
+                // actually visible. Verify there are lit, non-transparent
+                // pixels before hiding the reliable legacy renderer.
+                // TextureView.getBitmap() forces a GPU-to-CPU synchronisation.
+                // Do it only until a model has actually shown pixels; doing it
+                // every second for the lifetime of AR Safari causes stuttering.
+                if (!visibleAnimalPixels && nanos - lastPixelValidationNanos > 1_200_000_000L) {
+                    lastPixelValidationNanos = nanos;
+                    inspectVisibleAnimalPixels();
+                }
+            }
+        } catch (Throwable t) {
+            Log.e(TAG, "Filament render failed; restoring legacy model", t);
+            modelReady = false;
+            hasPresentedAnimalFrame = false;
+            surfaceView.setVisibility(android.view.View.GONE);
+        }
+        scheduleFrame();
+    }
+
+    private void inspectVisibleAnimalPixels() {
+        Bitmap frame = null;
+        try {
+            frame = surfaceView.getBitmap(96, 96);
+            if (frame == null) return;
+            int[] pixels = new int[96 * 96];
+            frame.getPixels(pixels, 0, 96, 0, 0, 96, 96);
+            int lit = 0;
+            int opaque = 0;
+            for (int color : pixels) {
+                int alpha = color >>> 24;
+                if (alpha < 48) continue;
+                opaque++;
+                int brightness = Math.max((color >>> 16) & 255,
+                    Math.max((color >>> 8) & 255, color & 255));
+                if (brightness >= 13) lit++;
+            }
+            // Ignore a totally opaque clear buffer or completely black model.
+            boolean visible = lit >= 3 && opaque < pixels.length * .7f;
+            visibleAnimalPixels = visible;
+            if (!visible) {
+                unsuccessfulPixelChecks++;
+                if (unsuccessfulPixelChecks == 3 || unsuccessfulPixelChecks == 8)
+                    Log.w(TAG, "No visible lit animal pixels: " + assetName +
+                        " nontransparent=" + opaque + " lit=" + lit +
+                        " modelEntities=" + asset.getRenderableEntities().length);
+            } else {
+                if (!textureVisibilityWarned)
+                    Log.i(TAG, "VERIFIED visible Filament animal pixels: " + assetName +
+                        " lit=" + lit + " nontransparent=" + opaque);
+                textureVisibilityWarned = true;
+                unsuccessfulPixelChecks = 0;
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "GPU frame visibility check unavailable: " + t.getMessage());
+        } finally {
+            if (frame != null) frame.recycle();
+        }
+    }
+
+    @Override public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+        if (view != null) view.setViewport(new Viewport(0, 0, w, h));
+    }
+    @Override public void surfaceDestroyed(SurfaceHolder holder) {
+        shutdownGpu();
+    }
+
+    public static void dispose() {
+        HushFilamentOverlay item = instance; instance = null;
+        if (item == null) return;
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            item.main.post(item::doDispose);
+        } else item.doDispose();
+    }
+    private void doDispose() {
+        destroyed = true;
+        if (frameScheduled) Choreographer.getInstance().removeFrameCallback(this);
+        frameScheduled = false;
+        shutdownGpu();
+        if (surfaceView.getParent() == container) container.removeView(surfaceView);
+    }
+    private void shutdownGpu() {
+        modelReady = false;
+        hasPresentedAnimalFrame = false;
+        visibleAnimalPixels = false;
+        try {
+            if (engine == null) return;
+            if (asset != null && scene != null) {
+                scene.removeEntities(asset.getEntities());
+                scene.removeEntities(asset.getLightEntities());
+                loader.destroyAsset(asset); asset = null;
+            }
+            if (resourceLoader != null) { resourceLoader.destroy(); resourceLoader = null; }
+            if (loader != null) { loader.destroy(); loader = null; }
+            if (materialProvider != null) {
+                materialProvider.destroyMaterials();
+                materialProvider.destroy(); materialProvider = null;
+            }
+            if (scene != null && ambientLight != null) scene.setIndirectLight(null);
+            if (ambientLight != null) { engine.destroyIndirectLight(ambientLight); ambientLight = null; }
+            if (scene != null && sunEntity != 0) scene.remove(sunEntity);
+            if (sunEntity != 0) { engine.destroyEntity(sunEntity); EntityManager.get().destroy(sunEntity); sunEntity = 0; }
+            if (cameraEntity != 0) { engine.destroyCameraComponent(cameraEntity); EntityManager.get().destroy(cameraEntity); cameraEntity = 0; }
+            if (swapChain != null) { engine.destroySwapChain(swapChain); swapChain = null; }
+            if (view != null) { engine.destroyView(view); view = null; }
+            if (scene != null) { engine.destroyScene(scene); scene = null; }
+            if (renderer != null) { engine.destroyRenderer(renderer); renderer = null; }
+            engine.destroy(); engine = null;
+            // SurfaceHolder owns its Surface; do not release it here.
+            surface = null;
+        } catch (Throwable t) { Log.w(TAG, "Filament cleanup", t); }
+    }
+}

@@ -1,0 +1,6 @@
+{
+  "patch": "HUSH_B99_ARCORE_LATEST_POSE_FILAMENT_PACING_01",
+  "source": "WhiskerHunt/Platforms/Android/Java/com/hushhunt/filament/HushFilamentOverlay.java",
+  "original_sha256": "a9f0b3917cd4edaecb88168371349899822d0567f71de000710e071eaf6201d5",
+  "backup_date": "20261028_135045_033923"
+}

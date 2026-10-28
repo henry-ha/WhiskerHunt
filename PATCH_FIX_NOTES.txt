@@ -1,0 +1,44 @@
+HUSH HUNT B99 - AR SMOOTHNESS + SPECIES SILHOUETTE SHADOW
+REVISED INSTALLER: 28 OCTOBER 2026 (V2)
+
+This ZIP supersedes HushHunt_B99_AR_Smoother_Walkaround_Species_Shadow_Patch_2026-10-28.zip.
+
+ERROR FIXED:
+  PATCH ABORTED: TextureView constructor: expected 1 occurrence of source anchor, saw 0.
+
+Cause: older installer demanded exactly five constructor lines with identical
+whitespace/order. Your current Java source apparently uses a different setup
+sequence. Check and install share the same safe transform, hence both failed.
+
+Fix: Locate the TextureView constructor and surface-listener setup as independent
+statements. Allow innocuous extra setters and comments, while refusing to change
+unknown TextureView-only calls or any ambiguous/missing constructs.
+
+WHAT TO DO:
+1. Close Visual Studio. Back up the project/Git commit.
+2. Extract ALL files, overwriting the files from the earlier patch, into the
+   same directory as WhiskerHunt.sln (for example E:\inetpub\wwwroot\WhiskerHunt).
+3. Run CHECK_HD_AR_REPAIR.cmd. It must print CHECK PASSED.
+4. Run INSTALL_HD_AR_REPAIR.cmd. It must report COMPLETED.
+5. Clean/Rebuild Solution in Visual Studio. Deploy OVER the existing app.
+   Do NOT uninstall: application-local photos and saved discoveries may be lost.
+6. Test FOX at 1x and move physically around the animal; compare the location
+   of feet, shadows, and ARCore floor tracking at slow and faster movement.
+
+If CHECK or INSTALL still aborts, do not force it. The current Java source may
+have moved beyond this known B99 architecture. Send the precise new error plus:
+  WhiskerHunt\Platforms\Android\Java\com\hushhunt\filament\HushFilamentOverlay.java
+  WhiskerHunt\Platforms\Android\HushArCoreActivity.cs
+so the patch can be adapted accurately. Failed preflight causes no source edits.
+
+LOCAL VERIFICATION:
+- check/install/repeat-check/rollback passed against B99 snapshot.
+- check/install/repeat-check/rollback passed with an additional constructor setter
+  (a variation that triggered the original exact-block error).
+- shadow masks generated from test fox and mouse GLBs.
+
+NOT YET VERIFIED:
+- The files in your current Windows working tree weren't available here.
+- Android compilation and device-level framerate/synchronisation were not tested.
+- SurfaceView may reduce composition latency but does not eliminate dual-renderer
+  synchronisation limits; future single-renderer integration may be necessary.

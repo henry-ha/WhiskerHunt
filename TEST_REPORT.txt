@@ -1,0 +1,9 @@
+Source-level checks performed in isolated temporary solution trees:
+- Older B99 TextureView source: check, install, check-again, rollback PASS
+- Newer B99 SurfaceView + PixelCopy source: PASS
+- Optimised colour/lighting source: PASS
+- SurfaceView prior revision: PASS
+- Deliberately changed matrix-transform source: PASS; unknown transform skipped
+- Previously optimised V3 source: PASS; already optimised logic preserved
+
+No Android build, phone frame-rate benchmark, or user machine verification.

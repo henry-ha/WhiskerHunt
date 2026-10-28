@@ -1,0 +1,25 @@
+{
+  "tag": "HUSH_B99_POSESYNC_V5_20261028",
+  "installed": {
+    "WhiskerHunt\\Platforms\\Android\\Java\\com\\hushhunt\\filament\\HushFilamentOverlay.java": "4dfe9d0ea869538d5636408278b56587ededf192a51230c5b171cac5ec0d5543",
+    "WhiskerHunt\\Platforms\\Android\\HushArCoreActivity.cs": "ed0463c5b31b00a796a846f5ae5f01fa487a36d7924c1ee6d4f8c03066aa45dc"
+  },
+  "original": {
+    "WhiskerHunt\\Platforms\\Android\\Java\\com\\hushhunt\\filament\\HushFilamentOverlay.java": "d5ee5103aadc09d14cf0eb6a2cd8879a9f626e4212aa83b61da15dbbbb0881e7",
+    "WhiskerHunt\\Platforms\\Android\\HushArCoreActivity.cs": "1a6c91b859508fe3ab8e187d564393faaf171d7da6539cefddfc52ad73e87dcf"
+  },
+  "notes": {
+    "WhiskerHunt\\Platforms\\Android\\Java\\com\\hushhunt\\filament\\HushFilamentOverlay.java": [
+      "Frame sync: acknowledge pose only after successful Filament endFrame",
+      "Left existing frame budget unchanged (custom variant)",
+      "Camera matrix: already cached",
+      "Matrix transform differs: WORLD matrix left unchanged safely",
+      "Projection: already cached",
+      "Limited HDR directional light JNI updates to 4 per second"
+    ],
+    "WhiskerHunt\\Platforms\\Android\\HushArCoreActivity.cs": [
+      "Stopped repeated plane scans after animal placement",
+      "Pose translation differs: left unchanged"
+    ]
+  }
+}

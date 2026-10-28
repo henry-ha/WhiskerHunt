@@ -1,0 +1,20 @@
+Hush Hunt v3.10.36 / B99 - Windows launcher correction
+
+FIXED: [WinError 123] on CHECK and INSTALL caused by a quoted project
+path ending in a backslash before --check. The fix does not modify the
+Filament patch itself; it corrects the Windows .cmd entrypoints.
+
+1. Close Visual Studio before applying source changes.
+2. Extract this ZIP into the folder containing WhiskerHunt.sln
+   E:\inetpub\wwwroot\WhiskerHunt\
+   Choose YES to replace the earlier four installer files.
+3. Run CHECK_AR_SMOOTH_FIX.cmd - must say CHECK PASSED.
+4. Run INSTALL_AR_SMOOTH_FIX.cmd - must say INSTALLED.
+5. In Visual Studio: Clean Solution > Rebuild Solution > deploy on top
+   of the existing app. Do not uninstall the app (stored captures).
+
+ROLLBACK_AR_SMOOTH_FIX.cmd restores latest timestamped backup.
+If CHECK reports an unknown source pattern, send its full error message
+rather than hand-editing the Java renderer.
+
+This is not a new APK, and device smoothness was not tested here.

@@ -1,0 +1,11 @@
+{
+  "backup_name": "HushFilamentOverlay.java.before_frame_stall_20261028_192320.bak",
+  "original_sha256": "4dfe9d0ea869538d5636408278b56587ededf192a51230c5b171cac5ec0d5543",
+  "installed_sha256": "5d5f3e531e8c98afcc231791af8257df24439982709f9f5b01bd6957846714b8",
+  "source_path": "WhiskerHunt\\Platforms\\Android\\Java\\com\\hushhunt\\filament\\HushFilamentOverlay.java",
+  "changes": [
+    "Disabled extra Filament overlay post-processing (PBR textures kept).",
+    "Filament shadow map is already disabled.",
+    "Capped repeated visibility GPU readbacks to six attempts per session; keeps legacy fallback logic."
+  ]
+}

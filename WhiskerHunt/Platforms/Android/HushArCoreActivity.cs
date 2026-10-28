@@ -22,6 +22,7 @@ using AndroidRect = Android.Graphics.Rect;
 using AndroidPaint = Android.Graphics.Paint;
 
 namespace WhiskerHunt;
+// HUSH_B99_POSESYNC_V5_20261028
 
 /// <summary>
 /// An optional native ARCore scene, separate from MAUI WebView's camera.
@@ -76,6 +77,7 @@ public sealed class HushArCoreActivity : Activity
     private bool _modelFrameConfirmed;
     // Resize the animal without moving its ARCore world anchor or digitally cropping the camera.
     private float _animalScale = 1f;
+    private float _filamentTargetMetres = .65f; // HUSH_B99_SURFACEVIEW_SILHOUETTE_AR_20261028: shadow shares HD model normalisation
     private float _pinchDistance;
     private bool _pinching;
     private TextView? _sizeLabel;
@@ -85,6 +87,7 @@ public sealed class HushArCoreActivity : Activity
     private bool _petBoundsValid, _petGestureStarted, _petGestureTriggered;
     private float _petStartX, _petStartY, _petTravelX, _petTravelY;
     private long _lastPetTick, _reactionStartedAt;
+    private int _filamentPetSequence, _filamentPetStroke;
     private readonly System.Random _petRandom = new();
     private static readonly long ReactionDurationMs = 850;
 
@@ -138,6 +141,7 @@ public sealed class HushArCoreActivity : Activity
             "snail" => .22f, "butterfly" or "bee" or "ant" or "beetle" => .13f,
             _ => .3f
         };
+        _filamentTargetMetres = metres;
         _filamentRequested = modernHdAsset && HushFilamentBridge.TryInstall(this, _root, filename!, metres);
         _filamentLaunchMs = System.Environment.TickCount64;
         if (!hasLegacyMesh && !_filamentRequested)
@@ -448,6 +452,11 @@ public sealed class HushArCoreActivity : Activity
         if (now - System.Threading.Interlocked.Read(ref _lastPetTick) < 480) return;
         System.Threading.Interlocked.Exchange(ref _lastPetTick, now);
         System.Threading.Interlocked.Exchange(ref _reactionStartedAt, now);
+        // HUSH_PET_REACTION_B99_V2_FRAMESYNC: no JNI calls on the touch/UI thread.
+        // The already-working ARCore frame submission safely delivers this event.
+        System.Threading.Volatile.Write(ref _filamentPetStroke, isStroke ? 1 : 0);
+        System.Threading.Interlocked.Increment(ref _filamentPetSequence);
+
         var response = BuildPetResponse(isStroke);
         _surface?.PerformHapticFeedback(FeedbackConstants.VirtualKey);
         if (_petFeedback is not null)
@@ -852,12 +861,12 @@ public sealed class HushArCoreActivity : Activity
             _floorShadow = null;
             // An HD Filament model may not be supported by the fallback GLB parser.
             // Keep the ARCore ground-contact cue independent of model format.
-            if (_animal is null)
+            if (_host._filamentRequested || _animal is not null)
             {
                 try
                 {
                     _floorShadow = new HushFloorShadow();
-                    _floorShadow.Initialise();
+                    _floorShadow.Initialise(_host, HushGlbAnimal3D.ResolveBundledFilename(_host._model, _host._species, _host._animalName));
                 }
                 catch (Exception shadowError)
                 {
@@ -941,7 +950,7 @@ public sealed class HushArCoreActivity : Activity
                 // Some phones track a floor at the LOWER third while the centre points at a wall.
                 // Probe a sparse grid for genuinely tracked planes instead of locking
                 // the Place item until the exact centre happens to intersect one.
-                if (System.Environment.TickCount64-_lastPlaneCheck>380)
+                if (_host._anchor is null && System.Environment.TickCount64-_lastPlaneCheck>380)
                 {
                     _lastPlaneCheck=System.Environment.TickCount64;
                     _host.UpdatePlacementReady(HasNearbyTrackablePlane(frame, _width, _height));
@@ -968,7 +977,19 @@ public sealed class HushArCoreActivity : Activity
                     var pos = _host.AnimalPosition(anchor);
                     float scale = System.Threading.Volatile.Read(ref _host._animalScale);
                     if (_host._filamentRequested)
-                        HushFilamentBridge.SubmitFrame(_view, _projection, pos, scale, frame);
+                    {
+                        // HUSH_PET_REACTION_B99_V2_FRAMESYNC: the first 3 values remain
+                        // unchanged XYZ; values 4 and 5 carry a pet event sequence/type.
+                        // Reuse the already functioning JNI submitFrame signature.
+                        float[] filamentAnchorWithPet =
+                        {
+                            pos[0], pos[1], pos[2],
+                            System.Threading.Volatile.Read(ref _host._filamentPetSequence),
+                            System.Threading.Volatile.Read(ref _host._filamentPetStroke)
+                        };
+                        HushFilamentBridge.SubmitFrame(
+                            _view, _projection, filamentAnchorWithPet, scale, frame);
+                    }
                     bool filamentReady = _host._filamentRequested && HushFilamentBridge.IsReady;
                     if (!filamentReady && _host._filamentRequested &&
                         !_host._filamentWatchdogWarned &&
@@ -996,9 +1017,10 @@ public sealed class HushArCoreActivity : Activity
                         {
                             // When Filament is ready the old shape is suppressed. Keep
                             // its low-cost soft floor shadow for the real-world contact cue.
+                            _floorShadow?.Draw(_view, _projection, pos, .5f * _host._filamentTargetMetres * scale, _host._yawDegrees);
                             _animal.Draw(_view, _projection, pos, scale, petProgress,
                                 System.Environment.TickCount64 % 600000L / 1000f,
-                                shadowOnly: filamentReady,
+                                shadowOnly: filamentReady, hideShadow: true,
                                 yawDegrees: _host._yawDegrees, pitchDegrees: _host._pitchDegrees);
                             if (_animal.TryGetScreenBounds(_width, _height, out var bounds))
                                 _host.UpdatePetBounds(true, bounds.left, bounds.top, bounds.right, bounds.bottom);
@@ -1010,7 +1032,7 @@ public sealed class HushArCoreActivity : Activity
                             // displayed non-transparent, lit animal pixels.
                             // It uses ARCore projection, so the shadow stays on the floor
                             // as the camera moves, without requiring legacy mesh parsing.
-                            _floorShadow?.Draw(_view, _projection, pos, .17f * scale);
+                            _floorShadow?.Draw(_view, _projection, pos, .5f * _host._filamentTargetMetres * scale, _host._yawDegrees);
                             // For new PBR assets that the legacy parser cannot open,
                             // provide a conservative central touch target around anchor.
                             _host.UpdatePetBounds(true, _width * .22f, _height * .25f,

@@ -501,7 +501,7 @@ internal sealed class HushGlbAnimal3D
         return 1f;
     }
 
-    public void Draw(float[] view,float[] projection,float[] anchor,float animalScale=1f,float petProgress=1f,float idleSeconds=0f,bool shadowOnly=false, float yawDegrees=0f, float pitchDegrees=0f)
+    public void Draw(float[] view,float[] projection,float[] anchor,float animalScale=1f,float petProgress=1f,float idleSeconds=0f,bool shadowOnly=false, float yawDegrees=0f, float pitchDegrees=0f, bool hideShadow=false) // HUSH_B99_SURFACEVIEW_SILHOUETTE_AR_20261028
     {
         if(_program==0)return;
         float maxExtent=Math.Max(_max[0]-_min[0],Math.Max(_max[1]-_min[1],_max[2]-_min[2]));
@@ -553,7 +553,7 @@ internal sealed class HushGlbAnimal3D
         _shadowQuad!.Position(0);
         GLES.GlEnableVertexAttribArray(_shadowVertex);
         GLES.GlVertexAttribPointer(_shadowVertex,2,GLES.GlFloat,false,0,_shadowQuad);
-        GLES.GlDrawArrays(GLES.GlTriangleStrip,0,4);
+        if (!hideShadow) GLES.GlDrawArrays(GLES.GlTriangleStrip,0,4);
         GLES.GlDisableVertexAttribArray(_shadowVertex);
         if (shadowOnly)
         {
