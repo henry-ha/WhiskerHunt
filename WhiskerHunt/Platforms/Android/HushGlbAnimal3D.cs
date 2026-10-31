@@ -421,7 +421,7 @@ internal sealed class HushGlbAnimal3D
             "uniform int uAlphaMode;uniform float uAlphaCutoff;"+
             "void main(){vec3 n=normalize(vNormal);vec3 key=normalize(vec3(-0.55,0.90,0.75));vec3 fill=normalize(vec3(0.45,0.35,0.95));"+
             "float keyDiffuse=max(0.0,dot(n,key));float fillDiffuse=max(0.0,dot(n,fill));float up=max(0.0,n.y);"+
-            "float rim=pow(1.0-max(0.0,n.z),2.0)*0.18;vec4 albedo=texture2D(uTex,vec2(vUV.x,1.0-vUV.y))*uTint;"+
+            "float rim=pow(1.0-max(0.0,n.z),2.0)*0.18;vec4 albedo=texture2D(uTex,vUV)*uTint;"+
             "if(uAlphaMode==1 && albedo.a<uAlphaCutoff)discard;"+
             "if(uAlphaMode==2 && albedo.a<0.04)discard;"+
             "float shade=0.47+0.34*keyDiffuse+0.15*fillDiffuse+0.09*up;vec3 lit=albedo.rgb*shade + albedo.rgb*rim;"+

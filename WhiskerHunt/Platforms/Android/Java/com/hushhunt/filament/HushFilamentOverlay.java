@@ -77,7 +77,17 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     // rendering a stale pose in a second TextureView while the background moves.
     private long frameGeneration;
     private long renderedGeneration;
-    private long frameBudgetNanos = 16_000_000L;
+    // v3.10.39: cap the second GPU render pass to ~30fps for dense GLBs.
+    // ARCore camera and tracking continue at full speed on their GL thread.
+    private long frameBudgetNanos = 33_000_000L;
+    // HUSH_31040_SCALE_BUFFER_HOTFIX: calibrate the 28 Meshy centimeter-rig animals.
+    // 0.01x in v3.10.39 was visibly too small; 0.08x is a TEST calibration,
+    // not a claim of real-world metric size. Does not affect static GLBs.
+    private static final float MESHY_ANIMATED_SIZE_FACTOR = 0.08f;
+    // Render ONLY the Filament animal overlay at 72% per dimension.
+    // ARCore camera background and tracking retain their full resolution.
+    private static final float FILAMENT_BUFFER_FACTOR = 0.72f;
+    private boolean overlayBufferConfigured;
     private int packagedGlbBytes;
     private int unsuccessfulPixelChecks;
     private boolean textureVisibilityWarned;
@@ -113,7 +123,13 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     private float animalScale = 1f;
     private float unitScale = 1f;
     private float centreX, centreY, centreZ, bottomY;
+    // HUSH_31041_ANIMATION_LIGHT_GPU: pick named idle/walk clips and keep time advancing.
     private long animationStartNanos;
+    private int idleClip = -1, walkClip = -1, currentClip = -1;
+    private int animationClipCount;
+    private long perfStartNanos;
+    private int perfFrames;
+    private volatile boolean isWalking;
     // Filament render calls are confined to the Android UI / Choreographer thread.
     // Scratch arrays are not shared with the ARCore camera thread; these reduce
     // 60 Hz allocations that can trigger GC stalls on mobile.
@@ -127,6 +143,46 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     private volatile boolean petReactionIsStroke;
     private int lastPetSignalSequence;
 
+
+    // Meshy animated exports have a 0.01 Armature root and
+    // ~100x inverse-bind scale. Their skin-deformed extent can exceed the
+    // accessor-only AABB reported by FilamentAsset.getBoundingBox().
+    // The remaining two skinned models (Red Panda and Turtle) use normal units.
+    // This list is audited against the exact 88 GLBs supplied for v3.10.38.
+    private static boolean hasMeshyCentimeterRig(String path) {
+        switch (path) {
+            case "wildlife/models/arctic_wolf.glb":
+            case "wildlife/models/camel.glb":
+            case "wildlife/models/capybara.glb":
+            case "wildlife/models/celestial_deer.glb":
+            case "wildlife/models/celestial_fox.glb":
+            case "wildlife/models/chow_chow_dog.glb":
+            case "wildlife/models/corgi.glb":
+            case "wildlife/models/donkey.glb":
+            case "wildlife/models/elephant.glb":
+            case "wildlife/models/giraffe.glb":
+            case "wildlife/models/golden_retriever.glb":
+            case "wildlife/models/jack_russell_dog.glb":
+            case "wildlife/models/jack_russell_terrier.glb":
+            case "wildlife/models/labrador.glb":
+            case "wildlife/models/lion.glb":
+            case "wildlife/models/lion_alternate.glb":
+            case "wildlife/models/pitbull_dog.glb":
+            case "wildlife/models/ragdoll_cat_grey.glb":
+            case "wildlife/models/rhinoceros.glb":
+            case "wildlife/models/seal_baby.glb":
+            case "wildlife/models/shiba_inu_dog.glb":
+            case "wildlife/models/silverback_gorilla.glb":
+            case "wildlife/models/snow_leopard.glb":
+            case "wildlife/models/stag.glb":
+            case "wildlife/models/tabby_cat.glb":
+            case "wildlife/models/tuxedo_cat.glb":
+            case "wildlife/models/wild_boar.glb":
+            case "wildlife/models/wolf.glb":
+                return true;
+            default: return false;
+        }
+    }
 
     private HushFilamentOverlay(Activity activity, FrameLayout container, String assetName, float targetSize) {
         this.activity = activity;
@@ -148,6 +204,20 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
         surfaceView.setFocusable(false);
         surfaceView.getHolder().addCallback(this);
         // Under the native UI controls, above the existing ARCore camera GLSurfaceView.
+        // Allocate a lower-resolution transparent SurfaceView BUFFER, while
+        // its on-screen View remains full-size and aligned with ARCore.
+        // The Android hardware compositor scales this surface to its view.
+        surfaceView.addOnLayoutChangeListener((v, left, top, right, bottom, ol, ot, or, ob) -> {
+            int w = right - left, h = bottom - top;
+            if (!overlayBufferConfigured && w >= 64 && h >= 64) {
+                overlayBufferConfigured = true;
+                int bw = Math.max(64, Math.round(w * FILAMENT_BUFFER_FACTOR));
+                int bh = Math.max(64, Math.round(h * FILAMENT_BUFFER_FACTOR));
+                surfaceView.getHolder().setFixedSize(bw, bh);
+                Log.i(TAG, "3D overlay buffer=" + bw + "x" + bh +
+                    " fullView=" + w + "x" + h);
+            }
+        });
         container.addView(surfaceView, Math.min(1, container.getChildCount()),
             new FrameLayout.LayoutParams(-1, -1));
     }
@@ -157,8 +227,8 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                                   String assetName, float targetSize) {
         try {
             if (instance != null) dispose();
-            if (assetName == null || !assetName.matches("[a-z0-9-]{1,110}\\.glb")) return false;
-            try (InputStream check = activity.getAssets().open("ar_models/" + assetName)) {
+            if (assetName == null || !assetName.matches("wildlife/models/[a-z0-9_]{1,80}\\.glb")) return false;
+            try (InputStream check = activity.getAssets().open(assetName)) {
                 if (check.read() < 0) return false;
             }
             instance = new HushFilamentOverlay(activity, container, assetName, targetSize);
@@ -220,6 +290,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                 Log.i(TAG, "Pet reaction via AR frame, stroke=" + item.petReactionIsStroke);
             }
         }
+        item.isWalking = anchor.length > 5 && anchor[5] > 0.5f;
         synchronized (item.snapshotLock) {
             item.viewSnapshot = view.clone();
             item.projectionSnapshot = projection.clone();
@@ -228,7 +299,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             item.frameGeneration++;
         }
         // Read the estimate while its ARCore Frame is still current.
-        if (arFrame != null && (++item.lightReadFrameCounter % 8) == 0) {
+        if (arFrame != null && (++item.lightReadFrameCounter % 20) == 0) {
             try {
                 Object estimate = arFrame.getClass().getMethod("getLightEstimate").invoke(arFrame);
                 String state = String.valueOf(estimate.getClass().getMethod("getState").invoke(estimate));
@@ -275,7 +346,10 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             view.setScene(scene);
             view.setCamera(camera);
             view.setBlendMode(View.BlendMode.TRANSLUCENT);
-            view.setPostProcessingEnabled(false); // HUSH_B99_FRAMESTALL_20261028: AR camera is already post-processed
+            view.setPostProcessingEnabled(false); // AR camera is already post-processed.
+            // Dynamic resolution is not relied upon: this View has post-processing
+            // disabled for a transparent AR overlay. Its fixed SurfaceView
+            // buffer already lowers the actual raster workload.
             Renderer.ClearOptions clear = renderer.getClearOptions();
             // Filament 1.77.3 exposes clear colour via setClearColor(...).
             clear.setClearColor(0.0, 0.0, 0.0, 0.0);
@@ -289,7 +363,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             sunEntity = EntityManager.get().create();
             new LightManager.Builder(LightManager.Type.DIRECTIONAL)
                 .direction(.35f, -1f, -.4f)
-                .intensity(24000f)
+                .intensity(10000f)
                 .castShadows(false)
                 .build(engine, sunEntity);
             scene.addEntity(sunEntity);
@@ -297,7 +371,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             // light fur. Keep the fill stable while honouring the source colour.
             ambientLight = new IndirectLight.Builder()
                 .irradiance(1, new float[] { .9f, .9f, .9f })
-                .intensity(6500f).build(engine);
+                .intensity(7000f).build(engine);
             scene.setIndirectLight(ambientLight);
 
             stage("gltfio.loader.create");
@@ -305,15 +379,15 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             loader = new AssetLoader(engine, materialProvider, EntityManager.get());
             resourceLoader = new ResourceLoader(engine);
             stage("asset.read:" + assetName);
-            byte[] bytes = readAsset("ar_models/" + assetName);
+            byte[] bytes = readAsset(assetName);
             packagedGlbBytes = bytes.length;
-            // A dense mesh may still be slow; keep camera and animal updates in
-            // sync rather than drawing stale poses at an artificial frame rate.
-            // HUSH_B99_ARCORE_LATEST_POSE_FILAMENT_PACING_01
-            // Do not hold 12-24 MiB animals at ~45 fps or 24+ MiB at ~33 fps.
-            // Follow the latest ARCore frame at every display VSYNC. Filament's
-            // beginFrame() handles native GPU backlog and may skip when needed.
-            frameBudgetNanos = 0L;
+            // ARCore camera tracking stays full rate. Filament is a second GPU
+            // pass with 100k-triangle/4K textured assets; cap only this pass.
+            // The latest pose is sampled at render time, never queued.
+            // Heavy textures/skinned meshes get additional GPU time for ARCore.
+            // This is a load-management measure, NOT an asset simplification.
+            frameBudgetNanos = packagedGlbBytes >= 18 * 1024 * 1024
+                ? 41_000_000L : 33_000_000L;  // ~24fps heavy, ~30fps other
             Log.i(TAG, "HD GLB=" + assetName + " bytes=" + packagedGlbBytes +
                 " frameBudgetNs=" + frameBudgetNanos);
             verifyGlbHeader(bytes);
@@ -329,6 +403,26 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             scene.addEntities(asset.getEntities());
             scene.addEntities(asset.getLightEntities());
             animator = asset.getInstance().getAnimator();
+            animationClipCount = animator == null ? 0 : animator.getAnimationCount();
+            // Prefer a real idle/breathing clip while stationary, and a walking
+            // clip when travelling between AR anchors. Do not assume clip 0.
+            for (int clip = 0; clip < animationClipCount; clip++) {
+                String name = animator.getAnimationName(clip);
+                String key = name == null ? "" : name.toLowerCase(java.util.Locale.ROOT);
+                if (idleClip < 0 && (key.contains("idle") || key.contains("breath") ||
+                        key.contains("rest") || key.contains("stand"))) idleClip = clip;
+                if (walkClip < 0 && (key.contains("walk") || key.contains("run") ||
+                        key.contains("trot") || key.contains("move") ||
+                        key.contains("fly") || key.contains("flap"))) walkClip = clip;
+                Log.i(TAG, "GLB animation #" + clip + " name='" + name +
+                    "' duration=" + animator.getAnimationDuration(clip) + "s");
+            }
+            if (animationClipCount > 0) {
+                if (walkClip < 0) walkClip = 0;
+                if (idleClip < 0) idleClip = 0; // no idle clip: slow first clip instead of freezing
+            } else {
+                Log.i(TAG, "GLB has NO baked animation clips: " + assetName);
+            }
             int visibleMeshes = asset.getRenderableEntities().length;
             if (visibleMeshes == 0) throw new IllegalStateException("GLB has no renderable geometry: " + assetName);
             Log.i(TAG, "GLB renderable entities=" + visibleMeshes + " name=" + assetName);
@@ -338,6 +432,12 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             float[] center = bounds.getCenter();
             float max = Math.max(.001f, 2f * Math.max(half[0], Math.max(half[1], half[2])));
             unitScale = targetSize / max;
+            // glTF accessor AABBs may omit skeletal deformation; apply an
+            // empirically tuned per-rig factor without touching GLB bones.
+            if (hasMeshyCentimeterRig(assetName)) unitScale *= MESHY_ANIMATED_SIZE_FACTOR;
+            Log.i(TAG, "AR model scale: " + assetName + " bboxLongest=" + max +
+                " targetMetres=" + targetSize + " normalizedScale=" + unitScale +
+                " centimeterRig=" + hasMeshyCentimeterRig(assetName));
             centreX = center[0]; centreY = center[1]; centreZ = center[2];
             bottomY = center[1] - half[1];
             stage("model.ready:" + assetName);
@@ -400,11 +500,13 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     @Override public void doFrame(long nanos) {
         frameScheduled = false;
         if (destroyed || !modelReady || swapChain == null) return;
-        // NO secondary app-level cadence limiter. A slow TextureView is especially
-        // visible during walk-around: its old animal pose trails the live AR video.
-        // The main thread owns all Filament GPU calls. ARCore publishes immutable
-        // same-frame camera/anchor matrices from its own GL thread.
-        lastRenderedNanos = nanos;
+        // At most 30 Filament GPU submissions/sec. The background ARCore layer
+        // is still refreshed every frame; on rendering we use its newest camera
+        // pose, so we do not queue / accumulate stale frames.
+        if (lastRenderedNanos != 0L && nanos - lastRenderedNanos < frameBudgetNanos) {
+            scheduleFrame();
+            return;
+        }
         try {
             float[] v, p, a, d, intensity;
             float scale;
@@ -439,9 +541,9 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                         float oscillation = (float) Math.sin(t * Math.PI * (stroke ? 7.0 : 5.0));
                         // Species personalities: cats lean softly, puppies wag
                         // more enthusiastically, birds give a small feathered sway.
-                        boolean isCat = assetName.startsWith("cat-");
-                        boolean isDog = assetName.startsWith("dog-");
-                        boolean isBird = assetName.startsWith("bird-") || assetName.startsWith("fantasy-");
+                        boolean isCat = assetName.contains("cat_") || assetName.contains("_cat");
+                        boolean isDog = assetName.contains("dog") || assetName.contains("labrador") || assetName.contains("retriever") || assetName.contains("corgi");
+                        boolean isBird = assetName.contains("eagle") || assetName.contains("falcon") || assetName.contains("bird") || assetName.contains("phoenix");
                         float personality = isCat ? .72f : (isDog ? 1.28f : (isBird ? .84f : 1f));
                         petYaw = (stroke ? 12f : 9f) * personality * damping * oscillation;
                         petRoll = (stroke ? 3.5f : 2.5f) * personality * damping * oscillation;
@@ -474,17 +576,25 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                         LightManager lm = engine.getLightManager();
                         int li = lm.getInstance(sunEntity);
                         lm.setDirection(li, -d[0], -d[1], -d[2]);
-                        float magnitude = Math.max(.35f, Math.min(1.35f,
+                        float magnitude = Math.max(.50f, Math.min(1.20f,
                             (intensity[0] + intensity[1] + intensity[2]) / 3.0f));
-                        lm.setIntensity(li, 15000f * magnitude);
+                        lm.setIntensity(li, 8500f * magnitude);
                     }
                 }
             }
-            if (animator != null && animator.getAnimationCount() > 0) {
-                int index = 0;
-                if (animationStartNanos == 0L) animationStartNanos = nanos;
+            if (animator != null && animationClipCount > 0) {
+                // Previously idle animals were forced to animation time zero
+                // EVERY frame, which made all characters appear frozen.
+                int index = isWalking ? walkClip : idleClip;
+                if (index != currentClip || animationStartNanos == 0L) {
+                    currentClip = index;
+                    animationStartNanos = nanos;
+                }
                 float duration = Math.max(.1f, animator.getAnimationDuration(index));
-                float seconds = ((nanos - animationStartNanos) / 1e9f) % duration;
+                // For single-clip walk exports, play gently in place when idle
+                // rather than freezing. Proper idle clips run at normal speed.
+                float speed = (!isWalking && idleClip == walkClip) ? .40f : 1f;
+                float seconds = ((nanos - animationStartNanos) * 1e-9f * speed) % duration;
                 animator.applyAnimation(index, seconds);
                 animator.updateBoneMatrices();
             }
@@ -494,6 +604,16 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                 renderer.render(view);
                 renderer.endFrame();
                 renderedGeneration = generation;
+                lastRenderedNanos = nanos;
+                if (perfStartNanos == 0L) perfStartNanos = nanos;
+                perfFrames++;
+                if (nanos - perfStartNanos > 5_000_000_000L) {
+                    float fps = perfFrames * 1_000_000_000f / (nanos - perfStartNanos);
+                    Log.i(TAG, "AR_OVERLAY_FPS=" + fps + " animal=" + assetName +
+                        " clip=" + currentClip + "/" + animationClipCount +
+                        " walking=" + isWalking + " bytes=" + packagedGlbBytes);
+                    perfFrames = 0; perfStartNanos = nanos;
+                }
                 if (!hasPresentedAnimalFrame) {
                     hasPresentedAnimalFrame = true;
                     Log.i(TAG, "First anchored GPU frame submitted: " + assetName);

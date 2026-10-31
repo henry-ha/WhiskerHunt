@@ -1,0 +1,89 @@
+﻿Display name,Asset file,Original archive path,Animated,Animation clip,Duration (s),Texture,Triangles,Size (MB),Warnings
+Arctic Wolf,wildlife/models/arctic_wolf.glb,GLB/Animated/Arctic_Wolf.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,103614,11.12,Emissive material detected; test appearance under AR lighting
+Badger,wildlife/models/badger.glb,GLB/Badger.glb,No,,,Yes,102665,11.09,
+Bat,wildlife/models/bat.glb,GLB/Bat.glb,No,,,Yes,1498,5.0,
+Black Ant,wildlife/models/black_ant.glb,GLB/Black_Ant.glb,No,,,Yes,20374,1.51,
+Bolognese Dog,wildlife/models/bolognese_dog.glb,GLB/Bolognese_Dog.glb,No,,,Yes,103975,11.73,
+Camel,wildlife/models/camel.glb,GLB/Animated/Camel.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,103222,9.51,Emissive material detected; test appearance under AR lighting
+Capybara,wildlife/models/capybara.glb,GLB/Animated/Capybara.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,102380,9.89,Emissive material detected; test appearance under AR lighting
+Capybara (Static),wildlife/models/capybara_static.glb,GLB/Capybara.glb,No,,,Yes,102380,11.1,Emissive material detected; test appearance under AR lighting
+Celestial Deer,wildlife/models/celestial_deer.glb,GLB/Animated/Celestial_Deer.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,9886,12.79,Emissive material detected; test appearance under AR lighting
+Celestial Fox,wildlife/models/celestial_fox.glb,GLB/Animated/Celestial_Fox.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,18860,6.99,Emissive material detected; test appearance under AR lighting
+Celestial Stag,wildlife/models/celestial_stag.glb,GLB/Celestial_Stag.glb,No,,,Yes,102416,12.67,
+Chill Guy Kangaroo,wildlife/models/chill_guy_kangaroo.glb,GLB/Chill_Guy_Kangaroo.glb,No,,,Yes,293824,14.85,
+Chimpanzee,wildlife/models/chimpanzee.glb,GLB/Chimpanzee.glb,No,,,Yes,103917,11.28,
+Chow Chow Dog,wildlife/models/chow_chow_dog.glb,GLB/Animated/Chow_Chow_Dog.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,103045,9.17,Emissive material detected; test appearance under AR lighting
+Corgi,wildlife/models/corgi.glb,GLB/Animated/Corgi.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,102984,9.33,Emissive material detected; test appearance under AR lighting
+Donkey,wildlife/models/donkey.glb,GLB/Animated/Donkey.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,103361,11.15,Emissive material detected; test appearance under AR lighting
+Donkey (Static),wildlife/models/donkey_static.glb,GLB/Donkey.glb,No,,,Yes,103369,10.6,Emissive material detected; test appearance under AR lighting
+Eagle,wildlife/models/eagle.glb,GLB/Eagle.glb,No,,,Yes,102628,12.69,
+Elephant,wildlife/models/elephant.glb,GLB/Animated/Elephant.glb,Yes,Armature|Unreal Take|baselayer,1,No,31286,2.98,No embedded texture: model may render grey; Emissive material detected; test appearance under AR lighting
+Emerald Chameleon,wildlife/models/emerald_chameleon.glb,GLB/Emerald_Chameleon.glb,No,,,Yes,103531,12.44,
+Emerald Dragonfly,wildlife/models/emerald_dragonfly.glb,GLB/Emerald_Dragonfly.glb,No,,,Yes,52414,9.26,
+Falcon,wildlife/models/falcon.glb,GLB/Falcon.glb,No,,,Yes,102675,11.27,
+Fennec Fox,wildlife/models/fennec_fox.glb,GLB/Fennec_Fox.glb,No,,,Yes,102326,10.53,
+Fishing Squirrel,wildlife/models/fishing_squirrel.glb,GLB/Fishing_Squirrel.glb,No,,,Yes,102907,11.36,
+Flamingo,wildlife/models/flamingo.glb,GLB/Flamingo.glb,No,,,Yes,103495,11.64,
+Frog,wildlife/models/frog.glb,GLB/Frog.glb,No,,,Yes,198157,8.33,
+Fruit Bat,wildlife/models/fruit_bat.glb,GLB/Fruit_Bat.glb,No,,,Yes,102834,12.59,
+Gecko,wildlife/models/gecko.glb,GLB/Gecko.glb,No,,,Yes,104279,13.72,Emissive material detected; test appearance under AR lighting
+German Spitz Dog,wildlife/models/german_spitz_dog.glb,GLB/German_Spitz_Dog.glb,No,,,Yes,103114,9.77,
+Ginger Tabby Cat,wildlife/models/ginger_tabby_cat.glb,GLB/Ginger_Tabby_Cat.glb,No,,,Yes,103998,14.65,
+Giraffe,wildlife/models/giraffe.glb,GLB/Animated/Giraffe.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,104050,10.55,Emissive material detected; test appearance under AR lighting
+Golden Retriever,wildlife/models/golden_retriever.glb,GLB/Animated/Golden_Retriever.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,104071,27.49,Emissive material detected; test appearance under AR lighting
+Grey Squirrel,wildlife/models/grey_squirrel.glb,GLB/Grey_Squirrel.glb,No,,,Yes,103007,11.39,
+Hare,wildlife/models/hare.glb,GLB/Hare.glb,No,,,Yes,103373,10.69,
+Hawk,wildlife/models/hawk.glb,GLB/Hawk.glb,No,,,Yes,102517,11.53,
+Hedgehog,wildlife/models/hedgehog.glb,GLB/Hedgehog.glb,No,,,Yes,102984,12.61,
+Honey Bee,wildlife/models/honey_bee.glb,GLB/Honey_Bee.glb,No,,,Yes,9962,3.51,
+Jack Russell Dog,wildlife/models/jack_russell_dog.glb,GLB/Animated/Jack_Russell_Dog.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,100382,9.96,Emissive material detected; test appearance under AR lighting
+Jack Russell Terrier,wildlife/models/jack_russell_terrier.glb,GLB/Animated/Jack_Russell_Terrier.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,103224,9.27,Emissive material detected; test appearance under AR lighting
+Japanese Macaque,wildlife/models/japanese_macaque.glb,GLB/Japanese_Macaque.glb,No,,,Yes,102855,11.58,
+Kangaroo,wildlife/models/kangaroo.glb,GLB/Kangaroo.glb,No,,,Yes,102795,9.41,
+Kangaroo Mouse,wildlife/models/kangaroo_mouse.glb,GLB/Kangaroo_Mouse.glb,No,,,Yes,102692,10.87,Emissive material detected; test appearance under AR lighting
+Kangaroo Mouse (Alternate),wildlife/models/kangaroo_mouse_alternate.glb,GLB/Animated/Kangaroo_Mouse.glb,No,,,Yes,102692,10.87,Despite being in Animated folder this file has no animation; Emissive material detected; test appearance under AR lighting
+Koala,wildlife/models/koala.glb,GLB/Koala.glb,No,,,Yes,103295,11.64,
+Labrador,wildlife/models/labrador.glb,GLB/Animated/Labrador.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,103246,10.47,Emissive material detected; test appearance under AR lighting
+Ladybug,wildlife/models/ladybug.glb,GLB/Ladybug.glb,No,,,Yes,4986,5.68,
+Lemur,wildlife/models/lemur.glb,GLB/Lemur.glb,No,,,Yes,102951,11.28,
+Lion,wildlife/models/lion.glb,GLB/Animated/Lion.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,10423,6.1,Emissive material detected; test appearance under AR lighting
+Lion (Alternate),wildlife/models/lion_alternate.glb,GLB/Animated/Lion (2).glb,Yes,Armature|Unreal Take|baselayer,1,Yes,103070,10.26,Emissive material detected; test appearance under AR lighting
+Lioness,wildlife/models/lioness.glb,GLB/Lioness.glb,No,,,Yes,102505,11.6,
+Mandarin Duck,wildlife/models/mandarin_duck.glb,GLB/Mandarin_Duck.glb,No,,,Yes,102390,11.54,Emissive material detected; test appearance under AR lighting
+Meerkat,wildlife/models/meerkat.glb,GLB/Meerkat.glb,No,,,Yes,103190,11.12,
+Mouse,wildlife/models/mouse.glb,GLB/Mouse.glb,No,,,Yes,64000,7.4,
+Nebula Butterfly,wildlife/models/nebula_butterfly.glb,GLB/Nebula_Butterfly.glb,No,,,Yes,168821,9.49,
+Nine Tails Fox Black,wildlife/models/nine_tails_fox_black.glb,GLB/Nine_Tails_Fox_Black.glb,No,,,Yes,104094,14.42,
+Nine Tails Fox White,wildlife/models/nine_tails_fox_white.glb,GLB/Nine_Tails_Fox_White.glb,No,,,Yes,103283,14.07,
+Octopus,wildlife/models/octopus.glb,GLB/Octopus.glb,No,,,Yes,104091,34.27,Emissive material detected; test appearance under AR lighting
+Orangutan,wildlife/models/orangutan.glb,GLB/Orangutan.glb,No,,,Yes,172878,6.03,
+Owl,wildlife/models/owl.glb,GLB/Owl.glb,No,,,Yes,28886,2.57,
+Pallas Cat,wildlife/models/pallas_cat.glb,GLB/Pallas_Cat.glb,No,,,Yes,103117,11.11,
+Peacock,wildlife/models/peacock.glb,GLB/Peacock.glb,No,,,Yes,103348,12.18,
+Pelican,wildlife/models/pelican.glb,GLB/Pelican.glb,No,,,Yes,103155,11.32,Emissive material detected; test appearance under AR lighting
+Phoenix,wildlife/models/phoenix.glb,GLB/Phoenix.glb,No,,,Yes,103568,15.17,
+Pitbull Dog,wildlife/models/pitbull_dog.glb,GLB/Animated/Pitbull_Dog.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,287034,15.93,Emissive material detected; test appearance under AR lighting
+Rabbit,wildlife/models/rabbit.glb,GLB/Rabbit.glb,No,,,Yes,18632,6.52,
+Ragdoll Cat (Brown),wildlife/models/ragdoll_cat_brown.glb,GLB/Ragdoll_Cat_Brown.glb,No,,,Yes,103758,11.29,Emissive material detected; test appearance under AR lighting
+Ragdoll Cat (Grey),wildlife/models/ragdoll_cat_grey.glb,GLB/Animated/Ragdoll_Cat_Grey.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,103421,29.87,Emissive material detected; test appearance under AR lighting
+Red Panda,wildlife/models/red_panda.glb,GLB/Animated/Red_Panda.glb,Yes,_360_Power_Spin_Jump,3.03,Yes,102903,12.76,"Animation is a 360 spin/jump, not a walking cycle"
+Reindeer,wildlife/models/reindeer.glb,GLB/Reindeer.glb,No,,,Yes,336110,16.83,
+Rhinoceros,wildlife/models/rhinoceros.glb,GLB/Animated/Rhinoceros.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,186908,11.39,Emissive material detected; test appearance under AR lighting
+Seal Baby,wildlife/models/seal_baby.glb,GLB/Animated/Seal_Baby.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,102366,9.45,Emissive material detected; test appearance under AR lighting
+Shiba Inu Dog,wildlife/models/shiba_inu_dog.glb,GLB/Animated/Shiba_Inu_Dog.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,100927,11.39,Emissive material detected; test appearance under AR lighting
+Silverback Gorilla,wildlife/models/silverback_gorilla.glb,GLB/Animated/Silverback_Gorilla.glb,Yes,Silverback_Walk,1,Yes,103110,10.72,
+Slug,wildlife/models/slug.glb,GLB/Slug.glb,No,,,Yes,9999,0.77,
+Snail,wildlife/models/snail.glb,GLB/Snail.glb,No,,,Yes,169799,5.84,
+Snow Leopard,wildlife/models/snow_leopard.glb,GLB/Animated/Snow_Leopard.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,102830,10.56,Emissive material detected; test appearance under AR lighting
+Snow Monkey On Bamboo,wildlife/models/snow_monkey_on_bamboo.glb,GLB/Snow_Monkey_On_Bamboo.glb,No,,,Yes,103961,11.79,Emissive material detected; test appearance under AR lighting
+Spider,wildlife/models/spider.glb,GLB/Spider.glb,No,,,Yes,9982,3.5,
+Stag,wildlife/models/stag.glb,GLB/Animated/Stag.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,103239,10.73,Emissive material detected; test appearance under AR lighting
+Stag Beetle,wildlife/models/stag_beetle.glb,GLB/Stag_Beetle.glb,No,,,Yes,257255,15.15,Emissive material detected; test appearance under AR lighting
+Tabby Cat,wildlife/models/tabby_cat.glb,GLB/Animated/Tabby_Cat.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,30344,8.52,Emissive material detected; test appearance under AR lighting
+Three-Headed Dragon,wildlife/models/three_headed_dragon.glb,GLB/3_Headed_Dragon.glb,No,,,Yes,104035,16.29,
+Thunderbird,wildlife/models/thunderbird.glb,GLB/Thunderbird.glb,No,,,Yes,103155,15.16,
+Turtle,wildlife/models/turtle.glb,GLB/Animated/Turtle.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,18700,4.22,Emissive material detected; test appearance under AR lighting
+Tuxedo Cat,wildlife/models/tuxedo_cat.glb,GLB/Animated/Tuxedo_Cat.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,99886,8.49,Emissive material detected; test appearance under AR lighting
+Wasp,wildlife/models/wasp.glb,GLB/Wasp.glb,No,,,Yes,60629,3.05,
+Wild Boar,wildlife/models/wild_boar.glb,GLB/Animated/Wild_Boar.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,103523,11.07,Emissive material detected; test appearance under AR lighting
+Wolf,wildlife/models/wolf.glb,GLB/Animated/Wolf.glb,Yes,Armature|Unreal Take|baselayer,1,Yes,104015,16.04,Emissive material detected; test appearance under AR lighting

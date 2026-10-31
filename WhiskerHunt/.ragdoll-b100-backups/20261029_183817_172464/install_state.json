@@ -1,0 +1,30 @@
+{
+  "model": "wildlife-cat-ragdoll-cat",
+  "version": "3.10.37-b100",
+  "files": [
+    {
+      "rel": "Resources/Raw/ar_models/installed_species.json",
+      "existed": true
+    },
+    {
+      "rel": "Resources/Raw/app_v99.js",
+      "existed": true
+    },
+    {
+      "rel": "WhiskerHunt.csproj",
+      "existed": true
+    },
+    {
+      "rel": "Resources/Raw/index.html",
+      "existed": true
+    },
+    {
+      "rel": "Resources/Raw/index_v99.html",
+      "existed": true
+    },
+    {
+      "rel": "Resources/Raw/ar_models/cat-ragdoll-cat.glb",
+      "existed": false
+    }
+  ]
+}

@@ -28,5 +28,11 @@
     "file": "dog-jack-russell-puppy.glb",
     "name": "Jack Russell Puppy",
     "species": "Dog"
+  },
+  {
+    "key": "wildlife-cat-ragdoll-cat",
+    "file": "cat-ragdoll-cat.glb",
+    "name": "Ragdoll Cat",
+    "species": "Cat"
   }
 ]

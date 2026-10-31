@@ -36,6 +36,8 @@ namespace WhiskerHunt;
     Exported = false, ScreenOrientation = ScreenOrientation.Portrait)]
 public sealed class HushArCoreActivity : Activity
 {
+    // Hush 3D Safari music v1 (persisted preference; no renderer changes).
+    private HushSafariMusicController? _safariMusic;
     public sealed class ArOutcome
     {
         [JsonPropertyName("status")] public string Status { get; init; } = "error";
@@ -66,6 +68,7 @@ public sealed class HushArCoreActivity : Activity
     private string _model = "";
     private string _species = "";
     private string _animalName = "";
+    private bool _animatedModel;
     private bool _installRequested, _didComplete, _resumed;
     private bool _filamentRequested;
     private bool _filamentAnnounced;
@@ -99,63 +102,43 @@ public sealed class HushArCoreActivity : Activity
         _model = Intent?.GetStringExtra("model") ?? "";
         _species = Intent?.GetStringExtra("species") ?? "Other";
         _animalName = Intent?.GetStringExtra("name") ?? "Animal";
-        // The Filament glTF loader understands modern PBR / skinned GLBs that
-        // the legacy simplified OpenGL loader cannot parse. For those assets
-        // keep the ARCore camera working even without a legacy-renderer model.
-        var filename = HushGlbAnimal3D.ResolveBundledFilename(_model, _species, _animalName);
-        if (string.IsNullOrWhiteSpace(filename))
+        // HUSH_WILDLIFE_88_20261031: only new, explicitly named catalogue assets.
+        // WebView model identifiers cannot be used as arbitrary Android asset paths.
+        if (!HushWildlifeCatalog.TryGet(_model, out var selected) || selected is null)
         {
-            FinishWith("fallback", $"No 3D model is installed for {_animalName}.");
+            FinishWith("fallback", "Choose a model from the new 3D Safari wildlife list.");
             return;
         }
-        try { using var check = Assets!.Open("ar_models/" + filename); }
-        catch { FinishWith("fallback", $"Missing 3D wildlife asset: {filename}"); return; }
-        bool hasLegacyMesh = HushGlbAnimal3D.TryLoad(this, _model, _species, _animalName,
-            out _animal, out var loadMessage);
-        Android.Util.Log.Info("HushHuntAR", "3D catalogue " + _animalName +
-            " -> ar_models/" + filename + "; selection: " + loadMessage);
-        string name = _animalName;
+        _animalName = selected.Name;
+        _animatedModel = selected.Animated;
+        _species = selected.Category;
+        string filename = selected.AssetPath;
+        try { using var check = Assets!.Open(filename); }
+        catch { FinishWith("fallback", $"Missing installed wildlife asset: {selected.Name}. Run the wildlife installer first."); return; }
+        // All 88 Meshy models use the existing glTF / Filament PBR loader.
+        // Avoid parsing large skinned meshes with the legacy static-only GL renderer.
+        _animal = null;
+        Android.Util.Log.Info("HushHuntAR", "3D Wildlife " + selected.Name +
+            " -> " + filename + "; animated=" + selected.Animated);
 
         _root = new FrameLayout(this) { Background = new ColorDrawable(AndroidColor.Black) };
         _surface = new GLSurfaceView(this);
         _surface.SetEGLContextClientVersion(2);
-        _surface.SetEGLConfigChooser(8, 8, 8, 8, 16, 0); // Real 3D mesh needs a depth buffer.
-        // The Android binding does not expose SetPreserveEGLContextOnPause(bool).
-        // GLSurfaceView recreates the GL resources after context loss; OnSurfaceCreated
-        // handles that lifecycle safely instead of requiring a non-existent setter.
+        _surface.SetEGLConfigChooser(8, 8, 8, 8, 16, 0);
         _renderer = new ArRenderer(this, _animal);
         _surface.SetRenderer(_renderer);
         _surface.RenderMode = Rendermode.Continuously;
         _root.AddView(_surface, new LayoutParams(-1, -1));
-        // Reserve Filament for modern (quantised / skinned / extended) assets.
-        // Running it over compatible legacy animals caused black silhouettes
-        // and false-positive readiness, so keep those on the proven OpenGL path.
-        bool modernHdAsset = !hasLegacyMesh || !IsPrimaryAssetLegacyCompatible(filename!);
-        // Filament presents PBR geometry over ARCore's existing camera feed.
-        float metres = _species.ToLowerInvariant() switch
-        {
-            "cat" => .47f, "dog" => .65f, "rabbit" => .35f, "squirrel" => .31f,
-            "bird" => .32f, "hedgehog" => .24f,
-            "other" when _animalName.Equals("Deer", StringComparison.OrdinalIgnoreCase) => 1.05f,
-            "other" when _animalName.Equals("Fox", StringComparison.OrdinalIgnoreCase) => .65f,
-            "snail" => .22f, "butterfly" or "bee" or "ant" or "beetle" => .13f,
-            _ => .3f
-        };
-        _filamentTargetMetres = metres;
-        _filamentRequested = modernHdAsset && HushFilamentBridge.TryInstall(this, _root, filename!, metres);
+        _filamentTargetMetres = HushWildlifeCatalog.RecommendedSizeMetres(selected.Name, selected.Category);
+        _filamentRequested = HushFilamentBridge.TryInstall(this, _root, filename, _filamentTargetMetres);
         _filamentLaunchMs = System.Environment.TickCount64;
-        if (!hasLegacyMesh && !_filamentRequested)
+        if (!_filamentRequested)
         {
-            Android.Util.Log.Error("HushHuntAR", "Neither renderer could open " + filename +
-                ". Filament: " + HushFilamentBridge.LastError + ". Legacy: " + loadMessage);
-            FinishWith("fallback", $"{_animalName} needs the updated 3D wildlife renderer. " +
-                "Please use 2D Safari until the renderer is installed.");
+            Android.Util.Log.Error("HushHuntAR", "Filament unavailable for " + filename + ": " + HushFilamentBridge.LastError);
+            FinishWith("fallback", $"Could not open {_animalName} in the 3D renderer. " +
+                "See HushFilament messages in Logcat.");
             return;
         }
-        if (!_filamentRequested && modernHdAsset)
-            Android.Util.Log.Warn("HushHuntAR", "Filament unavailable: " + HushFilamentBridge.LastError);
-        if (!modernHdAsset)
-            Android.Util.Log.Info("HushHuntAR", "Legacy renderer selected for " + filename + "; retaining normal materials and real 3D camera perspective.");
 
         // Native ARCore now renders a dimensional animal mesh in OpenGL, directly
         // at the world anchor. Never add a 2D ImageView sprite to this activity.
@@ -288,6 +271,7 @@ public sealed class HushArCoreActivity : Activity
         trayParams.BottomMargin = Dp(62);
         _root.AddView(bottom, trayParams);
         SetContentView(_root);
+        _safariMusic = HushSafariMusicController.Attach(this, _root);
         _surface.Touch += (_, e) =>
         {
             var motion = e.Event;
@@ -537,6 +521,7 @@ public sealed class HushArCoreActivity : Activity
             }
             _session.Resume();
             _resumed = true;
+            _safariMusic?.OnArForeground();
             _surface.OnResume();
             SetStatus("Move slowly to find a surface ✨");
         }
@@ -559,6 +544,7 @@ public sealed class HushArCoreActivity : Activity
 
     protected override void OnPause()
     {
+        _safariMusic?.OnArBackground();
         if (_resumed)
         {
             UpdatePetBounds(false, 0, 0, 0, 0);
@@ -571,6 +557,7 @@ public sealed class HushArCoreActivity : Activity
 
     protected override void OnDestroy()
     {
+        _safariMusic?.Dispose();
         if (_filamentRequested) HushFilamentBridge.Dispose();
         try { _walkingDestination?.Detach(); _walkingDestination?.Dispose(); } catch { }
         try { _anchor?.Detach(); _anchor?.Dispose(); } catch { }
@@ -646,7 +633,7 @@ public sealed class HushArCoreActivity : Activity
                 if (_walkingDestination is not null)
                 {
                     try { anchor.Detach(); anchor.Dispose(); } catch { }
-                    SetStatus($"{_animalName} is already walking ✨");
+                    SetStatus($"{_animalName} is already moving ✨");
                     return;
                 }
                 _walkingDestination = anchor;
@@ -670,7 +657,7 @@ public sealed class HushArCoreActivity : Activity
             _modelFrameConfirmed = false;
             UpdatePetBounds(false, 0, 0, 0, 0);
             if (_collect is not null) _collect.Enabled = false;
-            if (_place is not null) _place.Text = "Walk";
+            if (_place is not null) _place.Text = _animatedModel ? "Walk" : "Move";
             SetStatus($"Here comes {_animalName}! ✨");
         });
     }
@@ -866,7 +853,7 @@ public sealed class HushArCoreActivity : Activity
                 try
                 {
                     _floorShadow = new HushFloorShadow();
-                    _floorShadow.Initialise(_host, HushGlbAnimal3D.ResolveBundledFilename(_host._model, _host._species, _host._animalName));
+                    _floorShadow.Initialise(_host, null); // New GLBs have no pre-rendered silhouette masks.
                 }
                 catch (Exception shadowError)
                 {
@@ -985,7 +972,8 @@ public sealed class HushArCoreActivity : Activity
                         {
                             pos[0], pos[1], pos[2],
                             System.Threading.Volatile.Read(ref _host._filamentPetSequence),
-                            System.Threading.Volatile.Read(ref _host._filamentPetStroke)
+                            System.Threading.Volatile.Read(ref _host._filamentPetStroke),
+                            _host._walkingDestination is not null ? 1f : 0f
                         };
                         HushFilamentBridge.SubmitFrame(
                             _view, _projection, filamentAnchorWithPet, scale, frame);
@@ -1006,7 +994,12 @@ public sealed class HushArCoreActivity : Activity
                         _host._filamentAnnounced = true;
                         _host.SetStatus($"{_host._animalName} HD / Filament ready ✨ Touch to pet 💚");
                     }
-                    for (int i = 0; i < 8 && GLES.GlGetError() != GLES.GlNoError; i++) { }
+                    // HUSH_31041_GL_ERROR_FENCE: Filament is a separate renderer.
+                    // Polling GLES errors unconditionally every frame can force
+                    // a driver sync on the ARCore GL thread. Only drain them in
+                    // the legacy renderer fallback path.
+                    if (!filamentReady)
+                        for (int i = 0; i < 8 && GLES.GlGetError() != GLES.GlNoError; i++) { }
                     try
                     {
                         long reactionStart = System.Threading.Interlocked.Read(ref _host._reactionStartedAt);
@@ -1038,7 +1031,9 @@ public sealed class HushArCoreActivity : Activity
                             _host.UpdatePetBounds(true, _width * .22f, _height * .25f,
                                 _width * .78f, _height * .78f);
                         }
-                        if (filamentReady || _modelInitialised)
+                        if (filamentReady)
+                            _host.OnModelDrawn(0); // IsReady already validated real Filament pixels.
+                        else if (_modelInitialised)
                             _host.OnModelDrawn(GLES.GlGetError());
                     }
                     catch (Exception modelError)

@@ -2239,6 +2239,20 @@ for(const group of SPECIES.filter(x=>x!=='Cat')){
  }
 }
 AR_CAT_MODELS.push(...HUSH_AR_CATALOG);
+
+// HUSH_WILDLIFE_88_20261031 - Dedicated 3D Safari catalogue.
+// The 2D encounter pool is deliberately untouched; entries are a 1:1 copy of
+// the GLB whitelist in HushWildlifeCatalog.cs.
+const HUSH_3D_WILDLIFE = [{"key":"hh3d-arctic-wolf","name":"Arctic Wolf","category":"Wildlife","animated":true},{"key":"hh3d-badger","name":"Badger","category":"Wildlife","animated":false},{"key":"hh3d-bat","name":"Bat","category":"Wildlife","animated":false},{"key":"hh3d-black-ant","name":"Black Ant","category":"Insects & Invertebrates","animated":false},{"key":"hh3d-bolognese-dog","name":"Bolognese Dog","category":"Pets & Cats","animated":false},{"key":"hh3d-camel","name":"Camel","category":"Wildlife","animated":true},{"key":"hh3d-capybara","name":"Capybara","category":"Wildlife","animated":true},{"key":"hh3d-capybara-static","name":"Capybara (Static)","category":"Wildlife","animated":false},{"key":"hh3d-celestial-deer","name":"Celestial Deer","category":"Fantasy","animated":true},{"key":"hh3d-celestial-fox","name":"Celestial Fox","category":"Fantasy","animated":true},{"key":"hh3d-celestial-stag","name":"Celestial Stag","category":"Fantasy","animated":false},{"key":"hh3d-chill-guy-kangaroo","name":"Chill Guy Kangaroo","category":"Fantasy","animated":false},{"key":"hh3d-chimpanzee","name":"Chimpanzee","category":"Wildlife","animated":false},{"key":"hh3d-chow-chow-dog","name":"Chow Chow Dog","category":"Pets & Cats","animated":true},{"key":"hh3d-corgi","name":"Corgi","category":"Pets & Cats","animated":true},{"key":"hh3d-donkey","name":"Donkey","category":"Wildlife","animated":true},{"key":"hh3d-donkey-static","name":"Donkey (Static)","category":"Wildlife","animated":false},{"key":"hh3d-eagle","name":"Eagle","category":"Birds","animated":false},{"key":"hh3d-elephant","name":"Elephant","category":"Wildlife","animated":true},{"key":"hh3d-emerald-chameleon","name":"Emerald Chameleon","category":"Reptiles & Amphibians","animated":false},{"key":"hh3d-emerald-dragonfly","name":"Emerald Dragonfly","category":"Fantasy","animated":false},{"key":"hh3d-falcon","name":"Falcon","category":"Birds","animated":false},{"key":"hh3d-fennec-fox","name":"Fennec Fox","category":"Wildlife","animated":false},{"key":"hh3d-fishing-squirrel","name":"Fishing Squirrel","category":"Wildlife","animated":false},{"key":"hh3d-flamingo","name":"Flamingo","category":"Birds","animated":false},{"key":"hh3d-frog","name":"Frog","category":"Reptiles & Amphibians","animated":false},{"key":"hh3d-fruit-bat","name":"Fruit Bat","category":"Wildlife","animated":false},{"key":"hh3d-gecko","name":"Gecko","category":"Reptiles & Amphibians","animated":false},{"key":"hh3d-german-spitz-dog","name":"German Spitz Dog","category":"Pets & Cats","animated":false},{"key":"hh3d-ginger-tabby-cat","name":"Ginger Tabby Cat","category":"Pets & Cats","animated":false},{"key":"hh3d-giraffe","name":"Giraffe","category":"Wildlife","animated":true},{"key":"hh3d-golden-retriever","name":"Golden Retriever","category":"Pets & Cats","animated":true},{"key":"hh3d-grey-squirrel","name":"Grey Squirrel","category":"Wildlife","animated":false},{"key":"hh3d-hare","name":"Hare","category":"Wildlife","animated":false},{"key":"hh3d-hawk","name":"Hawk","category":"Birds","animated":false},{"key":"hh3d-hedgehog","name":"Hedgehog","category":"Wildlife","animated":false},{"key":"hh3d-honey-bee","name":"Honey Bee","category":"Insects & Invertebrates","animated":false},{"key":"hh3d-jack-russell-dog","name":"Jack Russell Dog","category":"Pets & Cats","animated":true},{"key":"hh3d-jack-russell-terrier","name":"Jack Russell Terrier","category":"Pets & Cats","animated":true},{"key":"hh3d-japanese-macaque","name":"Japanese Macaque","category":"Wildlife","animated":false},{"key":"hh3d-kangaroo","name":"Kangaroo","category":"Wildlife","animated":false},{"key":"hh3d-kangaroo-mouse","name":"Kangaroo Mouse","category":"Wildlife","animated":false},{"key":"hh3d-kangaroo-mouse-alternate","name":"Kangaroo Mouse (Alternate)","category":"Wildlife","animated":false},{"key":"hh3d-koala","name":"Koala","category":"Wildlife","animated":false},{"key":"hh3d-labrador","name":"Labrador","category":"Pets & Cats","animated":true},{"key":"hh3d-ladybug","name":"Ladybug","category":"Insects & Invertebrates","animated":false},{"key":"hh3d-lemur","name":"Lemur","category":"Wildlife","animated":false},{"key":"hh3d-lion","name":"Lion","category":"Wildlife","animated":true},{"key":"hh3d-lion-alternate","name":"Lion (Alternate)","category":"Wildlife","animated":true},{"key":"hh3d-lioness","name":"Lioness","category":"Wildlife","animated":false},{"key":"hh3d-mandarin-duck","name":"Mandarin Duck","category":"Birds","animated":false},{"key":"hh3d-meerkat","name":"Meerkat","category":"Wildlife","animated":false},{"key":"hh3d-mouse","name":"Mouse","category":"Wildlife","animated":false},{"key":"hh3d-nebula-butterfly","name":"Nebula Butterfly","category":"Fantasy","animated":false},{"key":"hh3d-nine-tails-fox-black","name":"Nine Tails Fox Black","category":"Fantasy","animated":false},{"key":"hh3d-nine-tails-fox-white","name":"Nine Tails Fox White","category":"Fantasy","animated":false},{"key":"hh3d-octopus","name":"Octopus","category":"Marine & Invertebrates","animated":false},{"key":"hh3d-orangutan","name":"Orangutan","category":"Wildlife","animated":false},{"key":"hh3d-owl","name":"Owl","category":"Birds","animated":false},{"key":"hh3d-pallas-cat","name":"Pallas Cat","category":"Pets & Cats","animated":false},{"key":"hh3d-peacock","name":"Peacock","category":"Birds","animated":false},{"key":"hh3d-pelican","name":"Pelican","category":"Birds","animated":false},{"key":"hh3d-phoenix","name":"Phoenix","category":"Fantasy","animated":false},{"key":"hh3d-pitbull-dog","name":"Pitbull Dog","category":"Pets & Cats","animated":true},{"key":"hh3d-rabbit","name":"Rabbit","category":"Wildlife","animated":false},{"key":"hh3d-ragdoll-cat-brown","name":"Ragdoll Cat (Brown)","category":"Pets & Cats","animated":false},{"key":"hh3d-ragdoll-cat-grey","name":"Ragdoll Cat (Grey)","category":"Pets & Cats","animated":true},{"key":"hh3d-red-panda","name":"Red Panda","category":"Wildlife","animated":true},{"key":"hh3d-reindeer","name":"Reindeer","category":"Wildlife","animated":false},{"key":"hh3d-rhinoceros","name":"Rhinoceros","category":"Wildlife","animated":true},{"key":"hh3d-seal-baby","name":"Seal Baby","category":"Wildlife","animated":true},{"key":"hh3d-shiba-inu-dog","name":"Shiba Inu Dog","category":"Pets & Cats","animated":true},{"key":"hh3d-silverback-gorilla","name":"Silverback Gorilla","category":"Wildlife","animated":true},{"key":"hh3d-slug","name":"Slug","category":"Marine & Invertebrates","animated":false},{"key":"hh3d-snail","name":"Snail","category":"Marine & Invertebrates","animated":false},{"key":"hh3d-snow-leopard","name":"Snow Leopard","category":"Wildlife","animated":true},{"key":"hh3d-snow-monkey-on-bamboo","name":"Snow Monkey On Bamboo","category":"Wildlife","animated":false},{"key":"hh3d-spider","name":"Spider","category":"Insects & Invertebrates","animated":false},{"key":"hh3d-stag","name":"Stag","category":"Wildlife","animated":true},{"key":"hh3d-stag-beetle","name":"Stag Beetle","category":"Insects & Invertebrates","animated":false},{"key":"hh3d-tabby-cat","name":"Tabby Cat","category":"Pets & Cats","animated":true},{"key":"hh3d-three-headed-dragon","name":"Three-Headed Dragon","category":"Fantasy","animated":false},{"key":"hh3d-thunderbird","name":"Thunderbird","category":"Fantasy","animated":false},{"key":"hh3d-turtle","name":"Turtle","category":"Reptiles & Amphibians","animated":true},{"key":"hh3d-tuxedo-cat","name":"Tuxedo Cat","category":"Pets & Cats","animated":true},{"key":"hh3d-wasp","name":"Wasp","category":"Insects & Invertebrates","animated":false},{"key":"hh3d-wild-boar","name":"Wild Boar","category":"Wildlife","animated":true},{"key":"hh3d-wolf","name":"Wolf","category":"Wildlife","animated":true}];
+const HUSH_3D_BY_KEY = new Map(HUSH_3D_WILDLIFE.map(x=>[x.key,x]));
+const hushOriginalGetArModelFor3D = getArModel;
+getArModel = function(key){
+ const animal=HUSH_3D_BY_KEY.get(key);
+ if(!animal)return hushOriginalGetArModelFor3D(key);
+ const isCat=/cat|pallas/i.test(animal.name),isDog=/dog|retriever|labrador|corgi|terrier|pitbull|shiba/i.test(animal.name);
+ return {key:animal.key,name:animal.name,species:isCat?'Cat':isDog?'Dog':'Other',speciesDetail:animal.name,coat:'Other',base:'#bb9b77',accent:'#715a48',belly:'#efdbc3',rarity:'common',breed:animal.name,is3D:true};
+};
+
 // Balanced species discovery rather than a cat-biased 120+ model pool.
 const hushOldRandomArModel=randomArModel;
 randomArModel=function(except=''){
@@ -2419,30 +2433,35 @@ function hushChooseArSafari(){
  const supported=hasAndroidActionBridge();
  openModal(`<div class="sheet-head"><h2>AR Safari ✨</h2><button class="close-btn" data-close aria-label="Close">×</button></div>
  <p class="dim">Find playful wildlife friends around you. Which mode would you like?</p>
- <div class="hush-ar-choice"><button id="hush-arcore-start" class="choice" type="button" ><span>🌍</span><strong>ARCore • Real surfaces</strong><small>Place an illustrated creature on a floor or table. It stays anchored while you move.</small></button>
+ <div class="hush-ar-choice"><button id="hush-arcore-start" class="choice" type="button" ><span>🌍</span><strong>3D Safari • Real surfaces</strong><small>Choose from 88 realistic 3D wildlife models and place one on a tracked floor.</small></button>
  <button id="hush-ar-2d" class="choice" type="button"><span>✨</span><strong>2D Safari • Quick play</strong><small>All devices · illustrated camera overlays · no surface tracking.</small></button></div>
  <p class="footnote">${supported?'ARCore needs a supported phone, Google Play Services for AR and camera permission.':'Tap to try ARCore on your device; the Android app will tell you if AR services need installing.'} Google Play Services for AR is provided by Google LLC and governed by the Google Privacy Policy. The artwork is illustrative, not a real animal. Only tap Collect to save a photo.</p>`);
  $('hush-ar-2d').onclick=()=>hushOriginalStartArEncounter();
- $('hush-arcore-start').onclick=hushLaunchArCore;
+ $('hush-arcore-start').onclick=hushChoose3DWildlife;
 }
 const hushOriginalStartArEncounter=startArEncounter;
 startArEncounter=function(){return hushChooseArSafari()};
-function hushLaunchArCore(){
+function hushChoose3DWildlife(){
+ if(!hasAndroidActionBridge())return hushLaunchArCore(null);
+ const options=HUSH_3D_WILDLIFE.map(a=>`<option value="${a.key}">${esc(a.name)}${a.animated?' · Animated':''}</option>`).join('');
+ openModal(`<div class="sheet-head"><h2>Choose 3D wildlife 🐾</h2><button class="close-btn" data-close aria-label="Close">×</button></div>
+  <p class="dim">All 88 models are listed alphabetically. Animated animals move when you tap Walk on a tracked floor.</p>
+  <label for="hush-3d-animal">Animal</label>
+  <select id="hush-3d-animal" style="width:100%;max-width:100%;margin:10px 0 15px;padding:12px;border-radius:10px">${options}</select>
+  <div class="actions"><button class="secondary" type="button" id="hush-3d-cancel">Back</button><button class="primary" type="button" id="hush-3d-place">Open 3D Safari</button></div>`);
+ $('hush-3d-cancel').onclick=hushChooseArSafari;
+ $('hush-3d-place').onclick=()=>hushLaunchArCore(HUSH_3D_BY_KEY.get($('hush-3d-animal').value));
+}
+function hushLaunchArCore(animal){
  if(!hasAndroidActionBridge()){
-  openModal('<div class="sheet-head"><h2>ARCore needs the Android app</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">Real-world surface tracking only works in the installed Android version of Hush Hunt. The browser demo supports 2D Safari instead.</p><div class="actions"><button type="button" class="primary" id="hush-ar-use-2d">✨ Try 2D Safari</button></div>');
+  openModal('<div class="sheet-head"><h2>3D Safari needs the Android app</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">Real-world surface tracking only works in the installed Android app. You can use 2D Safari here.</p><div class="actions"><button type="button" class="primary" id="hush-ar-use-2d">Try 2D Safari</button></div>');
   $('hush-ar-use-2d').onclick=hushOriginalStartArEncounter;return;
  }
- const model=randomArModel(),group=model.species||'Cat';
- s.hushNativeArPendingModel=model.key;
- const requestedSprite=safariCreatureArt(group, model.speciesDetail || (group==='Cat' ? (model.coat||'Tabby') : 'Other'));
- const sprite=(group==='Cat'||!model.speciesDetail)?safariCreatureArt(group):requestedSprite;
- // Only bundled relative images may cross the native bridge.
- if(!/^safari_cutouts_v63\/[a-z0-9-]+\.png$/.test(sprite)){
-  s.hushNativeArPendingModel=null;return hushOriginalStartArEncounter();
- }
+ if(!animal || !HUSH_3D_BY_KEY.has(animal.key))return hushChoose3DWildlife();
+ s.hushNativeArPendingModel=animal.key;
  closeModal();
- toast('Opening ARCore Safari… Move your phone slowly to find a surface.');
- const pairs=[['model',model.key],['name',model.name],['species',group],['sprite',sprite]];
+ toast('Opening '+animal.name+' in 3D Safari…');
+ const pairs=[['model',animal.key],['name',animal.name],['species','Other']];
  location.href='whiskerhunt://arcore?'+pairs.map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
 }
 window.hushNativeArCoreResult=function(result){
@@ -2461,11 +2480,11 @@ window.hushNativeArCoreResult=function(result){
   s.hushNativeArPendingModel=null;
   showVirtualNamingForm();
   const note=$('virtual-photo-preview')?.nextElementSibling;
-  if(note)note.insertAdjacentHTML('beforebegin','<p class="info-note">🌍 Captured in native ARCore with a tracked surface anchor. Creature art is 2D, not a 3D animal.</p>');
+  if(note)note.insertAdjacentHTML('beforebegin','<p class="info-note">🌍 Captured in native ARCore with a tracked surface anchor. This photo was captured with a 3D animal on a tracked surface.</p>');
   return;
  }
  s.hushNativeArPendingModel=null;
- if(result.status==='fallback')return hushOriginalStartArEncounter();
+ if(result.status==='fallback'){openModal(`<div class="sheet-head"><h2>3D wildlife unavailable</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">${esc(result.message||'The model could not be loaded on this device.')}</p><div class="actions"><button type="button" class="primary" id="hush-3d-retry">Choose another animal</button></div>`);$('hush-3d-retry').onclick=hushChoose3DWildlife;return;}
  if(result.status==='cancelled')return;
  openModal(`<div class="sheet-head"><h2>ARCore not ready</h2><button class="close-btn" data-close aria-label="Close">×</button></div><p class="dim">${esc(result.message||'Native ARCore cannot run right now.')}</p><button id="hush-ar-fallback" class="primary" type="button">✨ Use 2D Safari instead</button>`);
  $('hush-ar-fallback').onclick=()=>hushOriginalStartArEncounter();

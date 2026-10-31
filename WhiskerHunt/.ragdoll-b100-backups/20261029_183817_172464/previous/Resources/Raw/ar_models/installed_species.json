@@ -1,0 +1,32 @@
+[
+  {
+    "key": "wildlife-fantasy-phoenix-bird",
+    "file": "fantasy-phoenix-bird.glb",
+    "name": "Phoenix Bird",
+    "species": "Fantasy"
+  },
+  {
+    "key": "wildlife-cat-sumpitueslag-cat",
+    "file": "cat-sumpitueslag-cat.glb",
+    "name": "Sumpitueslag Cat",
+    "species": "Cat"
+  },
+  {
+    "key": "wildlife-cat-cat-in-motion",
+    "file": "cat-cat-in-motion.glb",
+    "name": "Cat in Motion",
+    "species": "Cat"
+  },
+  {
+    "key": "wildlife-bird-bald-eagle-catching-fish",
+    "file": "bird-bald-eagle-catching-fish.glb",
+    "name": "Bald Eagle Catching Fish",
+    "species": "Bird"
+  },
+  {
+    "key": "wildlife-dog-jack-russell-puppy",
+    "file": "dog-jack-russell-puppy.glb",
+    "name": "Jack Russell Puppy",
+    "species": "Dog"
+  }
+]
