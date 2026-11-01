@@ -16,6 +16,10 @@ namespace WhiskerHunt;
 internal static class HushFilamentBridge
 {
     private const string JavaName = "com/hushhunt/filament/HushFilamentOverlay";
+    // HUSH_31043_JNI_CACHE: cache the runtime-managed GLOBAL class ref and
+    // method ID; avoid FindClass/GetStaticMethodID on the ARCore thread every frame.
+    private static IntPtr _frameClass = IntPtr.Zero;
+    private static IntPtr _frameMethod = IntPtr.Zero;
     private static bool _installed;
     private static bool _warned;
     internal static string LastError { get; private set; } = "none";
@@ -43,6 +47,12 @@ internal static class HushFilamentBridge
             {
                 _installed = JNIEnv.CallStaticBooleanMethod(clazz, method,
                     new JValue(activity), new JValue(container), new JValue(text), new JValue(modelMetres));
+                if (_installed && _frameMethod == IntPtr.Zero)
+                {
+                    _frameClass = clazz; // FindClass returns a managed global ref.
+                    _frameMethod = JNIEnv.GetStaticMethodID(clazz, "submitFrame",
+                        "([F[F[FFLjava/lang/Object;)V");
+                }
                 if (!_installed)
                     LastError = "Java Filament install returned false. See Android Logcat (HushFilament).";
                 return _installed;
@@ -91,7 +101,7 @@ internal static class HushFilamentBridge
                 var method = JNIEnv.GetStaticMethodID(clazz, "reactToPet", "(Z)V");
                 JNIEnv.CallStaticVoidMethod(clazz, method, new JValue(isStroke));
             }
-            finally { JNIEnv.DeleteLocalRef(clazz); }
+            finally { /* FindClass is a managed global, not a local ref. */ }
         }
         catch (Exception e) { Warn(e); }
     }
@@ -115,8 +125,15 @@ internal static class HushFilamentBridge
         IntPtr v = IntPtr.Zero, p = IntPtr.Zero, a = IntPtr.Zero;
         try
         {
-            var clazz = JNIEnv.FindClass(JavaName);
-            var method = JNIEnv.GetStaticMethodID(clazz, "submitFrame", "([F[F[FFLjava/lang/Object;)V");
+            var clazz = _frameClass;
+            var method = _frameMethod;
+            if (clazz == IntPtr.Zero || method == IntPtr.Zero)
+            {
+                clazz = JNIEnv.FindClass(JavaName);
+                method = JNIEnv.GetStaticMethodID(clazz, "submitFrame", "([F[F[FFLjava/lang/Object;)V");
+                _frameClass = clazz;
+                _frameMethod = method;
+            }
             v = JNIEnv.NewArray(view);
             p = JNIEnv.NewArray(projection);
             a = JNIEnv.NewArray(anchor);

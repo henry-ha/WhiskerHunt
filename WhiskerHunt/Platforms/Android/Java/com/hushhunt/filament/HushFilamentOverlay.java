@@ -86,7 +86,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     private static final float MESHY_ANIMATED_SIZE_FACTOR = 0.08f;
     // Render ONLY the Filament animal overlay at 72% per dimension.
     // ARCore camera background and tracking retain their full resolution.
-    private static final float FILAMENT_BUFFER_FACTOR = 0.72f;
+    private static final float FILAMENT_BUFFER_FACTOR = 0.65f;
     private boolean overlayBufferConfigured;
     private int packagedGlbBytes;
     private int unsuccessfulPixelChecks;
@@ -124,7 +124,9 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     private float unitScale = 1f;
     private float centreX, centreY, centreZ, bottomY;
     // HUSH_31041_ANIMATION_LIGHT_GPU: pick named idle/walk clips and keep time advancing.
+    // HUSH_31043_STEADY_ANIMATION: ensure animations advance while a camera pose is unchanged.
     private long animationStartNanos;
+    private long lastLongFrameLogNanos;
     private int idleClip = -1, walkClip = -1, currentClip = -1;
     private int animationClipCount;
     private long perfStartNanos;
@@ -292,9 +294,12 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
         }
         item.isWalking = anchor.length > 5 && anchor[5] > 0.5f;
         synchronized (item.snapshotLock) {
-            item.viewSnapshot = view.clone();
-            item.projectionSnapshot = projection.clone();
-            item.anchorSnapshot = anchor.clone();
+            // JNI.NewArray creates fresh Java arrays for each ARCore frame.
+            // Retain their immutable references; cloning them again allocated
+            // three extra arrays every frame and induced GC pauses.
+            item.viewSnapshot = view;
+            item.projectionSnapshot = projection;
+            item.anchorSnapshot = anchor;
             item.animalScale = Math.max(.5f, Math.min(3f, scale));
             item.frameGeneration++;
         }
@@ -312,12 +317,9 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                             item.lightIntensity = i.clone();
                         }
                     }
-                    // ARCore Environmental HDR supplies 3-band ambient spherical
-                    // harmonics as 27 floats (nine RGB coefficients).
-                    float[] harmonics = (float[]) estimate.getClass()
-                        .getMethod("getEnvironmentalHdrAmbientSphericalHarmonics").invoke(estimate);
-                    if (harmonics != null && harmonics.length == 27)
-                        item.ambientCoefficients = harmonics.clone();
+                    // 27-coefficient SH read intentionally omitted: the
+                    // renderer uses a stable neutral fill, not these values.
+                    // Avoid allocating unused arrays via reflection.
                 }
             } catch (Throwable ignored) { /* ARCore binding may not expose HDR on all devices. */ }
         }
@@ -341,7 +343,10 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             // ambient fill, badly clipped normal baseColor textures. f/8 at
             // 1/125 s (EV100 13) uses a physically compatible exposure for
             // daylight-strength lights. Avoid reintroducing a bright ISO.
-            camera.setExposure(8.0f, 1f / 125f, 100f);
+            // HUSH_31042_COLOR_FRAME_COST: compensate for the reduced v3.10.41
+            // key light without clipping bright fur by doubling the sun.
+            // Keep baseColor textures and physically based material properties intact.
+            camera.setExposure(6.3f, 1f / 125f, 100f);
             view = engine.createView();
             view.setScene(scene);
             view.setCamera(camera);
@@ -363,7 +368,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             sunEntity = EntityManager.get().create();
             new LightManager.Builder(LightManager.Type.DIRECTIONAL)
                 .direction(.35f, -1f, -.4f)
-                .intensity(10000f)
+                .intensity(9000f)
                 .castShadows(false)
                 .build(engine, sunEntity);
             scene.addEntity(sunEntity);
@@ -371,7 +376,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             // light fur. Keep the fill stable while honouring the source colour.
             ambientLight = new IndirectLight.Builder()
                 .irradiance(1, new float[] { .9f, .9f, .9f })
-                .intensity(7000f).build(engine);
+                .intensity(8000f).build(engine);
             scene.setIndirectLight(ambientLight);
 
             stage("gltfio.loader.create");
@@ -386,8 +391,9 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             // The latest pose is sampled at render time, never queued.
             // Heavy textures/skinned meshes get additional GPU time for ARCore.
             // This is a load-management measure, NOT an asset simplification.
-            frameBudgetNanos = packagedGlbBytes >= 18 * 1024 * 1024
-                ? 41_000_000L : 33_000_000L;  // ~24fps heavy, ~30fps other
+            // 41ms against a 60Hz display quantises to 3 VSync intervals (~20fps).
+            // Use 33ms for both paths; Filament's beginFrame handles GPU backlog.
+            frameBudgetNanos = 33_000_000L;
             Log.i(TAG, "HD GLB=" + assetName + " bytes=" + packagedGlbBytes +
                 " frameBudgetNs=" + frameBudgetNanos);
             verifyGlbHeader(bytes);
@@ -401,7 +407,10 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             stage("resources.release:" + assetName);
             asset.releaseSourceData();
             scene.addEntities(asset.getEntities());
-            scene.addEntities(asset.getLightEntities());
+            // Imported GLB punctual lights can have uncontrolled lux/intensity,
+            // causing white blowout or very harsh contrast. The app supplies
+            // its own balanced environmental rig; do not add authored GLB lights.
+            Log.i(TAG, "Ignoring imported GLB light entities=" + asset.getLightEntities().length);
             animator = asset.getInstance().getAnimator();
             animationClipCount = animator == null ? 0 : animator.getAnimationCount();
             // Prefer a real idle/breathing clip while stationary, and a walking
@@ -516,7 +525,14 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                 d = lightDirection; intensity = lightIntensity; scale = animalScale;
                 generation = frameGeneration;
             }
-            if (generation == renderedGeneration || v == null || p == null || a == null) {
+            if (v == null || p == null || a == null) {
+                scheduleFrame();
+                return;
+            }
+            // With a valid anchor, a skinned animal can continue playing its
+            // clip even when ARCore hasn't delivered another camera pose yet.
+            // Static assets still avoid wasteful redraws of identical poses.
+            if (generation == renderedGeneration && animationClipCount == 0) {
                 scheduleFrame();
                 return;
             }
@@ -576,9 +592,11 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                         LightManager lm = engine.getLightManager();
                         int li = lm.getInstance(sunEntity);
                         lm.setDirection(li, -d[0], -d[1], -d[2]);
-                        float magnitude = Math.max(.50f, Math.min(1.20f,
+                        // Keep the key intensity near its baseline indoors;
+                        // avoid drastic ARCore brightness swings on dark subjects.
+                        float magnitude = Math.max(.70f, Math.min(1.10f,
                             (intensity[0] + intensity[1] + intensity[2]) / 3.0f));
-                        lm.setIntensity(li, 8500f * magnitude);
+                        lm.setIntensity(li, 7500f * magnitude);
                     }
                 }
             }
@@ -591,9 +609,9 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                     animationStartNanos = nanos;
                 }
                 float duration = Math.max(.1f, animator.getAnimationDuration(index));
-                // For single-clip walk exports, play gently in place when idle
-                // rather than freezing. Proper idle clips run at normal speed.
-                float speed = (!isWalking && idleClip == walkClip) ? .40f : 1f;
+                // Most Meshy exports have exactly one 1-second baked clip.
+                // The previous .40x speed made their motion appear to stop.
+                float speed = 1f;
                 float seconds = ((nanos - animationStartNanos) * 1e-9f * speed) % duration;
                 animator.applyAnimation(index, seconds);
                 animator.updateBoneMatrices();
@@ -604,6 +622,12 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                 renderer.render(view);
                 renderer.endFrame();
                 renderedGeneration = generation;
+                if (nanos - lastRenderedNanos > 180_000_000L &&
+                    nanos - lastLongFrameLogNanos > 3_000_000_000L && lastRenderedNanos != 0L) {
+                    lastLongFrameLogNanos = nanos;
+                    Log.w(TAG, "AR_OVERLAY_STALL_MS=" +
+                        ((nanos - lastRenderedNanos) / 1_000_000L) + " animal=" + assetName);
+                }
                 lastRenderedNanos = nanos;
                 if (perfStartNanos == 0L) perfStartNanos = nanos;
                 perfFrames++;

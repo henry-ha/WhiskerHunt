@@ -10,6 +10,7 @@ namespace WhiskerHunt;
 internal static class HushWildlifeCatalog
 {
     internal sealed record Entry(string Key, string Name, string Category, string AssetPath, bool Animated);
+    // HUSH_31043_CATALOG_86: Lion uses the requested alternate animated GLB.
     private static readonly Dictionary<string, Entry> Entries = new(StringComparer.Ordinal)
     {
         ["hh3d-arctic-wolf"] = new("hh3d-arctic-wolf", "Arctic Wolf", "Wildlife", "wildlife/models/arctic_wolf.glb", true),
@@ -54,13 +55,11 @@ internal static class HushWildlifeCatalog
         ["hh3d-japanese-macaque"] = new("hh3d-japanese-macaque", "Japanese Macaque", "Wildlife", "wildlife/models/japanese_macaque.glb", false),
         ["hh3d-kangaroo"] = new("hh3d-kangaroo", "Kangaroo", "Wildlife", "wildlife/models/kangaroo.glb", false),
         ["hh3d-kangaroo-mouse"] = new("hh3d-kangaroo-mouse", "Kangaroo Mouse", "Wildlife", "wildlife/models/kangaroo_mouse.glb", false),
-        ["hh3d-kangaroo-mouse-alternate"] = new("hh3d-kangaroo-mouse-alternate", "Kangaroo Mouse (Alternate)", "Wildlife", "wildlife/models/kangaroo_mouse_alternate.glb", false),
         ["hh3d-koala"] = new("hh3d-koala", "Koala", "Wildlife", "wildlife/models/koala.glb", false),
         ["hh3d-labrador"] = new("hh3d-labrador", "Labrador", "Pets & Cats", "wildlife/models/labrador.glb", true),
         ["hh3d-ladybug"] = new("hh3d-ladybug", "Ladybug", "Insects & Invertebrates", "wildlife/models/ladybug.glb", false),
         ["hh3d-lemur"] = new("hh3d-lemur", "Lemur", "Wildlife", "wildlife/models/lemur.glb", false),
-        ["hh3d-lion"] = new("hh3d-lion", "Lion", "Wildlife", "wildlife/models/lion.glb", true),
-        ["hh3d-lion-alternate"] = new("hh3d-lion-alternate", "Lion (Alternate)", "Wildlife", "wildlife/models/lion_alternate.glb", true),
+        ["hh3d-lion"] = new("hh3d-lion", "Lion", "Wildlife", "wildlife/models/lion_alternate.glb", true),
         ["hh3d-lioness"] = new("hh3d-lioness", "Lioness", "Wildlife", "wildlife/models/lioness.glb", false),
         ["hh3d-mandarin-duck"] = new("hh3d-mandarin-duck", "Mandarin Duck", "Birds", "wildlife/models/mandarin_duck.glb", false),
         ["hh3d-meerkat"] = new("hh3d-meerkat", "Meerkat", "Wildlife", "wildlife/models/meerkat.glb", false),

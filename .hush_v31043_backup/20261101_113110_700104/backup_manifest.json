@@ -1,0 +1,260 @@
+{
+  "root": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt",
+  "created": "20261101_113110_700104",
+  "files": {
+    "Platforms/Android/Java/com/hushhunt/filament/HushFilamentOverlay.java": {
+      "original_sha256": "a12b6df57c64b5828e232ac825755bfb3e0f76afacdb081d3f4acbb0f25a51f7",
+      "new_sha256": "05f87f06728659a365c84d18c37f2e7697e0191651a19489fb204a1b2eddde84"
+    },
+    "Platforms/Android/HushFilamentBridge.cs": {
+      "original_sha256": "5935740403efe2fa1901582d4fc0506dfc8326f3c12f0fec1a0ad96ece8be269",
+      "new_sha256": "e7a2d582768c428ab142d6f511ce7dae64404c2f7d2be739151049d032c89c07"
+    },
+    "Platforms/Android/HushArCoreActivity.cs": {
+      "original_sha256": "9f24392ed95e34fdbbb8b6d7c9267b1a2f69f31f7722833f23026c54adec447a",
+      "new_sha256": "d64de4928dc81b2f99173956708d4ca29cfa1ff4889c8baaaa672c06778e9c64"
+    },
+    "Platforms/Android/HushWildlifeCatalog.cs": {
+      "original_sha256": "ea907f8e620a22b81d0fa0b95aa1531b2dc059b14f99ee0565ec7b7753a6d707",
+      "new_sha256": "776a11c9bda0a0ea34b7ed3ed6c7587ac6ebbc7b93206007877c6a245ccf05cc"
+    },
+    "Resources/Raw/app_v99.js": {
+      "original_sha256": "2fa24c3555a57ff7a7405c0e11be2255783b8ab66c295b93c7d3b11818294578",
+      "new_sha256": "85a40ece671702829acf98e66fcbe6b9690bb4f1e32391d23977cdb3d8ed9ae2"
+    },
+    "Resources/Raw/app.js": {
+      "original_sha256": "31f293e1c61c85fa401a4c2f9d36d2d9fcd08b0f9e1d7c6ef92483833aeefc52",
+      "new_sha256": "001f57c3be3230631bd3e41bd999b74377c6270630f0cde83199eb0b4762d968"
+    },
+    "Resources/Raw/index_v99.html": {
+      "original_sha256": "f3bfe279003a6f9c7988ae0dc71ea325346fa5eaaba05d876a4e8322a8ad43e6",
+      "new_sha256": "a9504dea2c75d6feecd387ca1b6f2ebbb9a995de1242e1d8a9fbee8639bbb866"
+    },
+    "Resources/Raw/wildlife/manifest.json": {
+      "original_sha256": "5ba560c904374e8dfbdd4f13cf8df7b6baf64c4ea4645313b5a7409af406969f",
+      "new_sha256": "01b6334631e10d2797a2b6e13f7ff1fe68e30f666afb9f697e87789404c8d361"
+    },
+    "WhiskerHunt.csproj": {
+      "original_sha256": "bc1ca4556d9d5ab81053140cd4fe0755ce86d2d390a6bee8d062868c0997d699",
+      "new_sha256": "19829de0896a71ca20d0b936d3aa850c0f73c11c388771dd188ee0c6832c1c74"
+    },
+    "Resources/Raw/wildlife/models/arctic_wolf.glb": {
+      "original_sha256": "eb6cc78577dd429470f14db052c9969c9c23d9c0902838a49f41124877a0363d",
+      "new_sha256": "44ad5a36c2f967c093f49a4eedf7cea923d10afda91dd6de3b2ce4acf97b37b6"
+    },
+    "Resources/Raw/wildlife/models/bat.glb": {
+      "original_sha256": "8f1bdc543c5bfb8f072c4703e083b9e2325aa68b19fd499dec0f59aa56c25e57",
+      "new_sha256": "f1daa033264c51d4db4c6782177d573cad348f555c86cf01f0a312dbae94fdb6"
+    },
+    "Resources/Raw/wildlife/models/black_ant.glb": {
+      "original_sha256": "a3422657c10352ab6bb67cad9d828b0dd26efae32dedd0a303599f586b2f2580",
+      "new_sha256": "1d4917b529ad31087f85b7a3a4921925e4c7aa8f9ce838d4f2ee7be4ddda3c44"
+    },
+    "Resources/Raw/wildlife/models/camel.glb": {
+      "original_sha256": "0705a542e13df9f81baa51b26dd221fdd2cc798e6059c627863e85339a248eb9",
+      "new_sha256": "53bf758d283e6b9f583c9d7027a824b16e2884facc708f196397ce6f07729a2f"
+    },
+    "Resources/Raw/wildlife/models/capybara.glb": {
+      "original_sha256": "1ec9ebbbde4e875f5224004b8e819a799207fb6618bb5217fbfee68d28b52bd9",
+      "new_sha256": "17c9808c7295b30408df452fc5045525aff90f435aafe873ecd1735ec52b70f1"
+    },
+    "Resources/Raw/wildlife/models/capybara_static.glb": {
+      "original_sha256": "e4bb38fcefbfbc866869de5348df0d82478b95555a21dc9f917190e3099e6134",
+      "new_sha256": "6e451b6f2adb05c7bfbdd4be0e5d008af0529598f617020891c8ed4d5ac1e3ce"
+    },
+    "Resources/Raw/wildlife/models/celestial_deer.glb": {
+      "original_sha256": "2ea3dccd288bcd3aca67e50a93f15c66e493775829a21c0a04f2759954fb1dbe",
+      "new_sha256": "a369189cbbaf31002633107b32ad5e7e0b8c262c56bb1d9c21f61959e30f1e1e"
+    },
+    "Resources/Raw/wildlife/models/celestial_fox.glb": {
+      "original_sha256": "ddfb5339872dd1fb964bfed40344ebbe6e16b114eb31b7377f821aa01dd9cec4",
+      "new_sha256": "164ede8842f1ced6b3495cf6ee050de8091b109a64646766a6d614caf91c9916"
+    },
+    "Resources/Raw/wildlife/models/chill_guy_kangaroo.glb": {
+      "original_sha256": "5db37c2a369003534f3577f32cdc2927055dc06ed6df4f658d5a3e84399792f5",
+      "new_sha256": "577732c89aad88e9e1924a3cd2ae19da0af398f633ee5abca740ef29ea8d3bec"
+    },
+    "Resources/Raw/wildlife/models/chow_chow_dog.glb": {
+      "original_sha256": "7fb9c69b047ccf2f01d1c0f6298b9335e300618361b4476258c83be49818c4c5",
+      "new_sha256": "3b504b73da3f3093b6f045d3a674ffe1472253d57f1d157dc2adf9d3e40726db"
+    },
+    "Resources/Raw/wildlife/models/corgi.glb": {
+      "original_sha256": "35b75a618d50295dcb2271b03eaa53fea4e958e496b537dd2e0ff60bec7b4792",
+      "new_sha256": "d6d40480fb7af0e8eb90de73453866f5d01ca40986c593cf4cecbadf5a8d6ef8"
+    },
+    "Resources/Raw/wildlife/models/donkey.glb": {
+      "original_sha256": "cb80cc66cf41cf2e6fb0cd8eaaca898dcb2d1a00569b12f804dc0ca3270070e2",
+      "new_sha256": "489e9096ebbc08ab5a1d3ab126c10dc52fbbc43ffdec3ad1ae2f153532a87eac"
+    },
+    "Resources/Raw/wildlife/models/donkey_static.glb": {
+      "original_sha256": "ae8d4a696e375d5173975b8934c7812ac2fc3869e51f092bae011fb5d08958c4",
+      "new_sha256": "aa7ae0d7aac8d3e44dc6327aa5a8f2f49321c8652874df682338b2fc4f5814aa"
+    },
+    "Resources/Raw/wildlife/models/elephant.glb": {
+      "original_sha256": "45966981f41ce8ad94e872dd41b98b6b8ec4e154121e80aa1b9eccc29fb53be6",
+      "new_sha256": "75a888387871b0e7558cda61ec88f45821fba213799d7c574b072469e087714f"
+    },
+    "Resources/Raw/wildlife/models/emerald_dragonfly.glb": {
+      "original_sha256": "91dc1554b5934ea08e93c538766a3ff8513f606dc4499899c4fbc4527a00059b",
+      "new_sha256": "198f38e73b5e26422faf374157ddfd6a8a50a032771f764123e42f1720a9135b"
+    },
+    "Resources/Raw/wildlife/models/frog.glb": {
+      "original_sha256": "d7a7684fe7606a3fb82b5eb7e37a1cd5cd925404e63d421ddc499ad54ab48ddd",
+      "new_sha256": "0424967e18d8bc53b5328c86793f0ce0ed6ba45222cdaa7fb78b7beda49a25ed"
+    },
+    "Resources/Raw/wildlife/models/gecko.glb": {
+      "original_sha256": "549c7b9f9b7738d93720b12ed663812bfcd40e72a7fa92c027c78c5c02c9e620",
+      "new_sha256": "1d5dd438b8bdf3eae14aee512a118c441030aff5ead98c3339fc330cf8829b9c"
+    },
+    "Resources/Raw/wildlife/models/giraffe.glb": {
+      "original_sha256": "2242de7ed49496d7caa324e7a8abc816bb11268010cb9c6d73ab476907b674a7",
+      "new_sha256": "ee95b67c9043f10645b6cdeba76c81588d722d467dd0fd1907d2f5f832cd9dfe"
+    },
+    "Resources/Raw/wildlife/models/golden_retriever.glb": {
+      "original_sha256": "9af5cd87677e803e545e0b6d87cf8b065eb057eee8ef77d0d9868920bb837874",
+      "new_sha256": "cc2be43854325209656502386d4d6553c7a2b208f9261bec50e48de182281f7a"
+    },
+    "Resources/Raw/wildlife/models/honey_bee.glb": {
+      "original_sha256": "d20f85437bc2074e371e149c82c5f873099650236f97deb31da538abfeec9eba",
+      "new_sha256": "ca7d1ceef014968da1431788ded1a608fca91752757e89a4ab06ccda74011c78"
+    },
+    "Resources/Raw/wildlife/models/jack_russell_dog.glb": {
+      "original_sha256": "d0883c473d3a09026cd4b50c5a6f24604b2ab6c63ac550f7b91aa9ae806df6de",
+      "new_sha256": "f8af4f3a1c8500faea8f9676c07dc04ea2ae686a42f0f97ba3f274201aeb2558"
+    },
+    "Resources/Raw/wildlife/models/jack_russell_terrier.glb": {
+      "original_sha256": "079a5ef97915cade52add9c6e19ff98542f2826131596c803b45c211212e7b09",
+      "new_sha256": "81dd1c8e41721679411d22c7fb170f69949c866cf0cef8bb81a130eba07612b5"
+    },
+    "Resources/Raw/wildlife/models/kangaroo_mouse.glb": {
+      "original_sha256": "2b156765e7b93defc5609fb543e2c238b04d172ece22f5643d92d27bf2b8d366",
+      "new_sha256": "2e4881df7d15a29c75cf28aad7b22b4ea23c72ce1004707200153f99512e3ada"
+    },
+    "Resources/Raw/wildlife/models/labrador.glb": {
+      "original_sha256": "e07d805d55370cbf2af4cca66ad1094a36ad19a64b0760295b2089946ce23b09",
+      "new_sha256": "0410b8e3623c458ab218512cca5ce39edc5cc569aca3ddbc032068e4ad7a311b"
+    },
+    "Resources/Raw/wildlife/models/ladybug.glb": {
+      "original_sha256": "1ad07fbe821a82e93e7602ce622f961b0c634665d5172fa1cc170be6b5993ead",
+      "new_sha256": "22aa957216c61db059177e931c13dbe4df7c3445d4e45f1bbd2e05f9e2083830"
+    },
+    "Resources/Raw/wildlife/models/lion_alternate.glb": {
+      "original_sha256": "8746d7c028bf2ada22aee930f89d303ae83d84a859d9a21303a48b6cd9a00466",
+      "new_sha256": "7893cc67525f9fc3894ae24e1cfb15ff8ef73bcf0cdd412bc0dee0f5ca83f0e6"
+    },
+    "Resources/Raw/wildlife/models/mandarin_duck.glb": {
+      "original_sha256": "f5e7baf39e40f1f43e57247401c59877292417e18bf32ae94418203e6cf7064d",
+      "new_sha256": "d7d6385eee86975d1679082509737d705eb66e717059137baa588262f9df250c"
+    },
+    "Resources/Raw/wildlife/models/mouse.glb": {
+      "original_sha256": "494c304265bfde74b12d8240ca88f620eca9dcf14c7b9d26735fe8bdc2a5eed6",
+      "new_sha256": "856a827a427112537f0e21aab4b859b437925d45e93578f7b808bd03e16a6bbd"
+    },
+    "Resources/Raw/wildlife/models/octopus.glb": {
+      "original_sha256": "9228370cc51bb011fc577be7ddb46e44c6664370f49155bf8751d9d925435f82",
+      "new_sha256": "56db3fba4ec7fac21711fa2a6f177f50257491c9659bc404a41d91f28b48fb5f"
+    },
+    "Resources/Raw/wildlife/models/orangutan.glb": {
+      "original_sha256": "a5c1ae34d5f9a2c220c3be1c2238de315c01079064b1db6ae91239236afe4ffb",
+      "new_sha256": "693d87abdb38e7ba61a2a69863761269ae6ff1c62231396f5d7dc159011a2db5"
+    },
+    "Resources/Raw/wildlife/models/owl.glb": {
+      "original_sha256": "dad6cd201c157f6380a8a3883b96670f6204d3b13f0cdb80c68484d33d7235ed",
+      "new_sha256": "211b7b5506ea597bf0c0734ae4f650e8fc009a140ed3e3ff34ecd8ba598cdd0b"
+    },
+    "Resources/Raw/wildlife/models/pelican.glb": {
+      "original_sha256": "0e8a9229b9bbc38227b94d36e2849b32eb336e9086f85817d44c239a6af6a606",
+      "new_sha256": "d2bba51fd0513733d80531af4460f51ca40cbb69655ac99ba3842e9690737382"
+    },
+    "Resources/Raw/wildlife/models/pitbull_dog.glb": {
+      "original_sha256": "9ba601d45ae909dcdd79791d2b9408609758299535b86aee5cfae14254ad20cb",
+      "new_sha256": "7ac40375c41db7a900095dc0876b37f43d1fa79075011786887ca2cf5ca62ce0"
+    },
+    "Resources/Raw/wildlife/models/rabbit.glb": {
+      "original_sha256": "ea4ad4870d842814976aef9bdf7f121d1a05edd61613363b829ace725460e8d4",
+      "new_sha256": "73e1adb2aa437c6d9f1a63b353f580db0ba2ed3d66c805e0506a372b9172cea2"
+    },
+    "Resources/Raw/wildlife/models/ragdoll_cat_brown.glb": {
+      "original_sha256": "c9a7c2cfb88d0191d2acc86c825d17609bb2731067305c7b6f1afd7d27060551",
+      "new_sha256": "b14499ee277b03c5b8bf910b6c088204557c9291e6d5df94279e881d0c5b64ca"
+    },
+    "Resources/Raw/wildlife/models/ragdoll_cat_grey.glb": {
+      "original_sha256": "e52a5664fed5d76a5336ffcee8680c0f13701b823a522360c2bb73a85a6d9b9a",
+      "new_sha256": "bb286dc1e8b66b7e39c879d57b1ca047d1bc597e80eb42ae8a9a3707d96c81d3"
+    },
+    "Resources/Raw/wildlife/models/reindeer.glb": {
+      "original_sha256": "b5f3cec07d0e3bd6d4547e9452369b9ac793196b4d1c79135597ef2ff959a66a",
+      "new_sha256": "b8ca630d1c6aec5868aa0c0fa53180cb51cffbf38b624b47a865fe11192a5b1f"
+    },
+    "Resources/Raw/wildlife/models/rhinoceros.glb": {
+      "original_sha256": "4f83a5e586d7fdde7c4ced5759d26cfcdd74c762828b1daf5e051fdae0b18582",
+      "new_sha256": "d01f074deaca99bc95c45f122561c6477783e41372e8c31f27c0ed33aec11069"
+    },
+    "Resources/Raw/wildlife/models/seal_baby.glb": {
+      "original_sha256": "babc3f60dc5112c6dc0bf7ee89d6baf77cf2759a9978d8c56088de7fe4a5627d",
+      "new_sha256": "64ce6cea27f3ff6754df2462c9bb8a2e3c3ff52e9dffbe0484005e51a51ebca1"
+    },
+    "Resources/Raw/wildlife/models/shiba_inu_dog.glb": {
+      "original_sha256": "a823ad1d0b68df75ad77f204a8a0364824d6a2399f24959b00a0f25034a37295",
+      "new_sha256": "23caecfa7d2d62ee31223622977766200204f3b8ede7753faa0b3c77fd68f183"
+    },
+    "Resources/Raw/wildlife/models/snail.glb": {
+      "original_sha256": "6e394da900436fd99916c471818ea7a41560319b88e3732a6eb1cebc517f2309",
+      "new_sha256": "14b921c162e73efc67affdcd75b06c8502167291615fe5886150f56c77c0f162"
+    },
+    "Resources/Raw/wildlife/models/snow_leopard.glb": {
+      "original_sha256": "a4b92d36316600576f99426dce43742a5e1859e68027280d271d3494fc761d07",
+      "new_sha256": "099f3e7f1d094d2dee5f5d22cc18f18c99043b2aba3b472007e6bc3c3d1ced02"
+    },
+    "Resources/Raw/wildlife/models/snow_monkey_on_bamboo.glb": {
+      "original_sha256": "0d592767c8a23682063b07a05b88c65c62e7495a0d3fba3ee303b6747f91722f",
+      "new_sha256": "24aee53fa4d51fc770809acb6423bd5a785a8c6a7f70d901e3d044341b58c28f"
+    },
+    "Resources/Raw/wildlife/models/spider.glb": {
+      "original_sha256": "4bb8ce93728e29067b91ce6a629441ba37bc0ac50dcdc852208a809a5e660650",
+      "new_sha256": "bfb4b3f7ccb041886ce4c20276e2f2e22405b80d403ece045650ca9087879e22"
+    },
+    "Resources/Raw/wildlife/models/stag.glb": {
+      "original_sha256": "86b968078a7aea2284080583d8f2540efab95b4359ab4c24f5d5d16c0f0ab1e3",
+      "new_sha256": "4be86c29febb32d20b53919b852154463b0d6d1bcfd6edf176e8dbe2a4dd816e"
+    },
+    "Resources/Raw/wildlife/models/stag_beetle.glb": {
+      "original_sha256": "0c40534bbf4a6d7f23a13c30ffefcc879878134275fcbd1fc362b9229e1b086b",
+      "new_sha256": "9f9fb0c20b7be0c3c2f4b4f5d3f9099bb641154cf636251e1891b0161aa3bf1a"
+    },
+    "Resources/Raw/wildlife/models/tabby_cat.glb": {
+      "original_sha256": "e237e7eb384eabdcc13babcf74e713d2ab69ed0f248dc4d8b0fd7b4bc91a6903",
+      "new_sha256": "d51d8bb9e130e6626bd3533cb06e1138b258465709f26ae4caf3529a6f0fc34a"
+    },
+    "Resources/Raw/wildlife/models/turtle.glb": {
+      "original_sha256": "e76ae048288ca6e220b37b4ce9c65ca398ac52f351e784ddbce4955aeb38e7dd",
+      "new_sha256": "0a4d2be948db4396485ba7a28cd4016142b175d9070c57e15d07d11abfc06781"
+    },
+    "Resources/Raw/wildlife/models/tuxedo_cat.glb": {
+      "original_sha256": "79496b26addca83e6c0a1fc968875756ef211a4ebf05a7b106cee9d2d8c3c80a",
+      "new_sha256": "ad5cb5d22cbf41f71ea1d38ffcc127d1a67beb5e8665bb0a13af9f8530605cc9"
+    },
+    "Resources/Raw/wildlife/models/wasp.glb": {
+      "original_sha256": "12093cfdd109afd6e622e3578963a8125cd0d68d4a1fa5fb9f7839cce7a49c07",
+      "new_sha256": "d675326a35335458c387ab321e749a2645d4e6ee17ecfdfc18688a3eba31a295"
+    },
+    "Resources/Raw/wildlife/models/wild_boar.glb": {
+      "original_sha256": "97ce4fb36382b0ffd28531a24a76b51b3e9e73cfefc8e9450577e3d25167d93d",
+      "new_sha256": "0b62fe66e64fb1c118f66914bc9410a4b5a9513ec518a015431f31e8c51c0ecd"
+    },
+    "Resources/Raw/wildlife/models/wolf.glb": {
+      "original_sha256": "e720b830e418c3cf05ca04ecb114727b9e9e0e29e8bc6a660e04c2a5e1f479aa",
+      "new_sha256": "9ceb521e3531ad01245febf02f12712b28ca6c93d1900ae0e195514f39f448d0"
+    },
+    "Resources/Raw/wildlife/models/lion.glb": {
+      "original_sha256": "f69b4294e539bfb953a2139a2975d99c1c7997d32be0f685ed1a63995d9f73ea",
+      "new_sha256": null
+    },
+    "Resources/Raw/wildlife/models/kangaroo_mouse_alternate.glb": {
+      "original_sha256": "2b156765e7b93defc5609fb543e2c238b04d172ece22f5643d92d27bf2b8d366",
+      "new_sha256": null
+    }
+  },
+  "version": "3.10.43",
+  "complete": true
+}

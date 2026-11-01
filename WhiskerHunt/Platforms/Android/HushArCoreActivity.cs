@@ -808,8 +808,17 @@ public sealed class HushArCoreActivity : Activity
         private float? _tapX, _tapY;
         private bool _searchNearby;
         private bool _textureBound;
+        // HUSH_31043_GEOMETRY_CACHE: native display geometry changes only on resize/rotation.
+        private int _lastGeometryRotation = -1, _lastGeometryW = -1, _lastGeometryH = -1;
+        private long _lastArStallWarningMs;
         private HushFloorShadow? _floorShadow;
         private bool _modelInitialised;
+        // HUSH_31042_COLOR_FRAME_COST: cache the Java JNI readiness result.
+        private bool _filamentReadyCached;
+        private long _nextFilamentReadyCheckMs;
+        // Reused solely on the ARCore GL thread. JNI.NewArray copies values into
+        // a new Java float[] immediately; no shared mutable Java arrays.
+        private readonly float[] _filamentAnchorScratch = new float[6];
         private long _lastPlaneCheck;
         private readonly HushGlbAnimal3D? _animal;
         private readonly float[] _view = new float[16], _projection = new float[16];
@@ -844,6 +853,7 @@ public sealed class HushArCoreActivity : Activity
             _sourceUv = DirectFloatBuffer(new float[] { 0,1, 1,1, 0,0, 1,0 });
             _displayUv = DirectFloatBuffer(new float[8]);
             _textureBound = false;
+            _lastGeometryRotation = -1; // Rebind geometry after ARCore surface/session recreation.
             _modelInitialised = false;
             _floorShadow = null;
             // An HD Filament model may not be supported by the fallback GLB parser.
@@ -906,8 +916,22 @@ public sealed class HushArCoreActivity : Activity
             try
             {
                 if (!_textureBound) { session.SetCameraTextureNames(new[] { _texture }); _textureBound = true; }
-                session.SetDisplayGeometry((int)_host.WindowManager!.DefaultDisplay!.Rotation, _width, _height);
+                int rotation = (int)_host.WindowManager!.DefaultDisplay!.Rotation;
+                if (rotation != _lastGeometryRotation || _width != _lastGeometryW || _height != _lastGeometryH)
+                {
+                    session.SetDisplayGeometry(rotation, _width, _height);
+                    _lastGeometryRotation = rotation;
+                    _lastGeometryW = _width;
+                    _lastGeometryH = _height;
+                }
+                long arUpdateStart = System.Environment.TickCount64;
                 var frame = session.Update();
+                long arUpdateMs = System.Environment.TickCount64 - arUpdateStart;
+                if (arUpdateMs > 90 && arUpdateStart - _lastArStallWarningMs > 3000)
+                {
+                    _lastArStallWarningMs = arUpdateStart;
+                    JLog.Warn("HushHuntAR", $"ARCORE_UPDATE_STALL_MS={arUpdateMs}");
+                }
                 if (_sourceUv is not null && _displayUv is not null)
                 {
                     _sourceUv.Position(0); _displayUv.Position(0);
@@ -968,17 +992,25 @@ public sealed class HushArCoreActivity : Activity
                         // HUSH_PET_REACTION_B99_V2_FRAMESYNC: the first 3 values remain
                         // unchanged XYZ; values 4 and 5 carry a pet event sequence/type.
                         // Reuse the already functioning JNI submitFrame signature.
-                        float[] filamentAnchorWithPet =
-                        {
-                            pos[0], pos[1], pos[2],
-                            System.Threading.Volatile.Read(ref _host._filamentPetSequence),
-                            System.Threading.Volatile.Read(ref _host._filamentPetStroke),
-                            _host._walkingDestination is not null ? 1f : 0f
-                        };
+                        _filamentAnchorScratch[0] = pos[0];
+                        _filamentAnchorScratch[1] = pos[1];
+                        _filamentAnchorScratch[2] = pos[2];
+                        _filamentAnchorScratch[3] = System.Threading.Volatile.Read(ref _host._filamentPetSequence);
+                        _filamentAnchorScratch[4] = System.Threading.Volatile.Read(ref _host._filamentPetStroke);
+                        _filamentAnchorScratch[5] = _host._walkingDestination is not null ? 1f : 0f;
                         HushFilamentBridge.SubmitFrame(
-                            _view, _projection, filamentAnchorWithPet, scale, frame);
+                            _view, _projection, _filamentAnchorScratch, scale, frame);
                     }
-                    bool filamentReady = _host._filamentRequested && HushFilamentBridge.IsReady;
+                    // Readiness JNI includes class/method lookup. Poll while
+                    // loading, then only every 500ms after the first valid frame.
+                    long nowMs = System.Environment.TickCount64;
+                    if (_host._filamentRequested &&
+                        (nowMs >= _nextFilamentReadyCheckMs))
+                    {
+                        _filamentReadyCached = HushFilamentBridge.IsReady;
+                        _nextFilamentReadyCheckMs = nowMs + (_filamentReadyCached ? 500 : 100);
+                    }
+                    bool filamentReady = _host._filamentRequested && _filamentReadyCached;
                     if (!filamentReady && _host._filamentRequested &&
                         !_host._filamentWatchdogWarned &&
                         System.Environment.TickCount64 - _host._filamentLaunchMs > 9000)
@@ -1006,30 +1038,27 @@ public sealed class HushArCoreActivity : Activity
                         float petProgress = reactionStart > 0
                             ? Math.Clamp((System.Environment.TickCount64 - reactionStart) / (float)HushArCoreActivity.ReactionDurationMs, 0f, 1f)
                             : 1f;
-                        if (_modelInitialised && _animal is not null)
+                        if (filamentReady)
                         {
-                            // When Filament is ready the old shape is suppressed. Keep
-                            // its low-cost soft floor shadow for the real-world contact cue.
-                            _floorShadow?.Draw(_view, _projection, pos, .5f * _host._filamentTargetMetres * scale, _host._yawDegrees);
+                            // Filament is already drawing the PBR animal. Avoid
+                            // running the legacy GLB shader/geometry path a
+                            // second time. Draw only the cheap floor contact cue.
+                            _floorShadow?.Draw(_view, _projection, pos,
+                                .5f * _host._filamentTargetMetres * scale, _host._yawDegrees);
+                            _host.UpdatePetBounds(true, _width * .22f, _height * .25f,
+                                _width * .78f, _height * .78f);
+                        }
+                        else if (_modelInitialised && _animal is not null)
+                        {
+                            _floorShadow?.Draw(_view, _projection, pos,
+                                .5f * _host._filamentTargetMetres * scale, _host._yawDegrees);
                             _animal.Draw(_view, _projection, pos, scale, petProgress,
                                 System.Environment.TickCount64 % 600000L / 1000f,
-                                shadowOnly: filamentReady, hideShadow: true,
+                                shadowOnly: false, hideShadow: true,
                                 yawDegrees: _host._yawDegrees, pitchDegrees: _host._pitchDegrees);
                             if (_animal.TryGetScreenBounds(_width, _height, out var bounds))
                                 _host.UpdatePetBounds(true, bounds.left, bounds.top, bounds.right, bounds.bottom);
                             else _host.UpdatePetBounds(false, 0, 0, 0, 0);
-                        }
-                        else if (filamentReady)
-                        {
-                            // Add the contact decal ONLY when Filament has actually
-                            // displayed non-transparent, lit animal pixels.
-                            // It uses ARCore projection, so the shadow stays on the floor
-                            // as the camera moves, without requiring legacy mesh parsing.
-                            _floorShadow?.Draw(_view, _projection, pos, .5f * _host._filamentTargetMetres * scale, _host._yawDegrees);
-                            // For new PBR assets that the legacy parser cannot open,
-                            // provide a conservative central touch target around anchor.
-                            _host.UpdatePetBounds(true, _width * .22f, _height * .25f,
-                                _width * .78f, _height * .78f);
                         }
                         if (filamentReady)
                             _host.OnModelDrawn(0); // IsReady already validated real Filament pixels.

@@ -1,12 +1,12 @@
 {
   "schemaVersion": "1.0",
   "catalogue": "Hush Hunt 3D AR Safari Wildlife",
-  "releaseTarget": "3.10.38 source integration; requires Android build and on-device testing",
+  "releaseTarget": "Hush Hunt 3.10.43: 86 nonduplicate wildlife models",
   "sort": "name ascending",
   "replacementMode": "Native Filament loads wildlife/models only; 2D Safari unchanged",
-  "modelCount": 88,
-  "animatedModelCount": 30,
-  "staticModelCount": 58,
+  "modelCount": 86,
+  "animatedModelCount": 29,
+  "staticModelCount": 57,
   "animals": [
     {
       "id": "arctic_wolf",
@@ -1023,32 +1023,6 @@
       ]
     },
     {
-      "id": "kangaroo_mouse_alternate",
-      "name": "Kangaroo Mouse (Alternate)",
-      "category": "Wildlife",
-      "asset": "wildlife/models/kangaroo_mouse_alternate.glb",
-      "originalArchivePath": "GLB/Animated/Kangaroo_Mouse.glb",
-      "animated": false,
-      "animationCount": 0,
-      "animationClips": [],
-      "skinCount": 0,
-      "joints": 0,
-      "hasBaseColorTexture": true,
-      "textureSizes": [
-        "2048x2048",
-        "2048x2048",
-        "2048x2048"
-      ],
-      "triangleCount": 102692,
-      "vertexCount": 93497,
-      "sizeBytes": 11402624,
-      "sourceSha256Prefix": "2b156765e7b9",
-      "reviewNotes": [
-        "Despite being in Animated folder this file has no animation",
-        "Emissive material detected; test appearance under AR lighting"
-      ]
-    },
-    {
       "id": "koala",
       "name": "Koala",
       "category": "Wildlife",
@@ -1146,34 +1120,6 @@
     {
       "id": "lion",
       "name": "Lion",
-      "category": "Wildlife",
-      "asset": "wildlife/models/lion.glb",
-      "originalArchivePath": "GLB/Animated/Lion.glb",
-      "animated": true,
-      "animationCount": 1,
-      "animationClips": [
-        {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
-        }
-      ],
-      "skinCount": 1,
-      "joints": 27,
-      "hasBaseColorTexture": true,
-      "textureSizes": [
-        "2048x2048"
-      ],
-      "triangleCount": 10423,
-      "vertexCount": 12553,
-      "sizeBytes": 6391600,
-      "sourceSha256Prefix": "f69b4294e539",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
-    },
-    {
-      "id": "lion_alternate",
-      "name": "Lion (Alternate)",
       "category": "Wildlife",
       "asset": "wildlife/models/lion_alternate.glb",
       "originalArchivePath": "GLB/Animated/Lion (2).glb",
@@ -2159,5 +2105,6 @@
         "Emissive material detected; test appearance under AR lighting"
       ]
     }
-  ]
+  ],
+  "materialRepair": "base-color textures preserved, excessive emissive/specular factors normalised; elephant grey untextured fallback"
 }
