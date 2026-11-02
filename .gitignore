@@ -11,5 +11,6 @@
 *.pfx
 .env
 .env.*
+.hush_*
 **/.DS_Store
 # NOTE: imported wildlife .glb files under Resources/Raw/ar_models SHOULD be committed.

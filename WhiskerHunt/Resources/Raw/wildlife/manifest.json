@@ -1,13 +1,29 @@
 {
   "schemaVersion": "1.0",
   "catalogue": "Hush Hunt 3D AR Safari Wildlife",
-  "releaseTarget": "Hush Hunt 3.10.43: 86 nonduplicate wildlife models",
+  "releaseTarget": "3.10.56 shared Lit/PBR pipeline, no per-species material tuning, corrected animated Drog size",
   "sort": "name ascending",
   "replacementMode": "Native Filament loads wildlife/models only; 2D Safari unchanged",
-  "modelCount": 86,
+  "modelCount": 91,
   "animatedModelCount": 29,
-  "staticModelCount": 57,
+  "staticModelCount": 62,
   "animals": [
+    {
+      "id": "anteater",
+      "name": "Anteater",
+      "category": "Wildlife",
+      "asset": "wildlife/models/anteater.glb",
+      "originalArchivePath": "GLB/Anteater.glb",
+      "animated": false,
+      "animationCount": 0,
+      "animationClips": [],
+      "skinCount": 0,
+      "hasBaseColorTexture": true,
+      "triangleCount": 101529,
+      "sizeBytes": 16197780,
+      "sourceSha256Prefix": "84cb58e65115",
+      "reviewNotes": []
+    },
     {
       "id": "arctic_wolf",
       "name": "Arctic Wolf",
@@ -18,8 +34,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -32,9 +47,7 @@
       "vertexCount": 83373,
       "sizeBytes": 11658924,
       "sourceSha256Prefix": "eb6cc78577dd",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "badger",
@@ -134,8 +147,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -148,9 +160,7 @@
       "vertexCount": 78994,
       "sizeBytes": 9976488,
       "sourceSha256Prefix": "0705a542e13d",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "capybara",
@@ -162,8 +172,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -176,9 +185,7 @@
       "vertexCount": 69852,
       "sizeBytes": 10370904,
       "sourceSha256Prefix": "1ec9ebbbde4e",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "capybara_static",
@@ -201,9 +208,7 @@
       "vertexCount": 69810,
       "sizeBytes": 11635648,
       "sourceSha256Prefix": "e4bb38fcefbf",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "celestial_deer",
@@ -215,8 +220,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -230,9 +234,7 @@
       "vertexCount": 11938,
       "sizeBytes": 13409468,
       "sourceSha256Prefix": "2ea3dccd288b",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "celestial_fox",
@@ -244,8 +246,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -258,9 +259,7 @@
       "vertexCount": 13716,
       "sizeBytes": 7331412,
       "sourceSha256Prefix": "ddfb5339872d",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "celestial_stag",
@@ -339,8 +338,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -353,9 +351,7 @@
       "vertexCount": 67529,
       "sizeBytes": 9615228,
       "sourceSha256Prefix": "7fb9c69b047c",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "corgi",
@@ -367,8 +363,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -381,9 +376,7 @@
       "vertexCount": 71947,
       "sizeBytes": 9783116,
       "sourceSha256Prefix": "35b75a618d50",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "donkey",
@@ -395,8 +388,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -409,9 +401,7 @@
       "vertexCount": 91804,
       "sizeBytes": 11689680,
       "sourceSha256Prefix": "cb80cc66cf41",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "donkey_static",
@@ -434,9 +424,50 @@
       "vertexCount": 91688,
       "sizeBytes": 11109976,
       "sourceSha256Prefix": "ae8d4a696e37",
+      "reviewNotes": []
+    },
+    {
+      "id": "drog_dog_meme",
+      "name": "Drog Dog Meme (Static)",
+      "category": "Pets & Cats",
+      "asset": "wildlife/models/drog_dog_meme.glb",
+      "originalArchivePath": "GLB/Drog_Dog_Meme.glb",
+      "animated": false,
+      "animationCount": 0,
+      "animationClips": [],
+      "skinCount": 0,
+      "hasBaseColorTexture": true,
+      "triangleCount": 102554,
+      "sizeBytes": 26142864,
+      "sourceSha256Prefix": "fa75de7fa8cf",
       "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+        "Restored original STATIC GLB in v3.10.54; no rig; original materials retained"
+      ],
+      "vertexCount": 75088
+    },
+    {
+      "id": "drog_dog_meme_animated",
+      "name": "Drog Dog Meme (Animated)",
+      "category": "Pets & Cats",
+      "asset": "wildlife/models/drog_dog_meme_animated.glb",
+      "originalArchivePath": "GLB/Animated/Drog_Doge_Meme.glb",
+      "animated": true,
+      "animationCount": 1,
+      "animationClips": [
+        {
+          "name": "Armature|Unreal Take|baselayer",
+          "durationSeconds": 1.0
+        }
+      ],
+      "skinCount": 1,
+      "hasBaseColorTexture": true,
+      "triangleCount": 99230,
+      "sizeBytes": 20664148,
+      "sourceSha256Prefix": "92f30c1c3c79",
+      "reviewNotes": [
+        "Original animated Doge GLB preserved; corrected size-only recommendation to 0.050m at 1x."
+      ],
+      "vertexCount": 73195
     },
     {
       "id": "eagle",
@@ -465,26 +496,20 @@
       "name": "Elephant",
       "category": "Wildlife",
       "asset": "wildlife/models/elephant.glb",
-      "originalArchivePath": "GLB/Animated/Elephant.glb",
-      "animated": true,
-      "animationCount": 1,
-      "animationClips": [
-        {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
-        }
-      ],
-      "skinCount": 1,
+      "originalArchivePath": "GLB/Elephant.glb",
+      "animated": false,
+      "animationCount": 0,
+      "animationClips": [],
+      "skinCount": 0,
       "joints": 27,
-      "hasBaseColorTexture": false,
+      "hasBaseColorTexture": true,
       "textureSizes": [],
       "triangleCount": 31286,
       "vertexCount": 55623,
-      "sizeBytes": 3123628,
+      "sizeBytes": 11170080,
       "sourceSha256Prefix": "45966981f41c",
       "reviewNotes": [
-        "No embedded texture: model may render grey",
-        "Emissive material detected; test appearance under AR lighting"
+        "No embedded texture: model may render grey"
       ]
     },
     {
@@ -684,9 +709,7 @@
       "vertexCount": 88047,
       "sizeBytes": 14388356,
       "sourceSha256Prefix": "549c7b9f9b77",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "german_spitz_dog",
@@ -742,8 +765,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -756,9 +778,7 @@
       "vertexCount": 79389,
       "sizeBytes": 11059308,
       "sourceSha256Prefix": "2242de7ed494",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "golden_retriever",
@@ -770,8 +790,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -784,9 +803,7 @@
       "vertexCount": 83587,
       "sizeBytes": 28828312,
       "sourceSha256Prefix": "9af5cd87677e",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "grey_squirrel",
@@ -907,8 +924,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -921,9 +937,7 @@
       "vertexCount": 100835,
       "sizeBytes": 10448444,
       "sourceSha256Prefix": "d0883c473d3a",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "jack_russell_terrier",
@@ -935,8 +949,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -949,9 +962,7 @@
       "vertexCount": 67583,
       "sizeBytes": 9715816,
       "sourceSha256Prefix": "079a5ef97915",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "japanese_macaque",
@@ -1018,9 +1029,7 @@
       "vertexCount": 93497,
       "sizeBytes": 11402624,
       "sourceSha256Prefix": "2b156765e7b9",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "koala",
@@ -1054,8 +1063,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1068,9 +1076,7 @@
       "vertexCount": 72125,
       "sizeBytes": 10975272,
       "sourceSha256Prefix": "e07d805d5537",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "ladybug",
@@ -1122,13 +1128,12 @@
       "name": "Lion",
       "category": "Wildlife",
       "asset": "wildlife/models/lion_alternate.glb",
-      "originalArchivePath": "GLB/Animated/Lion (2).glb",
+      "originalArchivePath": "GLB/Animated/Lion.glb",
       "animated": true,
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1141,9 +1146,7 @@
       "vertexCount": 82414,
       "sizeBytes": 10756996,
       "sourceSha256Prefix": "8746d7c028bf",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "lioness",
@@ -1188,9 +1191,7 @@
       "vertexCount": 93911,
       "sizeBytes": 12096316,
       "sourceSha256Prefix": "f5e7baf39e40",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "meerkat",
@@ -1325,9 +1326,7 @@
       "vertexCount": 79008,
       "sizeBytes": 35930956,
       "sourceSha256Prefix": "9228370cc51b",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "orangutan",
@@ -1416,6 +1415,20 @@
       "reviewNotes": []
     },
     {
+      "id": "peacock_pink",
+      "name": "Peacock Pink",
+      "category": "Birds",
+      "asset": "wildlife/models/peacock_pink.glb",
+      "originalArchivePath": "GLB/Peacock_Pink.glb",
+      "animated": false,
+      "animationCount": 0,
+      "animationClips": [],
+      "skinCount": 0,
+      "hasBaseColorTexture": true,
+      "reviewNotes": [],
+      "sizeBytes": 21172548
+    },
+    {
       "id": "pelican",
       "name": "Pelican",
       "category": "Birds",
@@ -1436,9 +1449,7 @@
       "vertexCount": 92961,
       "sizeBytes": 11865996,
       "sourceSha256Prefix": "0e8a9229b9bb",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "phoenix",
@@ -1472,8 +1483,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1486,9 +1496,7 @@
       "vertexCount": 162251,
       "sizeBytes": 16708472,
       "sourceSha256Prefix": "9ba601d45ae9",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "rabbit",
@@ -1534,9 +1542,7 @@
       "vertexCount": 73748,
       "sizeBytes": 11836072,
       "sourceSha256Prefix": "c9a7c2cfb88d",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "ragdoll_cat_grey",
@@ -1548,8 +1554,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1563,7 +1568,30 @@
       "sizeBytes": 31322464,
       "sourceSha256Prefix": "e52a5664fed5",
       "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
+        "Original animated GLB restored from GLB/Animated; render its source materials through shared Filament lighting."
+      ]
+    },
+    {
+      "id": "ragdoll_cat_grey_static",
+      "name": "Ragdoll Cat (Grey - Static)",
+      "category": "Pets & Cats",
+      "asset": "wildlife/models/ragdoll_cat_grey_static.glb",
+      "originalArchivePath": "GLB/Ragdoll_Cat_Grey.glb",
+      "animated": false,
+      "animationCount": 0,
+      "animationClips": [],
+      "skinCount": 0,
+      "joints": 0,
+      "hasBaseColorTexture": true,
+      "textureSizes": [
+        "4096x4096",
+        "4096x4096"
+      ],
+      "triangleCount": 103559,
+      "sizeBytes": 36573416,
+      "sourceSha256Prefix": "537c08cd4d39",
+      "reviewNotes": [
+        "A/B comparison: same 4K base colour PNG as animated Ragdoll; original metallic/roughness map"
       ]
     },
     {
@@ -1576,8 +1604,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "_360_Power_Spin_Jump",
-          "durationSeconds": 3.03
+          "name": "_360_Power_Spin_Jump"
         }
       ],
       "skinCount": 1,
@@ -1628,8 +1655,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1642,9 +1668,7 @@
       "vertexCount": 105014,
       "sizeBytes": 11943684,
       "sourceSha256Prefix": "4f83a5e586d7",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "seal_baby",
@@ -1656,8 +1680,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1670,9 +1693,7 @@
       "vertexCount": 74429,
       "sizeBytes": 9905100,
       "sourceSha256Prefix": "babc3f60dc51",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "shiba_inu_dog",
@@ -1684,8 +1705,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1698,9 +1718,7 @@
       "vertexCount": 95225,
       "sizeBytes": 11942440,
       "sourceSha256Prefix": "a823ad1d0b68",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "silverback_gorilla",
@@ -1712,8 +1730,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Silverback_Walk",
-          "durationSeconds": 1
+          "name": "Silverback_Walk"
         }
       ],
       "skinCount": 1,
@@ -1782,8 +1799,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1796,9 +1812,7 @@
       "vertexCount": 94672,
       "sizeBytes": 11074464,
       "sourceSha256Prefix": "a4b92d363166",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "snow_monkey_on_bamboo",
@@ -1821,9 +1835,7 @@
       "vertexCount": 90061,
       "sizeBytes": 12359240,
       "sourceSha256Prefix": "0d592767c8a2",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "spider",
@@ -1856,8 +1868,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1870,9 +1881,7 @@
       "vertexCount": 79658,
       "sizeBytes": 11246792,
       "sourceSha256Prefix": "86b968078a7a",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "stag_beetle",
@@ -1896,9 +1905,7 @@
       "vertexCount": 151634,
       "sizeBytes": 15887304,
       "sourceSha256Prefix": "0c40534bbf4a",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "tabby_cat",
@@ -1910,8 +1917,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1924,9 +1930,7 @@
       "vertexCount": 20958,
       "sizeBytes": 8932368,
       "sourceSha256Prefix": "e237e7eb384e",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "three_headed_dragon",
@@ -1982,8 +1986,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -1996,9 +1999,7 @@
       "vertexCount": 12075,
       "sizeBytes": 4428972,
       "sourceSha256Prefix": "e76ae048288c",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "tuxedo_cat",
@@ -2010,8 +2011,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -2024,9 +2024,7 @@
       "vertexCount": 68150,
       "sizeBytes": 8898376,
       "sourceSha256Prefix": "79496b26addc",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "wasp",
@@ -2059,8 +2057,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -2073,9 +2070,7 @@
       "vertexCount": 84569,
       "sizeBytes": 11610296,
       "sourceSha256Prefix": "97ce4fb36382",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     },
     {
       "id": "wolf",
@@ -2087,8 +2082,7 @@
       "animationCount": 1,
       "animationClips": [
         {
-          "name": "Armature|Unreal Take|baselayer",
-          "durationSeconds": 1
+          "name": "Armature|Unreal Take|baselayer"
         }
       ],
       "skinCount": 1,
@@ -2101,10 +2095,7 @@
       "vertexCount": 193409,
       "sizeBytes": 16815640,
       "sourceSha256Prefix": "e720b830e418",
-      "reviewNotes": [
-        "Emissive material detected; test appearance under AR lighting"
-      ]
+      "reviewNotes": []
     }
-  ],
-  "materialRepair": "base-color textures preserved, excessive emissive/specular factors normalised; elephant grey untextured fallback"
+  ]
 }

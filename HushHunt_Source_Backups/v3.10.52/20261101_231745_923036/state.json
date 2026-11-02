@@ -1,0 +1,49 @@
+{
+  "root": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt",
+  "version": "3.10.52",
+  "complete": true,
+  "entries": [
+    {
+      "relative": "Resources/Raw/wildlife/manifest.json",
+      "existed": true,
+      "before": "12d7b98707f1d1b532baf9721456175f7a807d3c3c2a4de4bb979850f1bc393f",
+      "after": "c1b29837e7fe1bf32ddd23a1f3504afb0f0e6b1abd4358fb718ecc01ee841b70"
+    },
+    {
+      "relative": "Platforms/Android/HushWildlifeCatalog.cs",
+      "existed": true,
+      "before": "2c9d7d4df84ed340a98fa7614f790939737352394b48efe45ec31d01060a5182",
+      "after": "139a416f6e4adf1e12fccff6437078c61aebf50343440b2fe55b3031391349d3"
+    },
+    {
+      "relative": "Resources/Raw/app_v99.js",
+      "existed": true,
+      "before": "3044609652dedbc2025da562f80aaae8cb98dbfcfeb1f772f3462b625af4c88d",
+      "after": "65994c3bb6900f5c182070b21aad2c2abdcc49d5f8ce7d06d2c512061b215c1d"
+    },
+    {
+      "relative": "Resources/Raw/app.js",
+      "existed": true,
+      "before": "d963d9bad6b33d3a9e977f2e9e4f9ab0968116976a8d914184094cc930f2f9a9",
+      "after": "8c6ac44ddacf7dad114c809695c6e7e1a0cc593aa411d0066907649b7d0fd1a4"
+    },
+    {
+      "relative": "WhiskerHunt.csproj",
+      "existed": true,
+      "before": "1d98d33dd1af84c0e1b6a20575e9feccdf023adc258c14d7dba4d44bcdbc2c76",
+      "after": "542a729d00d433215f7d87661de17d5ea725cc8d58a3e4299cf7e1cc68e8a241"
+    },
+    {
+      "relative": "Resources/Raw/wildlife/manifest.csv",
+      "existed": true,
+      "before": "3015bd5db89ae2cc392f5d7106c257b6862771c589e8ee71b64aacb75005bc96",
+      "after": "1f293645834a3f5cee02a74879ac697f41497aa342c976caa257c1d2d4cd45b3"
+    },
+    {
+      "relative": "Resources/Raw/wildlife/models/drog_dog_meme.glb",
+      "existed": true,
+      "before": "fa75de7fa8cf4123d215f55dceb7c908e5b1b7e8347803beae65f66259686593",
+      "after": "92f30c1c3c79e5012494030ad66aae7b4ffe455e70622b5d323d58579ccc13ec"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "version": "3.10.54",
+  "projectRoot": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt",
+  "complete": true,
+  "entries": [
+    {
+      "relative": "Resources/Raw/wildlife/manifest.json",
+      "existed": true,
+      "before": "8ea2abea51fb861fe464181d4d72e8815974f751d64f6558448f8be39ebd8df2",
+      "after": "b5a3162b49f9883b009ae2b372cec8c520e82f83bbd45b257373684130f2a034"
+    },
+    {
+      "relative": "Resources/Raw/wildlife/manifest.csv",
+      "existed": true,
+      "before": "97ddb9cc9755c3c4f7a120394e5bc9c8422fd07878dcf4ebac166649c6cb5b44",
+      "after": "496160368fef156fa1f4b56f3a3549b8edc1d1cb3c854997cd15a4ac07fd3b96"
+    },
+    {
+      "relative": "Platforms/Android/HushWildlifeCatalog.cs",
+      "existed": true,
+      "before": "8f5d9e1e3cd0ea1fc73e7ec3514045912d1a8e043e6b11f3ed355fdfe0df4a01",
+      "after": "f0a64fa0f6c6514124107787d02060086e2b91dc7729b41a9a075be53f70baed"
+    },
+    {
+      "relative": "Resources/Raw/app.js",
+      "existed": true,
+      "before": "1150b5f670664a3ed3db77c3e2fe1cdf815a9379bda14236358cf3d5bc768b69",
+      "after": "cbc00af88487dd5ef7fa83841594b4f5f1ca4b7e145ebfab55a439f17c847aa6"
+    },
+    {
+      "relative": "Resources/Raw/app_v99.js",
+      "existed": true,
+      "before": "3191f6526d5c07a20bd87623cf4cbf81cad9de8394d5df5339092e309891c417",
+      "after": "5af0e938829c3bbecef7ca02383a1bee711ec0d0f41a67832211649df3cab8d5"
+    },
+    {
+      "relative": "WhiskerHunt.csproj",
+      "existed": true,
+      "before": "52e4f390d0fce885be084f73200a8d7b342faf876ba4046b60f983d5fccd9d41",
+      "after": "94807218a8cb48fe748aa779ea2631cffc47866214ddc12dc2167c67f1d3ed79"
+    },
+    {
+      "relative": "Resources/Raw/wildlife/models/drog_dog_meme.glb",
+      "existed": true,
+      "before": "92f30c1c3c79e5012494030ad66aae7b4ffe455e70622b5d323d58579ccc13ec",
+      "after": "fa75de7fa8cf4123d215f55dceb7c908e5b1b7e8347803beae65f66259686593"
+    },
+    {
+      "relative": "Resources/Raw/wildlife/models/drog_dog_meme_animated.glb",
+      "existed": false,
+      "before": null,
+      "after": "92f30c1c3c79e5012494030ad66aae7b4ffe455e70622b5d323d58579ccc13ec"
+    }
+  ]
+}

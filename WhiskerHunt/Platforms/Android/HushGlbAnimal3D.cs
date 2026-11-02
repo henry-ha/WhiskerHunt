@@ -171,6 +171,10 @@ internal sealed class HushGlbAnimal3D
                     "other" when variety.Equals("Tortoise", StringComparison.OrdinalIgnoreCase) => .35f,
                     _ => .30f
                 };
+                // v3.10.47: category data can call Elephant "other" or even
+                // misclassify it. Calibrate by animal name, not category.
+                if (variety.Equals("Elephant", StringComparison.OrdinalIgnoreCase))
+                    scale = 1.35f;
                 var model = new HushGlbAnimal3D(variety, scale);
                 model.Parse(data);
                 if (model._parts.Count == 0) continue;
@@ -424,7 +428,13 @@ internal sealed class HushGlbAnimal3D
             "float rim=pow(1.0-max(0.0,n.z),2.0)*0.18;vec4 albedo=texture2D(uTex,vUV)*uTint;"+
             "if(uAlphaMode==1 && albedo.a<uAlphaCutoff)discard;"+
             "if(uAlphaMode==2 && albedo.a<0.04)discard;"+
-            "float shade=0.47+0.34*keyDiffuse+0.15*fillDiffuse+0.09*up;vec3 lit=albedo.rgb*shade + albedo.rgb*rim;"+
+            // HUSH_31047_COLOR_SCALE: the legacy GL ES path previously multiplied
+            // fully exposed color textures by as little as 0.47. This loses the
+            // brown/gold and metal details on original static GLBs. Keep alpha,
+            // UVs, and actual baseColor texture pixels unchanged.
+            "float shade=0.86+0.20*keyDiffuse+0.10*fillDiffuse+0.04*up;"+
+            "float metalGlint=0.05*keyDiffuse*keyDiffuse;"+
+            "vec3 lit=min(vec3(1.0),albedo.rgb*(shade+0.12*rim)+vec3(metalGlint));"+
             "gl_FragColor=vec4(lit,uAlphaMode==2?albedo.a:1.0);}";
         int v=Shader(GLES.GlVertexShader,vs),f=Shader(GLES.GlFragmentShader,fs);
         _program=GLES.GlCreateProgram();GLES.GlAttachShader(_program,v);GLES.GlAttachShader(_program,f);GLES.GlLinkProgram(_program);

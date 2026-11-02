@@ -1,0 +1,16 @@
+{
+  "project_root": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt",
+  "complete": true,
+  "files": [
+    {
+      "file": "Platforms\\Android\\Java\\com\\hushhunt\\filament\\HushFilamentOverlay.java",
+      "old_sha256": "b706c548a39306c92d703e7cf29cb2642b0e27837fc45f87835f1b9a523630a3",
+      "new_sha256": "e040306c3561a77f238cc68a4492a63852eb25eb25b030e58d41a0a6d45d66d4"
+    },
+    {
+      "file": "WhiskerHunt.csproj",
+      "old_sha256": "e0ad9d3f55b15165c9014186f99c44dbb8e8b5bb99616fddb57e56517e1fdf4b",
+      "new_sha256": "70d1d8b8f3bdf51f8d1521a6f96113c66dbb987b44aa12d9902bd2bde174e656"
+    }
+  ]
+}

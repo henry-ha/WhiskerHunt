@@ -13,6 +13,7 @@ internal static class HushWildlifeCatalog
     // HUSH_31043_CATALOG_86: Lion uses the requested alternate animated GLB.
     private static readonly Dictionary<string, Entry> Entries = new(StringComparer.Ordinal)
     {
+        ["hh3d-anteater"] = new("hh3d-anteater", "Anteater", "Wildlife", "wildlife/models/anteater.glb", false),
         ["hh3d-arctic-wolf"] = new("hh3d-arctic-wolf", "Arctic Wolf", "Wildlife", "wildlife/models/arctic_wolf.glb", true),
         ["hh3d-badger"] = new("hh3d-badger", "Badger", "Wildlife", "wildlife/models/badger.glb", false),
         ["hh3d-bat"] = new("hh3d-bat", "Bat", "Wildlife", "wildlife/models/bat.glb", false),
@@ -30,8 +31,10 @@ internal static class HushWildlifeCatalog
         ["hh3d-corgi"] = new("hh3d-corgi", "Corgi", "Pets & Cats", "wildlife/models/corgi.glb", true),
         ["hh3d-donkey"] = new("hh3d-donkey", "Donkey", "Wildlife", "wildlife/models/donkey.glb", true),
         ["hh3d-donkey-static"] = new("hh3d-donkey-static", "Donkey (Static)", "Wildlife", "wildlife/models/donkey_static.glb", false),
+        ["hh3d-drog-dog-meme"] = new("hh3d-drog-dog-meme", "Drog Dog Meme (Static)", "Pets & Cats", "wildlife/models/drog_dog_meme.glb", false),
+        ["hh3d-drog-dog-meme-animated"] = new("hh3d-drog-dog-meme-animated", "Drog Dog Meme (Animated)", "Pets & Cats", "wildlife/models/drog_dog_meme_animated.glb", true),
         ["hh3d-eagle"] = new("hh3d-eagle", "Eagle", "Birds", "wildlife/models/eagle.glb", false),
-        ["hh3d-elephant"] = new("hh3d-elephant", "Elephant", "Wildlife", "wildlife/models/elephant.glb", true),
+        ["hh3d-elephant"] = new("hh3d-elephant", "Elephant", "Wildlife", "wildlife/models/elephant.glb", false),
         ["hh3d-emerald-chameleon"] = new("hh3d-emerald-chameleon", "Emerald Chameleon", "Reptiles & Amphibians", "wildlife/models/emerald_chameleon.glb", false),
         ["hh3d-emerald-dragonfly"] = new("hh3d-emerald-dragonfly", "Emerald Dragonfly", "Fantasy", "wildlife/models/emerald_dragonfly.glb", false),
         ["hh3d-falcon"] = new("hh3d-falcon", "Falcon", "Birds", "wildlife/models/falcon.glb", false),
@@ -72,12 +75,14 @@ internal static class HushWildlifeCatalog
         ["hh3d-owl"] = new("hh3d-owl", "Owl", "Birds", "wildlife/models/owl.glb", false),
         ["hh3d-pallas-cat"] = new("hh3d-pallas-cat", "Pallas Cat", "Pets & Cats", "wildlife/models/pallas_cat.glb", false),
         ["hh3d-peacock"] = new("hh3d-peacock", "Peacock", "Birds", "wildlife/models/peacock.glb", false),
+        ["hh3d-peacock-pink"] = new("hh3d-peacock-pink", "Peacock Pink", "Birds", "wildlife/models/peacock_pink.glb", false),
         ["hh3d-pelican"] = new("hh3d-pelican", "Pelican", "Birds", "wildlife/models/pelican.glb", false),
         ["hh3d-phoenix"] = new("hh3d-phoenix", "Phoenix", "Fantasy", "wildlife/models/phoenix.glb", false),
         ["hh3d-pitbull-dog"] = new("hh3d-pitbull-dog", "Pitbull Dog", "Pets & Cats", "wildlife/models/pitbull_dog.glb", true),
         ["hh3d-rabbit"] = new("hh3d-rabbit", "Rabbit", "Wildlife", "wildlife/models/rabbit.glb", false),
         ["hh3d-ragdoll-cat-brown"] = new("hh3d-ragdoll-cat-brown", "Ragdoll Cat (Brown)", "Pets & Cats", "wildlife/models/ragdoll_cat_brown.glb", false),
         ["hh3d-ragdoll-cat-grey"] = new("hh3d-ragdoll-cat-grey", "Ragdoll Cat (Grey)", "Pets & Cats", "wildlife/models/ragdoll_cat_grey.glb", true),
+        ["hh3d-ragdoll-cat-grey-static"] = new("hh3d-ragdoll-cat-grey-static", "Ragdoll Cat (Grey - Static)", "Pets & Cats", "wildlife/models/ragdoll_cat_grey_static.glb", false),
         ["hh3d-red-panda"] = new("hh3d-red-panda", "Red Panda", "Wildlife", "wildlife/models/red_panda.glb", true),
         ["hh3d-reindeer"] = new("hh3d-reindeer", "Reindeer", "Wildlife", "wildlife/models/reindeer.glb", false),
         ["hh3d-rhinoceros"] = new("hh3d-rhinoceros", "Rhinoceros", "Wildlife", "wildlife/models/rhinoceros.glb", true),
@@ -110,6 +115,8 @@ internal static class HushWildlifeCatalog
 
     internal static float RecommendedSizeMetres(string name, string category)
     {
+        if (System.String.Equals(name, "Drog Dog Meme (Animated)", System.StringComparison.OrdinalIgnoreCase)) return 0.050f; // HUSH_31056B_DOGE_SIZE_ONLY
+
         // Relative scale of the longest GLB bounding-box dimension; user can resize in AR.
         var n = name.ToLowerInvariant();
         if (n.Contains("elephant") || n.Contains("giraffe")) return 1.4f;

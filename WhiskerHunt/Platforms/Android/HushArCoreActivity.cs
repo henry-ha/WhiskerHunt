@@ -130,6 +130,9 @@ public sealed class HushArCoreActivity : Activity
         _surface.RenderMode = Rendermode.Continuously;
         _root.AddView(_surface, new LayoutParams(-1, -1));
         _filamentTargetMetres = HushWildlifeCatalog.RecommendedSizeMetres(selected.Name, selected.Category);
+        // HUSH_31047_COLOR_SCALE: Elephant-only scale adjustment; other animals unchanged.
+        if (selected.Name.Equals("Elephant", StringComparison.OrdinalIgnoreCase))
+            _filamentTargetMetres = 2.4f;
         _filamentRequested = HushFilamentBridge.TryInstall(this, _root, filename, _filamentTargetMetres);
         _filamentLaunchMs = System.Environment.TickCount64;
         if (!_filamentRequested)

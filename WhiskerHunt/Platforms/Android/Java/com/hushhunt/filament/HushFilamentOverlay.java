@@ -20,6 +20,8 @@ import com.google.android.filament.EntityManager;
 import com.google.android.filament.Filament;
 import com.google.android.filament.LightManager;
 import com.google.android.filament.IndirectLight;
+import com.google.android.filament.Texture;
+import com.google.android.filament.PixelBufferDescriptor;
 import com.google.android.filament.Renderer;
 import com.google.android.filament.Scene;
 import com.google.android.filament.SwapChain;
@@ -62,6 +64,8 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     private final SurfaceView surfaceView;
     private final String assetName;
     private final float targetSize;
+    // HUSH_31056_SHARED_PBR_ONLY: all GLB materials are supplied directly by gltfio, with one shared scene light/exposure profile.
+    // No per-species emissive/metallic/brightness adjustments.
     private final Object snapshotLock = new Object();
     private final Handler main = new Handler(Looper.getMainLooper());
     private boolean destroyed;
@@ -107,6 +111,8 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     private int cameraEntity;
     private int sunEntity;
     private IndirectLight ambientLight;
+    private Texture reflectionCubemap;
+    private ByteBuffer[] reflectionUploadBuffers;
     private volatile float[] ambientCoefficients;
     private long lastAmbientUpdate;
     private int lightReadFrameCounter;
@@ -346,10 +352,19 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             // HUSH_31042_COLOR_FRAME_COST: compensate for the reduced v3.10.41
             // key light without clipping bright fur by doubling the sun.
             // Keep baseColor textures and physically based material properties intact.
-            camera.setExposure(6.3f, 1f / 125f, 100f);
+            // HUSH_31047_COLOR_SCALE: prior EV/exposure was calibrated for
+            // bright daylight, making textured animals almost black indoors.
+            // This is a modest exposure change, NOT a texture or material edit.
+            // HUSH_31050_UNIFORM_EXPOSURE: one Filament exposure for every GLB.
+            // No animal-specific overrides; original GLBs remain untouched.
+            float safariAperture = 6.8f;
+            camera.setExposure(safariAperture, 1f / 125f, 100f);
+            Log.i(TAG, "HUSH_31050_EXPOSURE animal=" + assetName +
+                " aperture=" + safariAperture + " shared=true");
             view = engine.createView();
             view.setScene(scene);
             view.setCamera(camera);
+            view.setShadowType(View.ShadowType.PCF);
             view.setBlendMode(View.BlendMode.TRANSLUCENT);
             view.setPostProcessingEnabled(false); // AR camera is already post-processed.
             // Dynamic resolution is not relied upon: this View has post-processing
@@ -365,19 +380,34 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             swapChain = engine.createSwapChain(surface);
             view.setViewport(new Viewport(0, 0, width, height));
 
+            // HUSH_31055_LIT_STUDIO: one neutral key for every Filament wildlife GLB.
+            // Stable indoor/outdoor appearance; original textures / PBR materials unchanged.
             sunEntity = EntityManager.get().create();
             new LightManager.Builder(LightManager.Type.DIRECTIONAL)
                 .direction(.35f, -1f, -.4f)
-                .intensity(9000f)
-                .castShadows(false)
+                .intensity(17500f)
+                .castShadows(true)
                 .build(engine, sunEntity);
             scene.addEntity(sunEntity);
+            // Modest PCF shadow resolution preserves mobile AR GPU time.
+            // Preserve the engine's other default shadow-map values.
+            try {
+                LightManager lm = engine.getLightManager();
+                int key = lm.getInstance(sunEntity);
+                LightManager.ShadowOptions opts = lm.getShadowOptions(key);
+                opts.setMapSize(512);
+                lm.setShadowOptions(key, opts);
+            } catch (Throwable shadowError) {
+                Log.w(TAG, "HUSH_31055_LIT shadow map defaults retained", shadowError);
+            }
+            Log.i(TAG, "HUSH_31055_LIT_STUDIO default=lit keyLux=17500 shadow=PCF512 sharedExposure=true");
             // Conservative neutral fill: the old 16,000 lux ambient washed out
             // light fur. Keep the fill stable while honouring the source colour.
             ambientLight = new IndirectLight.Builder()
                 .irradiance(1, new float[] { .9f, .9f, .9f })
-                .intensity(8000f).build(engine);
+                .intensity(9500f).build(engine);
             scene.setIndirectLight(ambientLight);
+            installStudioReflections();
 
             stage("gltfio.loader.create");
             materialProvider = new UbershaderProvider(engine);
@@ -435,12 +465,43 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             int visibleMeshes = asset.getRenderableEntities().length;
             if (visibleMeshes == 0) throw new IllegalStateException("GLB has no renderable geometry: " + assetName);
             Log.i(TAG, "GLB renderable entities=" + visibleMeshes + " name=" + assetName);
+            // HUSH_31055_LIT_STUDIO: model surfaces both cast and receive self shadows.
+            // Runs only on asset load, not on every render frame; protects animation FPS.
+            try {
+                com.google.android.filament.RenderableManager rm = engine.getRenderableManager();
+                int shadowMeshes = 0;
+                for (int entity : asset.getRenderableEntities()) {
+                    int ri = rm.getInstance(entity);
+                    if (ri == 0) continue;
+                    rm.setCastShadows(ri, true);
+                    rm.setReceiveShadows(ri, true);
+                    shadowMeshes++;
+                }
+                Log.i(TAG, "HUSH_31055_LIT_STUDIO animal=" + assetName +
+                    " shadowMeshes=" + shadowMeshes + " GLBUnchanged=true");
+            } catch (Throwable t) {
+                Log.w(TAG, "HUSH_31055_LIT_STUDIO self-shadow setup unavailable", t);
+            }
+
 
             Box bounds = asset.getBoundingBox();
             float[] half = bounds.getHalfExtent();
             float[] center = bounds.getCenter();
             float max = Math.max(.001f, 2f * Math.max(half[0], Math.max(half[1], half[2])));
-            unitScale = targetSize / max;
+            // HUSH_31048_STUDIO_IBL: Elephant uses actual vertical extent for size.
+            // All others retain existing max-axis normalization and rig correction.
+            float referenceExtent = max;
+            if ("wildlife/models/elephant.glb".equals(assetName)) {
+                float verticalExtent = 2f * half[1];
+                if (verticalExtent > .05f && Float.isFinite(verticalExtent)) {
+                    referenceExtent = verticalExtent;
+                }
+            }
+            unitScale = targetSize / referenceExtent;
+            Log.i(TAG, "HUSH_31048_BOUNDS animal=" + assetName +
+                " half=" + half[0] + "," + half[1] + "," + half[2] +
+                " longest=" + max + " reference=" + referenceExtent +
+                " targetMetres=" + targetSize + " unitScale=" + unitScale);
             // glTF accessor AABBs may omit skeletal deformation; apply an
             // empirically tuned per-rig factor without touching GLB bones.
             if (hasMeshyCentimeterRig(assetName)) unitScale *= MESHY_ANIMATED_SIZE_FACTOR;
@@ -450,6 +511,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             centreX = center[0]; centreY = center[1]; centreZ = center[2];
             bottomY = center[1] - half[1];
             stage("model.ready:" + assetName);
+
             modelReady = true;
             hasPresentedAnimalFrame = false;
             visibleAnimalPixels = false;
@@ -466,6 +528,77 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             surfaceView.setVisibility(android.view.View.GONE);
         }
     }
+
+    // HUSH_31048_STUDIO_IBL: neutral prefiltered reflection cubemap for metallic GLB surfaces.
+    // Built OFFLINE (32px; 6 faces; 6 roughness mips); upload once, never per-frame.
+    // Environment is a studio approximation, not the ARCore camera capture.
+    private void installStudioReflections() {
+        Texture cubemap = null;
+        try {
+            final int size = 32;
+            final int levels = 6;
+            cubemap = new Texture.Builder()
+                .width(size).height(size).levels(levels)
+                .sampler(Texture.Sampler.SAMPLER_CUBEMAP)
+                .format(Texture.InternalFormat.RGBA16F).build(engine);
+            reflectionUploadBuffers = new ByteBuffer[levels];
+            try (InputStream input = activity.getAssets().open(
+                    "wildlife/lighting/studio_ibl_32_linear_rgba32.bin")) {
+                for (int mip = 0; mip < levels; ++mip) {
+                    int edge = size >> mip;
+                    int length = 6 * edge * edge * 4 * Float.BYTES;
+                    ByteBuffer pixels = ByteBuffer.allocateDirect(length).order(ByteOrder.nativeOrder());
+                    byte[] part = new byte[length];
+                    int have = 0;
+                    while (have < length) {
+                        int count = input.read(part, have, length - have);
+                        if (count < 0) throw new IllegalStateException("Truncated studio IBL level " + mip);
+                        have += count;
+                    }
+                    pixels.put(part);
+                    pixels.flip();
+                    reflectionUploadBuffers[mip] = pixels;
+                    cubemap.setImage(engine, mip, 0, 0, 0, edge, edge, 6,                        
+                        new com.google.android.filament.Texture.PixelBufferDescriptor(
+                            pixels,
+                            Texture.Format.RGBA,
+                            Texture.Type.FLOAT
+                        ))
+;
+                }
+                if (input.read() != -1) throw new IllegalStateException("Studio IBL unexpected trailing data");
+            }
+            // Keep the previously calibrated diffuse ambient energy; only add
+            // roughness-dependent specular reflections, not an extra fill light.
+            IndirectLight upgraded = new IndirectLight.Builder()
+                .reflections(cubemap)
+                .irradiance(1, new float[] { .9f, .9f, .9f })
+                .intensity(9500f).build(engine);
+            IndirectLight previous = ambientLight;
+            scene.setIndirectLight(upgraded);
+            ambientLight = upgraded;
+            reflectionCubemap = cubemap;
+            // From here the new IBL owns the cubemap. A failure while freeing
+            // the previous diffuse-only light must NOT dispose the active map.
+            if (previous != null) {
+                try { engine.destroyIndirectLight(previous); }
+                catch (Throwable cleanupError) {
+                    Log.w(TAG, "Old ambient cleanup failed", cleanupError);
+                }
+            }
+            Log.i(TAG, "HUSH_31048_IBL enabled: 32px studio reflections, 6 roughness mips");
+        } catch (Throwable failure) {
+            Log.w(TAG, "HUSH_31048_IBL failed; keeping previous ambient lighting", failure);
+            // Avoid changing the already-working renderer if the device lacks
+            // floating-point cubemaps. Resource ownership is balanced in cleanup.
+            if (cubemap != null && cubemap != reflectionCubemap) {
+                try { engine.destroyTexture(cubemap); } catch (Throwable ignored) { }
+            }
+            if (cubemap != reflectionCubemap) reflectionUploadBuffers = null;
+        }
+    }
+
+
 
     private void stage(String value) {
         lastStage = value;
@@ -586,18 +719,9 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                     // coefficients have been validated and converted correctly.
                     // The previous code allocated an HDR environment every second,
                     // creating frame stalls and inverting contrast indoors.
-                    if (d.length >= 3 && intensity.length >= 3 &&
-                        nanos - lastLightNanos >= 250_000_000L) {
-                        lastLightNanos = nanos;
-                        LightManager lm = engine.getLightManager();
-                        int li = lm.getInstance(sunEntity);
-                        lm.setDirection(li, -d[0], -d[1], -d[2]);
-                        // Keep the key intensity near its baseline indoors;
-                        // avoid drastic ARCore brightness swings on dark subjects.
-                        float magnitude = Math.max(.70f, Math.min(1.10f,
-                            (intensity[0] + intensity[1] + intensity[2]) / 3.0f));
-                        lm.setIntensity(li, 7500f * magnitude);
-                    }
+                    // HUSH_31055_LIT_STUDIO: do not overwrite the fixed key direction
+                    // or intensity from ARCore's sometimes extreme HDR estimates.
+                    // ARCore still provides camera poses, projection, and anchors.
                 }
             }
             if (animator != null && animationClipCount > 0) {
@@ -767,6 +891,11 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             }
             if (scene != null && ambientLight != null) scene.setIndirectLight(null);
             if (ambientLight != null) { engine.destroyIndirectLight(ambientLight); ambientLight = null; }
+            if (reflectionCubemap != null) {
+                engine.destroyTexture(reflectionCubemap);
+                reflectionCubemap = null;
+            }
+            reflectionUploadBuffers = null;
             if (scene != null && sunEntity != 0) scene.remove(sunEntity);
             if (sunEntity != 0) { engine.destroyEntity(sunEntity); EntityManager.get().destroy(sunEntity); sunEntity = 0; }
             if (cameraEntity != 0) { engine.destroyCameraComponent(cameraEntity); EntityManager.get().destroy(cameraEntity); cameraEntity = 0; }
