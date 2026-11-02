@@ -414,7 +414,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             loader = new AssetLoader(engine, materialProvider, EntityManager.get());
             resourceLoader = new ResourceLoader(engine);
             stage("asset.read:" + assetName);
-            byte[] bytes = readAsset(assetName);
+            byte[] bytes = applyGlobalGltfMaterialPolicy(readAsset(assetName));
             packagedGlbBytes = bytes.length;
             // ARCore camera tracking stays full rate. Filament is a second GPU
             // pass with 100k-triangle/4K textured assets; cap only this pass.
@@ -603,6 +603,152 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     private void stage(String value) {
         lastStage = value;
         Log.i(TAG, "STAGE " + value);
+    }
+
+    // HUSH_31058_GLOBAL_PBR_PARITY
+    // General material hygiene for every GLB, regardless of wildlife species.
+    // A known glTF-export pattern uses one base-colour image as its full-strength
+    // emissive source, omits metallicFactor and omits the metallic-roughness map.
+    // In glTF, missing metallicFactor defaults to 1 (fully metallic), which can
+    // make organic surfaces unexpectedly dark once duplicate emission is removed.
+    // Correct the export pattern in an IN-MEMORY copy of the GLB only.
+    private static byte[] applyGlobalGltfMaterialPolicy(byte[] glb) {
+        try {
+            if (glb == null || glb.length < 28) return glb;
+            java.nio.ByteBuffer header = java.nio.ByteBuffer.wrap(glb)
+                .order(java.nio.ByteOrder.LITTLE_ENDIAN);
+            if (header.getInt(0) != 0x46546C67 || header.getInt(4) != 2 ||
+                header.getInt(8) != glb.length || header.getInt(16) != 0x4E4F534A) return glb;
+            int originalJsonLength = header.getInt(12);
+            int followingChunks = 20 + originalJsonLength;
+            if (originalJsonLength < 2 || followingChunks > glb.length) return glb;
+            String json = new String(glb, 20, originalJsonLength,
+                java.nio.charset.StandardCharsets.UTF_8);
+            org.json.JSONObject doc = new org.json.JSONObject(json);
+            org.json.JSONArray materials = doc.optJSONArray("materials");
+            org.json.JSONArray textures = doc.optJSONArray("textures");
+            if (materials == null || textures == null || materials.length() == 0) return glb;
+
+            java.util.regex.Matcher materialKey = java.util.regex.Pattern
+                .compile("\\\"materials\\\"\\s*:\\s*\\[").matcher(json);
+            if (!materialKey.find()) return glb;
+            int cursor = materialKey.end();
+            java.util.ArrayList<int[]> edits = new java.util.ArrayList<>();
+            java.util.ArrayList<String> values = new java.util.ArrayList<>();
+            int emissionCorrected = 0, metallicCorrected = 0;
+            for (int index = 0; index < materials.length(); index++) {
+                while (cursor < json.length() &&
+                    (Character.isWhitespace(json.charAt(cursor)) || json.charAt(cursor) == ',')) cursor++;
+                if (cursor >= json.length() || json.charAt(cursor) != '{') return glb;
+                int finish = findGltfJsonObjectEnd(json, cursor);
+                if (finish < 0) return glb;
+                org.json.JSONObject material = materials.optJSONObject(index);
+                if (material != null) {
+                    org.json.JSONObject pbr = material.optJSONObject("pbrMetallicRoughness");
+                    org.json.JSONObject base = pbr == null ? null : pbr.optJSONObject("baseColorTexture");
+                    org.json.JSONObject emission = material.optJSONObject("emissiveTexture");
+                    org.json.JSONArray emissionFactor = material.optJSONArray("emissiveFactor");
+                    if (base != null && emission != null && emissionFactor != null &&
+                        emissionFactor.length() == 3) {
+                        int bi = base.optInt("index", -1), ei = emission.optInt("index", -1);
+                        if (bi >= 0 && ei >= 0 && bi < textures.length() && ei < textures.length()) {
+                            org.json.JSONObject bt = textures.optJSONObject(bi);
+                            org.json.JSONObject et = textures.optJSONObject(ei);
+                            boolean sameSource = bt != null && et != null &&
+                                bt.optInt("source", -1) >= 0 &&
+                                bt.optInt("source", -1) == et.optInt("source", -2) &&
+                                bt.optInt("sampler", -1) == et.optInt("sampler", -1);
+                            boolean sameUv = base.optInt("texCoord", 0) == emission.optInt("texCoord", 0) &&
+                                String.valueOf(base.optJSONObject("extensions"))
+                                    .equals(String.valueOf(emission.optJSONObject("extensions")));
+                            boolean active = false;
+                            for (int ch = 0; ch < 3; ch++) {
+                                active |= emissionFactor.optDouble(ch, 0) > 0;
+                            }
+                            if (sameSource && sameUv && active) {
+                                java.util.regex.Matcher em = java.util.regex.Pattern.compile(
+                                    "\\\"emissiveFactor\\\"\\s*:\\s*(\\[[^\\]]*\\])")
+                                    .matcher(json);
+                                em.region(cursor, finish + 1);
+                                if (!em.find()) return glb;
+                                edits.add(new int[]{em.start(1), em.end(1)});
+                                values.add("[0,0,0]");
+                                emissionCorrected++;
+
+                                // Only the same duplicate-emission export pattern is eligible.
+                                // Respect explicit metallic factors, roughness maps and all other GLBs.
+                                if (!pbr.has("metallicFactor") &&
+                                    !pbr.has("metallicRoughnessTexture") &&
+                                    !material.has("KHR_materials_unlit") &&
+                                    !(material.optJSONObject("extensions") != null &&
+                                      material.optJSONObject("extensions").has("KHR_materials_unlit"))) {
+                                    java.util.regex.Matcher pbrStart = java.util.regex.Pattern.compile(
+                                        "\\\"pbrMetallicRoughness\\\"\\s*:\\s*\\{").matcher(json);
+                                    pbrStart.region(cursor, finish + 1);
+                                    if (!pbrStart.find()) return glb;
+                                    int open = json.indexOf('{', pbrStart.start());
+                                    int pbrEnd = findGltfJsonObjectEnd(json, open);
+                                    if (pbrEnd < 0 || pbrEnd > finish + 1) return glb;
+                                    // Add a missing property rather than changing original values.
+                                    edits.add(new int[]{open + 1, open + 1});
+                                    values.add("\"metallicFactor\":0,");
+                                    metallicCorrected++;
+                                }
+                            }
+                        }
+                    }
+                }
+                cursor = finish + 1;
+            }
+            if (edits.isEmpty()) return glb;
+            java.util.ArrayList<Integer> order = new java.util.ArrayList<>();
+            for (int i = 0; i < edits.size(); i++) order.add(i);
+            java.util.Collections.sort(order, (a, b) ->
+                Integer.compare(edits.get(b)[0], edits.get(a)[0]));
+            StringBuilder builder = new StringBuilder(json);
+            for (int idx : order) {
+                int[] bounds = edits.get(idx);
+                builder.replace(bounds[0], bounds[1], values.get(idx));
+            }
+            byte[] content = builder.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            int paddedJsonLength = (content.length + 3) & ~3;
+            long totalSize = (long) glb.length + paddedJsonLength - originalJsonLength;
+            if (totalSize > Integer.MAX_VALUE || totalSize < 28) return glb;
+            byte[] fixed = new byte[(int) totalSize];
+            java.nio.ByteBuffer dest = java.nio.ByteBuffer.wrap(fixed)
+                .order(java.nio.ByteOrder.LITTLE_ENDIAN);
+            dest.putInt(0x46546C67); // glTF magic
+            dest.putInt(2);          // glTF version
+            dest.putInt(fixed.length);
+            dest.putInt(paddedJsonLength);
+            dest.putInt(0x4E4F534A); // JSON chunk
+            dest.put(content);
+            for (int i = content.length; i < paddedJsonLength; i++) dest.put((byte) ' ');
+            dest.put(glb, followingChunks, glb.length - followingChunks);
+            Log.i(TAG, "Global GLB PBR parity: disabled " + emissionCorrected +
+                " duplicated emission(s), corrected " + metallicCorrected +
+                " implicit metal(s); original GLB retained");
+            return fixed;
+        } catch (Exception e) {
+            Log.w(TAG, "Global GLB PBR parity skipped; using unchanged GLB", e);
+            return glb;
+        }
+    }
+
+    private static int findGltfJsonObjectEnd(String text, int start) {
+        int depth = 0;
+        boolean quoted = false, escaped = false;
+        for (int i = start; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (quoted) {
+                if (escaped) escaped = false;
+                else if (c == '\\') escaped = true;
+                else if (c == '"') quoted = false;
+            } else if (c == '"') quoted = true;
+            else if (c == '{') depth++;
+            else if (c == '}' && --depth == 0) return i;
+        }
+        return -1;
     }
 
     private static void verifyGlbHeader(byte[] data) {
