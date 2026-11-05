@@ -61,4 +61,8 @@
     <AndroidMavenLibrary Include="com.google.firebase:firebase-encoders" Version="17.0.0" Repository="Google" Bind="false" VerifyDependencies="false" />
     <AndroidMavenLibrary Include="com.google.firebase:firebase-encoders-json" Version="18.0.0" Repository="Google" Bind="false" VerifyDependencies="false" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Hush Hunt v3.10.59n: protobuf encoder for DataTransport background uploader -->
+    <AndroidMavenLibrary Include="com.google.firebase:firebase-encoders-proto" Version="16.0.0" Repository="Google" Bind="false" VerifyDependencies="false" />
+  </ItemGroup>
 </Project>
