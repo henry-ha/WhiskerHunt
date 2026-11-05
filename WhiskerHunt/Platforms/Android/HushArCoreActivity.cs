@@ -38,6 +38,10 @@ public sealed class HushArCoreActivity : Activity
 {
     // Hush 3D Safari music v1 (persisted preference; no renderer changes).
     private HushSafariMusicController? _safariMusic;
+    // HUSH_31059_LIVE_HAND_PET : hand recognition shares the ARCore image stream; screen touch remains usable.
+    private bool _livePetEnabled = true;
+    private bool _livePetAvailable;
+    private AndroidButton? _livePetButton;
     public sealed class ArOutcome
     {
         [JsonPropertyName("status")] public string Status { get; init; } = "error";
@@ -233,6 +237,29 @@ public sealed class HushArCoreActivity : Activity
         controlsParams.TopMargin = Dp(-50);
         _root.AddView(controls, controlsParams);
 
+        // Child-friendly opt-in toggle, opposite the existing rotate/resize controls.
+        _livePetButton = new AndroidButton(this)
+        {
+            Text = "✋ Live Pet", TextSize = 12f,
+            ContentDescription = "Toggle live camera hand petting in 3D Safari"
+        };
+        StyleCaptureToken(_livePetButton, AndroidColor.Argb(188, 49, 78, 76));
+        _livePetButton.SetAllCaps(false);
+        var livePetParams = new LayoutParams(Dp(105), Dp(46), GravityFlags.Left | GravityFlags.CenterVertical);
+        livePetParams.LeftMargin = Dp(10);
+        livePetParams.TopMargin = Dp(-30);
+        _root.AddView(_livePetButton, livePetParams);
+        _livePetButton.Click += (_, _) =>
+        {
+            if (!_livePetAvailable) { SetStatus("Hand tracking unavailable. Touch or show your hand to pet 💚"); return; }
+            _livePetEnabled = !_livePetEnabled;
+            HushLiveHandBridge.SetEnabled(_livePetEnabled && _resumed);
+            _livePetButton.Text = _livePetEnabled ? "✋ Live ON" : "✋ Live OFF";
+            SetStatus(_livePetEnabled
+                ? "Show your hand near the animal to pet it live ✋"
+                : "Live hands off. You can still touch to pet 💚");
+        };
+
         // A tiny, non-interactive acknowledgment replaces extra game controls.
         _petFeedback = new TextView(this)
         {
@@ -274,6 +301,12 @@ public sealed class HushArCoreActivity : Activity
         trayParams.BottomMargin = Dp(62);
         _root.AddView(bottom, trayParams);
         SetContentView(_root);
+        _livePetAvailable = HushLiveHandBridge.TryInstall(this);
+        if (_livePetButton is not null)
+        {
+            _livePetButton.Text = _livePetAvailable ? "✋ Live ON" : "✋ Unavailable";
+            _livePetButton.Enabled = _livePetAvailable;
+        }
         _safariMusic = HushSafariMusicController.Attach(this, _root);
         _surface.Touch += (_, e) =>
         {
@@ -499,6 +532,7 @@ public sealed class HushArCoreActivity : Activity
             RequestPermissions(new[] { Android.Manifest.Permission.Camera }, 7102);
             return;
         }
+        HushLiveHandBridge.SetEnabled(_livePetEnabled && _livePetAvailable);
         StartArSession();
     }
 
@@ -547,6 +581,7 @@ public sealed class HushArCoreActivity : Activity
 
     protected override void OnPause()
     {
+        HushLiveHandBridge.SetEnabled(false);
         _safariMusic?.OnArBackground();
         if (_resumed)
         {
@@ -560,6 +595,7 @@ public sealed class HushArCoreActivity : Activity
 
     protected override void OnDestroy()
     {
+        HushLiveHandBridge.Dispose();
         _safariMusic?.Dispose();
         if (_filamentRequested) HushFilamentBridge.Dispose();
         try { _walkingDestination?.Detach(); _walkingDestination?.Dispose(); } catch { }
@@ -712,10 +748,10 @@ public sealed class HushArCoreActivity : Activity
         {
             if (_collect is not null) _collect.Enabled = true;
             SetStatus(_filamentRequested && HushFilamentBridge.IsReady
-                ? $"{_animalName} HD model ready ✨ Touch to pet 💚"
+                ? $"{_animalName} HD model ready ✨ Touch or show your hand to pet 💚"
                 : _filamentRequested
                     ? $"{_animalName} is here. Checking HD graphics… 💚"
-                    : $"{_animalName} is here (standard graphics). Touch to pet 💚");
+                    : $"{_animalName} is here (standard graphics). Touch or show your hand to pet 💚");
         });
     }
 
@@ -823,6 +859,7 @@ public sealed class HushArCoreActivity : Activity
         // a new Java float[] immediately; no shared mutable Java arrays.
         private readonly float[] _filamentAnchorScratch = new float[6];
         private long _lastPlaneCheck;
+        private long _lastLiveHandFrameMs;
         private readonly HushGlbAnimal3D? _animal;
         private readonly float[] _view = new float[16], _projection = new float[16];
         private FloatBuffer? _quad, _sourceUv, _displayUv;
@@ -929,6 +966,30 @@ public sealed class HushArCoreActivity : Activity
                 }
                 long arUpdateStart = System.Environment.TickCount64;
                 var frame = session.Update();
+                // HUSH_31059_LIVE_HAND_PET: on-device camera frame, previous projected animal bounds.
+                // Stable injection point: independent of model-drawn status implementation.
+                if (_host._livePetAvailable && _host._livePetEnabled &&
+                    System.Environment.TickCount64 - _lastLiveHandFrameMs >= 115)
+                {
+                    _lastLiveHandFrameMs = System.Environment.TickCount64;
+                    bool valid; float left, top, right, bottom;
+                    lock (_host._frameLock)
+                    {
+                        valid = _host._petBoundsValid;
+                        left = _host._petLeft; top = _host._petTop;
+                        right = _host._petRight; bottom = _host._petBottom;
+                    }
+                    // HUSH_31059F_SKELETON_DIAGNOSTICS: track camera even before model placement.
+                    if (_width > 0 && _height > 0)
+                    {
+                        int handEvent = HushLiveHandBridge.OfferFrame(frame,
+                            valid ? left : 0f, valid ? top : 0f,
+                            valid ? right : 0f, valid ? bottom : 0f,
+                            _width, _height);
+                        if (handEvent != 0)
+                            _host.RunOnUiThread(() => _host.PetAnimal(isStroke: handEvent == 2));
+                    }
+                }
                 long arUpdateMs = System.Environment.TickCount64 - arUpdateStart;
                 if (arUpdateMs > 90 && arUpdateStart - _lastArStallWarningMs > 3000)
                 {
@@ -1027,7 +1088,7 @@ public sealed class HushArCoreActivity : Activity
                     if (filamentReady && !_host._filamentAnnounced)
                     {
                         _host._filamentAnnounced = true;
-                        _host.SetStatus($"{_host._animalName} HD / Filament ready ✨ Touch to pet 💚");
+                        _host.SetStatus($"{_host._animalName} HD / Filament ready ✨ Touch or show your hand to pet 💚");
                     }
                     // HUSH_31041_GL_ERROR_FENCE: Filament is a separate renderer.
                     // Polling GLES errors unconditionally every frame can force

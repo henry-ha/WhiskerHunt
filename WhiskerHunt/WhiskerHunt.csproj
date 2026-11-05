@@ -9,10 +9,11 @@
     <Nullable>enable</Nullable>
     <ApplicationTitle>Hush Hunt</ApplicationTitle>
     <ApplicationId>uk.whiskerhunt.mobile</ApplicationId>
-    <ApplicationDisplayVersion>3.10.58</ApplicationDisplayVersion>
-    <ApplicationVersion>123</ApplicationVersion>
+    <ApplicationDisplayVersion>3.10.59</ApplicationDisplayVersion>
+    <ApplicationVersion>124</ApplicationVersion>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <XamarinGoogleGuavaListenableFutureOptOut>true</XamarinGoogleGuavaListenableFutureOptOut>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
@@ -32,5 +33,32 @@
          avoid duplicate Java source entries on .NET SDKs with implicit globs. -->
     <AndroidJavaSource Remove="Platforms\Android\Java\com\hushhunt\filament\HushFilamentOverlay.java" />
     <AndroidJavaSource Include="Platforms\Android\Java\com\hushhunt\filament\HushFilamentOverlay.java" Bind="false" />
+    <!-- HUSH_31059_LIVE_HAND_PET -->
+    <!-- MediaPipe: explicitly include the transitive Java artifacts. AndroidMavenLibrary
+         does NOT bring in dependencies automatically in .NET for Android. -->
+    <AndroidMavenLibrary Include="com.google.mediapipe:tasks-vision" Version="0.10.35" Repository="Google" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="com.google.mediapipe:tasks-core" Version="0.10.35" Repository="Google" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="com.google.guava:guava" Version="27.0.1-android" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="com.google.flogger:flogger" Version="0.6" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="com.google.flogger:flogger-system-backend" Version="0.6" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="com.google.protobuf:protobuf-javalite" Version="4.26.1" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="com.google.android.datatransport:transport-api" Version="3.0.0" Repository="Google" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="com.google.android.datatransport:transport-backend-cct" Version="3.1.0" Repository="Google" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="com.google.android.datatransport:transport-runtime" Version="3.1.0" Repository="Google" Bind="false" VerifyDependencies="false" />
+    <AndroidJavaSource Remove="Platforms\Android\Java\com\hushhunt\filament\HushLiveHandTracker.java" />
+    <AndroidJavaSource Include="Platforms\Android\Java\com\hushhunt\filament\HushLiveHandTracker.java" Bind="false" />
+  </ItemGroup>
+  <!-- Hush Hunt v3.10.59h: omit duplicate Java ListenableFuture assets; retain full Guava. -->
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Google.Guava.ListenableFuture" Version="1.0.0.29" ExcludeAssets="all" />
+  </ItemGroup>
+  <!-- HUSH_31059K_JAVAX_INJECT_RUNTIME: supply javax.inject.Provider required by MediaPipe DataTransport. -->
+  <ItemGroup>
+    <AndroidMavenLibrary Include="javax.inject:javax.inject" Version="1" Bind="false" VerifyDependencies="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- v3.10.59l: DataTransport CCT 3.1.0 dependencies (MediaPipe hand tracking) -->
+    <AndroidMavenLibrary Include="com.google.firebase:firebase-encoders" Version="17.0.0" Repository="Google" Bind="false" VerifyDependencies="false" />
+    <AndroidMavenLibrary Include="com.google.firebase:firebase-encoders-json" Version="18.0.0" Repository="Google" Bind="false" VerifyDependencies="false" />
   </ItemGroup>
 </Project>
