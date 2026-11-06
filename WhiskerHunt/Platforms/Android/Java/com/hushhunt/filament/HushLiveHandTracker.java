@@ -54,6 +54,10 @@ public final class HushLiveHandTracker {
     private volatile boolean ready;
     private volatile boolean disposed;
     private volatile Sample sample;
+    // HUSH_31060_PET_HUD_VARIETY: independent gesture sensitivity and skeleton visibility.
+    private volatile int sensitivity = 1;
+    private volatile boolean showSkeleton = false;
+    private volatile int handStatus = 1; // 0 off, 1 loading, 2 searching, 3 detected, 4 error
     private long lastSubmittedMs;
     private long lastPetMs;
     private long lastSampleSeenMs;
@@ -105,10 +109,12 @@ public final class HushLiveHandTracker {
                 next.detector = HandLandmarker.createFromOptions(activity, options);
                 if (next.disposed) { next.detector.close(); next.detector = null; return; }
                 next.ready = true;
+                next.handStatus = 2;
                 next.overlay.publish("Camera ready - show your hand", null, 0);
                 Log.i(TAG, "On-device hand detection ready (MediaPipe CPU)");
             } catch (Throwable t) {
                 next.ready = false;
+                next.handStatus = 4;
                 next.overlay.publish("Hand ML failed: " + t.getClass().getSimpleName(), null, 0);
                 Log.e(TAG, "Hand tracker initialization failed; screen petting unaffected", t);
             }
@@ -120,6 +126,7 @@ public final class HushLiveHandTracker {
         HushLiveHandTracker item = instance;
         if (item != null) {
             item.enabled = value;
+            item.handStatus = !value ? 0 : (item.ready ? 2 : 1);
             if (!value) item.reset();
             item.overlay.publish(value ? (item.ready ? "Camera ready - show your hand" : "Hand model loading...")
                                        : "Live hand tracking OFF", null, 0);
@@ -127,6 +134,24 @@ public final class HushLiveHandTracker {
         }
     }
 
+    public static void setSensitivity(int sensitivity) {
+        HushLiveHandTracker item = instance;
+        if (item != null) {
+            item.sensitivity = Math.max(0, Math.min(2, sensitivity));
+            item.reset();
+        }
+    }
+    public static void setSkeletonVisible(boolean visible) {
+        HushLiveHandTracker item = instance;
+        if (item != null) {
+            item.showSkeleton = visible;
+            item.overlay.postInvalidate();
+        }
+    }
+    public static int getTrackingStatus() {
+        HushLiveHandTracker item = instance;
+        return item == null ? 4 : item.handStatus;
+    }
     public static boolean isReady() {
         HushLiveHandTracker item = instance;
         return item != null && item.enabled && item.ready && !item.disposed;
@@ -277,17 +302,29 @@ public final class HushLiveHandTracker {
                         raw[i*2]=image.m[0]+imageX*(image.m[2]-image.m[0])+imageY*(image.m[4]-image.m[0]);
                         raw[i*2+1]=image.m[1]+imageX*(image.m[3]-image.m[1])+imageY*(image.m[5]-image.m[1]);
                     }
-                    sample=new Sample(raw,image.t,true);
-                    overlay.publish("Hand detected - move over animal", raw, image.t);
+                    boolean finite = true;
+                    for (float v : raw) if (!Float.isFinite(v)) { finite=false; break; }
+                    if (finite) {
+                        sample=new Sample(raw,image.t,true);
+                        handStatus = 3;
+                    } else {
+                        sample=new Sample(null,image.t,false);
+                        handStatus = 2;
+                    }
+                    overlay.publish(finite ? "Hand detected - move over animal" : "Tracking coordinates invalid",
+                        finite ? raw : null, image.t);
                 } else {
+                    handStatus = 2;
                     sample=new Sample(null,image.t,false);
                     overlay.publish("Camera active - hand not found", null, image.t);
                 }
             } else {
+                handStatus = 2;
                 sample=new Sample(null,image.t,false);
                 overlay.publish("Camera active - show an open hand", null, image.t);
             }
         } catch (Throwable e) {
+            handStatus = 4;
             sample=new Sample(null,SystemClock.uptimeMillis(),false);
             overlay.publish("Hand inference error: " + e.getClass().getSimpleName(), null, 0);
             if (SystemClock.uptimeMillis() - lastCaptureWarningMs > 5000) {
@@ -303,7 +340,7 @@ public final class HushLiveHandTracker {
         if (s == null || s.t == lastSampleSeenMs || now-s.t>550) return 0;
         lastSampleSeenMs=s.t;
         if (!s.hand || s.points == null) { resetGesture(); return 0; }
-        float pad=12f*density;
+        float pad=(sensitivity == 0 ? 7f : sensitivity == 2 ? 20f : 12f)*density;
         float x=0,y=0;
         // Fixed fingertip priority avoids point switching from looking like a stroke.
         // (index tip -> middle tip -> palm centre)
@@ -313,22 +350,24 @@ public final class HushLiveHandTracker {
         for (int joint : fingertips) {
             int i = joint * 2;
             float px=s.points[i],py=s.points[i+1];
-            if (px<l-pad||px>r+pad||py<t-pad||py>b+pad) continue;
+            if (!Float.isFinite(px) || !Float.isFinite(py) ||
+                px<l-pad||px>r+pad||py<t-pad||py>b+pad) continue;
             x=px;y=py;matched=true;break;
         }
         if (!matched){resetGesture();return 0;}
         if (!inside){inside=true;enterMs=now;enterX=x;enterY=y;stableInsideFrames=1;dwellFired=false;return 0;}
         stableInsideFrames++;
-        if (stableInsideFrames<2 || now-lastPetMs<850) return 0;
+        if (stableInsideFrames<2 || now-lastPetMs<(sensitivity == 2 ? 650 : sensitivity == 0 ? 1100 : 850)) return 0;
         float dx=x-enterX,dy=y-enterY;
-        if (dx*dx+dy*dy >= (28f*density)*(28f*density)) {
+        float stroke = (sensitivity == 0 ? 36f : sensitivity == 2 ? 20f : 28f)*density;
+        if (dx*dx+dy*dy >= stroke*stroke) {
             lastPetMs=now; enterX=x;enterY=y;enterMs=now;dwellFired=true;
             overlay.publish("STROKE OK", s.points, s.t);
             Log.d(TAG,"Live hand stroke detected");
             return 2;
         }
         // Open-hand dwell is a gentle touch, only once per entry.
-        if (!dwellFired && now-enterMs>=550) {
+        if (!dwellFired && now-enterMs >= (sensitivity == 0 ? 740 : sensitivity == 2 ? 390 : 550)) {
             lastPetMs=now; dwellFired=true;
             overlay.publish("TOUCH OK", s.points, s.t);
             Log.d(TAG,"Live hand touch detected");
@@ -397,7 +436,7 @@ public final class HushLiveHandTracker {
             if (tracker == null || !tracker.enabled || tracker.disposed) return;
             float[] positions = joints;
             // Draw only fresh, genuine tracked positions; no fake skeleton.
-            if (positions != null && positions.length == 42 &&
+            if (tracker.showSkeleton && positions != null && positions.length == 42 &&
                 SystemClock.uptimeMillis() - pointsAt < 650) {
                 for (int[] chain : CHAINS) {
                     for (int i=1; i<chain.length; i++) {
@@ -409,6 +448,8 @@ public final class HushLiveHandTracker {
                 for (int i=0; i<21; i++)
                     canvas.drawCircle(positions[2*i], positions[2*i+1], 3.5f*scale, point);
             }
+            // Advanced diagnostic captions are visible with the skeleton; errors remain visible.
+            if (!tracker.showSkeleton && tracker.handStatus != 4) return;
             // Put a small status strip near the bottom, above the main controls.
             float x=12*scale, y=getHeight()-155*scale;
             if (y < 60*scale) y=60*scale;

@@ -149,6 +149,10 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     // Written by the UI thread and read by Filament's Choreographer thread.
     private volatile long petReactionStartedMs;
     private volatile boolean petReactionIsStroke;
+    // HUSH_31060_PET_HUD_VARIETY: 6 root-motion styles, no new JNI entrypoint.
+    private volatile int petReactionStyle = 1;
+    private final float[] petPoseScratch = new float[7];
+    private final int petSpeciesFlags;
     private int lastPetSignalSequence;
 
 
@@ -196,6 +200,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
         this.activity = activity;
         this.container = container;
         this.assetName = assetName;
+        this.petSpeciesFlags = HushPetReactionMotion.classify(assetName);
         this.targetSize = targetSize;
         surfaceView = new SurfaceView(activity);
         // HUSH_B99_SURFACEVIEW_SILHOUETTE_AR_20261028
@@ -267,6 +272,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
         HushFilamentOverlay item = instance;
         if (item == null || item.destroyed || !item.modelReady) return;
         item.petReactionIsStroke = isStroke;
+        item.petReactionStyle = isStroke ? 2 : 1;
         item.petReactionStartedMs = android.os.SystemClock.uptimeMillis();
     }
 
@@ -293,7 +299,10 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             int sequence = (int) anchor[3];
             if (sequence != 0 && sequence != item.lastPetSignalSequence) {
                 item.lastPetSignalSequence = sequence;
-                item.petReactionIsStroke = anchor[4] > 0.5f;
+                // HUSH_31060c_PACKED_PET_EVENT: style in upper bits, stroke in bit 0.
+                int petBits = Math.max(0, (int)anchor[4]);
+                item.petReactionStyle = Math.max(1, Math.min(6, petBits >> 1));
+                item.petReactionIsStroke = (petBits & 1) != 0;
                 item.petReactionStartedMs = android.os.SystemClock.uptimeMillis();
                 Log.i(TAG, "Pet reaction via AR frame, stroke=" + item.petReactionIsStroke);
             }
@@ -824,36 +833,18 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
                     // Triggered from MAUI touch events. Root-space animation works
                     // even when a licensed Sketchfab GLB has zero animation clips.
                     // This is additive to manual yaw and never changes the AR anchor.
-                    float petYaw = 0f;
-                    float petRoll = 0f;
-                    float petBob = 0f;
-                    long reactedAt = petReactionStartedMs;
-                    long petElapsed = android.os.SystemClock.uptimeMillis() - reactedAt;
-                    if (reactedAt > 0L && petElapsed >= 0L && petElapsed < 850L) {
-                        float t = petElapsed / 850f;
-                        float damping = (1f - t) * (1f - t);
-                        boolean stroke = petReactionIsStroke;
-                        float oscillation = (float) Math.sin(t * Math.PI * (stroke ? 7.0 : 5.0));
-                        // Species personalities: cats lean softly, puppies wag
-                        // more enthusiastically, birds give a small feathered sway.
-                        boolean isCat = assetName.contains("cat_") || assetName.contains("_cat");
-                        boolean isDog = assetName.contains("dog") || assetName.contains("labrador") || assetName.contains("retriever") || assetName.contains("corgi");
-                        boolean isBird = assetName.contains("eagle") || assetName.contains("falcon") || assetName.contains("bird") || assetName.contains("phoenix");
-                        float personality = isCat ? .72f : (isDog ? 1.28f : (isBird ? .84f : 1f));
-                        petYaw = (stroke ? 12f : 9f) * personality * damping * oscillation;
-                        petRoll = (stroke ? 3.5f : 2.5f) * personality * damping * oscillation;
-                        float bounce = isDog ? 1.3f : (isCat ? .6f : 1f);
-                        petBob = Math.min(.025f, targetSize * .055f) * bounce *
-                            damping * Math.abs(oscillation);
-                    }
+                    float[] pose = petPoseScratch; // reused scratch: no GC every 60 Hz.
+                    HushPetReactionMotion.evaluate(petSpeciesFlags, petReactionStyle,
+                        android.os.SystemClock.uptimeMillis() - petReactionStartedMs,
+                        targetSize, petReactionIsStroke, pose);
                     float s = unitScale * scale;
                     float[] world = modelWorldScratch;
                     Matrix.setIdentityM(world, 0);
-                    Matrix.translateM(world, 0, a[0], a[1] + petBob, a[2]);
-                    Matrix.rotateM(world, 0, orientationYaw + petYaw, 0f, 1f, 0f);
-                    Matrix.rotateM(world, 0, petRoll, 0f, 0f, 1f);
-                    Matrix.rotateM(world, 0, orientationPitch, 1f, 0f, 0f);
-                    Matrix.scaleM(world, 0, s, s, s);
+                    Matrix.translateM(world, 0, a[0] + pose[0], a[1] + pose[1], a[2] + pose[2]);
+                    Matrix.rotateM(world, 0, orientationYaw + pose[3], 0f, 1f, 0f);
+                    Matrix.rotateM(world, 0, pose[4], 0f, 0f, 1f);
+                    Matrix.rotateM(world, 0, orientationPitch + pose[5], 1f, 0f, 0f);
+                    Matrix.scaleM(world, 0, s * pose[6], s * pose[6], s * pose[6]);
                     Matrix.translateM(world, 0, -centreX, -bottomY, -centreZ);
                     TransformManager tm = engine.getTransformManager();
                     int instance = tm.getInstance(asset.getRoot());

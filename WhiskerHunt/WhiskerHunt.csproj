@@ -9,8 +9,8 @@
     <Nullable>enable</Nullable>
     <ApplicationTitle>Hush Hunt</ApplicationTitle>
     <ApplicationId>uk.whiskerhunt.mobile</ApplicationId>
-    <ApplicationDisplayVersion>3.10.59</ApplicationDisplayVersion>
-    <ApplicationVersion>124</ApplicationVersion>
+    <ApplicationDisplayVersion>3.10.60</ApplicationDisplayVersion>
+    <ApplicationVersion>125</ApplicationVersion>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <XamarinGoogleGuavaListenableFutureOptOut>true</XamarinGoogleGuavaListenableFutureOptOut>
@@ -64,5 +64,8 @@
   <ItemGroup>
     <!-- Hush Hunt v3.10.59n: protobuf encoder for DataTransport background uploader -->
     <AndroidMavenLibrary Include="com.google.firebase:firebase-encoders-proto" Version="16.0.0" Repository="Google" Bind="false" VerifyDependencies="false" />
-  </ItemGroup>
+      <!-- HUSH_31060_PET_HUD_VARIETY: reuse stable 3.10.59n Maven dependencies. -->
+    <AndroidJavaSource Remove="Platforms\Android\Java\com\hushhunt\filament\HushPetReactionMotion.java" />
+    <AndroidJavaSource Include="Platforms\Android\Java\com\hushhunt\filament\HushPetReactionMotion.java" Bind="false" />
+</ItemGroup>
 </Project>

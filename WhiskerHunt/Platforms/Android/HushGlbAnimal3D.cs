@@ -511,33 +511,61 @@ internal sealed class HushGlbAnimal3D
         return 1f;
     }
 
-    public void Draw(float[] view,float[] projection,float[] anchor,float animalScale=1f,float petProgress=1f,float idleSeconds=0f,bool shadowOnly=false, float yawDegrees=0f, float pitchDegrees=0f, bool hideShadow=false) // HUSH_B99_SURFACEVIEW_SILHOUETTE_AR_20261028
+    public void Draw(float[] view,float[] projection,float[] anchor,float animalScale=1f,float petProgress=1f,float idleSeconds=0f,bool shadowOnly=false, float yawDegrees=0f, float pitchDegrees=0f, bool hideShadow=false, int petStyle=1) // HUSH_B99_SURFACEVIEW_SILHOUETTE_AR_20261028
     {
         if(_program==0)return;
         float maxExtent=Math.Max(_max[0]-_min[0],Math.Max(_max[1]-_min[1],_max[2]-_min[2]));
         if(maxExtent<=0||!float.IsFinite(maxExtent))return;
         float s=(_displaySizeMetres/maxExtent)*Math.Clamp(animalScale,.5f,3f);
-        // Soft body-wide pet response works even for non-rigged static GLBs.
-        // No fake anatomical animation: dedicated rigged animations can be added later.
+        // HUSH_31060_PET_HUD_VARIETY: six distinct, modest whole-body poses.
+        // Existing GLB geometry, material colour and floor shadow remain unchanged.
         float phase = Math.Clamp(petProgress, 0f, 1f);
-        float envelope = MathF.Sin(phase * MathF.PI);
-        // Light idle motion keeps unrigged animal models feeling alive. No implied skeletal motion.
+        float envelope = MathF.Max(0f, MathF.Sin(MathF.PI * phase));
         bool flying = _label.Contains("Butterfly", StringComparison.OrdinalIgnoreCase) ||
                       _label.Contains("Dragonfly", StringComparison.OrdinalIgnoreCase) ||
                       _label.Contains("Bee", StringComparison.OrdinalIgnoreCase) ||
                       _label.Contains("Bat", StringComparison.OrdinalIgnoreCase);
         float idleBob = MathF.Sin(idleSeconds * (flying ? 3.4f : 1.6f)) *
-                        _displaySizeMetres * (flying ? .024f : .008f);
+            _displaySizeMetres * (flying ? .024f : .008f);
         float idleTurn = MathF.Sin(idleSeconds * .72f) * (flying ? 3.5f : 1.3f);
-        float bobMultiplier = SpeciesBobMultiplier();
-        float swayMultiplier = SpeciesSwayMultiplier();
-        float bounce = envelope * (.025f * bobMultiplier) * _displaySizeMetres + idleBob;
-        float swayDegrees = envelope * MathF.Sin(phase * 7f * MathF.PI) * 3.5f * swayMultiplier;
-        float pulse = 1f + .055f * envelope + .004f * MathF.Sin(idleSeconds * 2.1f) + (bobMultiplier - 1f) * .01f * envelope;
+        float dx = 0f, dz = 0f, yaw = 0f, roll = 0f, pitch = 0f;
+        float bounce = idleBob;
+        float pulse = 1f + .004f * MathF.Sin(idleSeconds * 2.1f);
+        switch (petStyle)
+        {
+            case 2: // cheerful two-beat hop
+                bounce += .055f * _displaySizeMetres * MathF.Pow(MathF.Sin(phase * MathF.PI * 2), 2);
+                pitch = -3f * envelope;
+                pulse += .032f * envelope * MathF.Sin(phase * MathF.PI * 4);
+                break;
+            case 3: // affectionate lean
+                dx = .027f * _displaySizeMetres * envelope;
+                roll = -9f * envelope;
+                yaw = 4.5f * envelope;
+                break;
+            case 4: // airy flutter: not a synthetic wing bone animation
+                bounce += .022f * _displaySizeMetres * envelope;
+                roll = 6f * envelope * MathF.Sin(phase * MathF.PI * 7);
+                pitch = 4f * envelope * MathF.Sin(phase * MathF.PI * 7);
+                break;
+            case 5: // shy retreat and return
+                dz = .03f * _displaySizeMetres * envelope;
+                pitch = 7f * envelope;
+                break;
+            case 6: // turn to acknowledge the person
+                yaw = 17f * envelope;
+                pitch = -3f * envelope;
+                break;
+            default: // friendly nod
+                pitch = 10f * envelope * MathF.Sin(phase * MathF.PI * 3);
+                bounce += .01f * _displaySizeMetres * envelope;
+                break;
+        }
         GlMatrix.SetIdentityM(_model,0);
-        GlMatrix.TranslateM(_model,0,anchor[0],anchor[1] + bounce,anchor[2]);
-        GlMatrix.RotateM(_model,0,yawDegrees + swayDegrees + idleTurn,0f,1f,0f);
-        GlMatrix.RotateM(_model,0,pitchDegrees,1f,0f,0f);
+        GlMatrix.TranslateM(_model,0,anchor[0] + dx, anchor[1] + bounce, anchor[2] + dz);
+        GlMatrix.RotateM(_model,0,yawDegrees + yaw + idleTurn,0f,1f,0f);
+        GlMatrix.RotateM(_model,0,roll,0f,0f,1f);
+        GlMatrix.RotateM(_model,0,pitchDegrees + pitch,1f,0f,0f);
         GlMatrix.ScaleM(_model,0,s*pulse,s*pulse,s*pulse);
         GlMatrix.TranslateM(_model,0,-(_min[0]+_max[0])*.5f,-_min[1],-(_min[2]+_max[2])*.5f);
         GlMatrix.MultiplyMM(_vm,0,view,0,_model,0);GlMatrix.MultiplyMM(_mvp,0,projection,0,_vm,0);

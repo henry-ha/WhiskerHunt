@@ -69,6 +69,40 @@ internal static class HushLiveHandBridge
         }
         catch(Exception e){Warn(e);return 0;}
     }
+    // HUSH_31060_PET_HUD_VARIETY - settings piggyback on existing JNI bridge.
+    public static void SetSensitivity(int level)
+    {
+        if (!_installed) return;
+        try
+        {
+            var klass = JNIEnv.FindClass(ClassName);
+            var method = JNIEnv.GetStaticMethodID(klass, "setSensitivity", "(I)V");
+            JNIEnv.CallStaticVoidMethod(klass, method, new JValue(level));
+        }
+        catch (Exception e) { Warn(e); }
+    }
+    public static void SetSkeletonVisible(bool visible)
+    {
+        if (!_installed) return;
+        try
+        {
+            var klass = JNIEnv.FindClass(ClassName);
+            var method = JNIEnv.GetStaticMethodID(klass, "setSkeletonVisible", "(Z)V");
+            JNIEnv.CallStaticVoidMethod(klass, method, new JValue(visible));
+        }
+        catch (Exception e) { Warn(e); }
+    }
+    public static int GetTrackingStatus()
+    {
+        if (!_installed) return 4;
+        try
+        {
+            var klass = JNIEnv.FindClass(ClassName);
+            var method = JNIEnv.GetStaticMethodID(klass, "getTrackingStatus", "()I");
+            return JNIEnv.CallStaticIntMethod(klass, method);
+        }
+        catch (Exception e) { Warn(e); return 4; }
+    }
     public static void Dispose()
     {
         if (!_installed)return;

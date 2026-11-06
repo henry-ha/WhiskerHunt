@@ -1,0 +1,40 @@
+{
+  "project": "E:\\inetpub\\wwwroot\\WhiskerHunt\\WhiskerHunt",
+  "entries": [
+    {
+      "path": "Platforms/Android/HushArCoreActivity.cs",
+      "before": "d0f1a165dc365646433f049824a3c94c42eee559a680fe8052fc93e981ed16f5",
+      "after": "8ac6e3342af43cfedb1e715b111c86a7db19279489c271f6629f414a3e97bab8"
+    },
+    {
+      "path": "Platforms/Android/Java/com/hushhunt/filament/HushLiveHandTracker.java",
+      "before": "b5f3d4c8640ea7ea283311dcdae9844946df7c3cd5f9b4867f537b4c3a30b0dc",
+      "after": "a2585208f097fc7a0534b9afab6d2de962acd7a5323a1b8d58bd830e9062b56c"
+    },
+    {
+      "path": "Platforms/Android/HushLiveHandBridge.cs",
+      "before": "1297e7db4cf530feeb281298b72520c50bb9cf92256ce5e497e27929d21519a8",
+      "after": "c9ffbcafbf5a783faff17d5443a16e130667980b20f94adc107051f2afc8e546"
+    },
+    {
+      "path": "Platforms/Android/Java/com/hushhunt/filament/HushFilamentOverlay.java",
+      "before": "134ed57b183e49364777e22065f50eb21006daccc6deb79ebbea852050262eb6",
+      "after": "8df770b4464b6ffb5c78a0482704f277680fb75440106b8e7a39650ba0c4eba3"
+    },
+    {
+      "path": "Platforms/Android/HushGlbAnimal3D.cs",
+      "before": "51a342e3c434ddb78fe88cdc9624d64e02f6e936492ef548d34c5cf88901d830",
+      "after": "296c09775ae31b64a0a825e7d3316bab49140c40b5f4534f06841dfcdad09f80"
+    },
+    {
+      "path": "WhiskerHunt.csproj",
+      "before": "65323f702dce2c2bb53a2136bebdd98c30669020ceb7b96c19778be167fd4670",
+      "after": "455497948b7f8d57033ac77aa85f222879423be93a8a70fbf44cd845d6f9afc8"
+    },
+    {
+      "path": "Platforms/Android/Java/com/hushhunt/filament/HushPetReactionMotion.java",
+      "before": null,
+      "after": "d4245fe71ad8e674bfa1377c5bd0607807d21ff9992335050b6c18f95eed7f20"
+    }
+  ]
+}

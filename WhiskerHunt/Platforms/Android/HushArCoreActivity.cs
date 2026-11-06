@@ -96,7 +96,7 @@ public sealed class HushArCoreActivity : Activity
     private long _lastPetTick, _reactionStartedAt;
     private int _filamentPetSequence, _filamentPetStroke;
     private readonly System.Random _petRandom = new();
-    private static readonly long ReactionDurationMs = 850;
+    private static readonly long ReactionDurationMs = 1150;
 
     private readonly object _frameLock = new();
 
@@ -237,28 +237,54 @@ public sealed class HushArCoreActivity : Activity
         controlsParams.TopMargin = Dp(-50);
         _root.AddView(controls, controlsParams);
 
-        // Child-friendly opt-in toggle, opposite the existing rotate/resize controls.
+        // HUSH_31060_PET_HUD_VARIETY - compact translucent HUD near top of Safari.
+        _livePetHud = new LinearLayout(this) { Orientation = Orientation.Horizontal };
+        _livePetHud.SetGravity(GravityFlags.CenterVertical);
+        _livePetHud.SetPadding(Dp(8), 0, Dp(4), 0);
+        var liveBg = new GradientDrawable();
+        liveBg.SetColor(AndroidColor.Argb(141, 34, 41, 47));
+        liveBg.SetStroke(Dp(1), AndroidColor.Argb(110, 235, 245, 242));
+        liveBg.SetCornerRadius(Dp(28));
+        _livePetHud.Background = liveBg;
+        _livePetHud.Elevation = Dp(3);
+        _livePetDot = new TextView(this) { Text = "●", TextSize = 14f, Gravity = GravityFlags.Center };
+        _livePetDot.SetTextColor(AndroidColor.Rgb(245, 211, 82));
+        _livePetHud.AddView(_livePetDot, new LinearLayout.LayoutParams(Dp(18), Dp(44)));
         _livePetButton = new AndroidButton(this)
         {
-            Text = "✋ Live Pet", TextSize = 12f,
-            ContentDescription = "Toggle live camera hand petting in 3D Safari"
+            Text = "✋ Live ON", TextSize = 12f, Gravity = GravityFlags.Center,
+            ContentDescription = "Turn live hand petting on or off"
         };
-        StyleCaptureToken(_livePetButton, AndroidColor.Argb(188, 49, 78, 76));
         _livePetButton.SetAllCaps(false);
-        var livePetParams = new LayoutParams(Dp(105), Dp(46), GravityFlags.Left | GravityFlags.CenterVertical);
-        livePetParams.LeftMargin = Dp(10);
-        livePetParams.TopMargin = Dp(-30);
-        _root.AddView(_livePetButton, livePetParams);
+        _livePetButton.SetMinimumWidth(0);
+        _livePetButton.SetMinimumHeight(0);
+        _livePetButton.SetPadding(Dp(4), 0, Dp(6), 0);
+        _livePetButton.Background = new ColorDrawable(AndroidColor.Transparent);
+        _livePetHud.AddView(_livePetButton, new LinearLayout.LayoutParams(Dp(91), Dp(44)));
+        _livePetSettings = new AndroidButton(this)
+        {
+            Text = "⚙", TextSize = 19f, Gravity = GravityFlags.Center,
+            ContentDescription = "Live petting: sensitivity, skeleton and haptics settings"
+        };
+        _livePetSettings.SetAllCaps(false);
+        _livePetSettings.SetMinimumWidth(0);
+        _livePetSettings.SetMinimumHeight(0);
+        _livePetSettings.SetPadding(0, 0, 0, 0);
+        _livePetSettings.Background = new ColorDrawable(AndroidColor.Transparent);
+        _livePetSettings.SetTextColor(AndroidColor.White);
+        _livePetHud.AddView(_livePetSettings, new LinearLayout.LayoutParams(Dp(44), Dp(44)));
+        var livePetParams = new LayoutParams(-2, Dp(48), GravityFlags.Top | GravityFlags.CenterHorizontal);
+        // Existing header is roughly 100dp high; leave clear of the title, close and Safari controls.
+        livePetParams.TopMargin = Dp(110);
+        _root.AddView(_livePetHud, livePetParams);
         _livePetButton.Click += (_, _) =>
         {
-            if (!_livePetAvailable) { SetStatus("Hand tracking unavailable. Touch or show your hand to pet 💚"); return; }
+            if (!_livePetAvailable) { SetStatus("Hand tracking unavailable; touch to pet 💚"); return; }
             _livePetEnabled = !_livePetEnabled;
             HushLiveHandBridge.SetEnabled(_livePetEnabled && _resumed);
-            _livePetButton.Text = _livePetEnabled ? "✋ Live ON" : "✋ Live OFF";
-            SetStatus(_livePetEnabled
-                ? "Show your hand near the animal to pet it live ✋"
-                : "Live hands off. You can still touch to pet 💚");
+            SaveLivePetPrefs(); RefreshLivePetHud(); PulseLivePetHud();
         };
+        _livePetSettings.Click += (_, _) => ShowLivePetSettings();
 
         // A tiny, non-interactive acknowledgment replaces extra game controls.
         _petFeedback = new TextView(this)
@@ -301,12 +327,11 @@ public sealed class HushArCoreActivity : Activity
         trayParams.BottomMargin = Dp(62);
         _root.AddView(bottom, trayParams);
         SetContentView(_root);
+        LoadLivePetPrefs();
         _livePetAvailable = HushLiveHandBridge.TryInstall(this);
-        if (_livePetButton is not null)
-        {
-            _livePetButton.Text = _livePetAvailable ? "✋ Live ON" : "✋ Unavailable";
-            _livePetButton.Enabled = _livePetAvailable;
-        }
+        HushLiveHandBridge.SetSensitivity(_livePetSensitivity);
+        HushLiveHandBridge.SetSkeletonVisible(_livePetSkeletonVisible);
+        RefreshLivePetHud(); PulseLivePetHud();
         _safariMusic = HushSafariMusicController.Attach(this, _root);
         _surface.Touch += (_, e) =>
         {
@@ -406,6 +431,112 @@ public sealed class HushArCoreActivity : Activity
         }
     }
 
+    // HUSH_31060_PET_HUD_VARIETY: these preferences are local to 3D Safari.
+    private LinearLayout? _livePetHud;
+    private TextView? _livePetDot;
+    private AndroidButton? _livePetSettings;
+    private bool _livePetSkeletonVisible = false;
+    private bool _livePetHaptics = true;
+    private int _livePetSensitivity = 1;  // 0 low, 1 medium, 2 high
+    private int _petReactionVariant = 1;
+    private int _petReactionCursor;
+    private int _petInteractionCount;
+
+    private void LoadLivePetPrefs()
+    {
+        var prefs = GetSharedPreferences("hush_3d_safari_pet", FileCreationMode.Private);
+        if (prefs is null) return;
+        _livePetEnabled = prefs.GetBoolean("live_enabled", true);
+        _livePetSkeletonVisible = prefs.GetBoolean("show_skeleton", false);
+        _livePetHaptics = prefs.GetBoolean("haptics", true);
+        _livePetSensitivity = Math.Clamp(prefs.GetInt("gesture_sensitivity", 1), 0, 2);
+    }
+    private void SaveLivePetPrefs()
+    {
+        var edit = GetSharedPreferences("hush_3d_safari_pet", FileCreationMode.Private)?.Edit();
+        if (edit is null) return;
+        edit.PutBoolean("live_enabled", _livePetEnabled);
+        edit.PutBoolean("show_skeleton", _livePetSkeletonVisible);
+        edit.PutBoolean("haptics", _livePetHaptics);
+        edit.PutInt("gesture_sensitivity", _livePetSensitivity);
+        edit.Apply();
+    }
+    private void PulseLivePetHud()
+    {
+        if (_livePetHud is null) return;
+        _livePetHud.Animate().Cancel();
+        _livePetHud.Alpha = 1f;
+        // Fade the whole group but do not disable hit targets or intercept the camera.
+        _livePetHud.Animate().Alpha(.70f).SetStartDelay(2300).SetDuration(450).Start();
+    }
+    private void RefreshLivePetHud()
+    {
+        if (_livePetButton is null) return;
+        _livePetButton.Text = !_livePetAvailable ? "✋ Unavailable" :
+                              (_livePetEnabled ? "✋ Live ON" : "✋ Live OFF");
+        _livePetButton.Enabled = _livePetAvailable;
+        UpdateLivePetStatus(_livePetEnabled ? 1 : 0);
+    }
+    private void UpdateLivePetStatus(int value)
+    {
+        if (_livePetDot is null) return;
+        // 0=off 1=loading 2=searching 3=hand detected 4=error.
+        var colour = !_livePetAvailable || value == 4 ? AndroidColor.Rgb(255, 117, 120) :
+            !_livePetEnabled || value == 0 ? AndroidColor.Rgb(169, 177, 181) :
+            value == 3 ? AndroidColor.Rgb(57, 241, 164) : AndroidColor.Rgb(255, 214, 101);
+        _livePetDot.SetTextColor(colour);
+        _livePetDot.ContentDescription = value == 3 ? "Hand detected" :
+            value == 4 ? "Hand tracking error" : value == 2 ? "Searching for hand" :
+            value == 1 ? "Hand model loading" : "Live petting off";
+    }
+    private void ShowLivePetSettings()
+    {
+        if (_livePetSettings is null) return;
+        var popup = new Android.Widget.PopupMenu(this, _livePetSettings);
+        popup.Menu?.Add(0, 101, 0, (_livePetSensitivity == 0 ? "✓ " : "") + "Sensitivity: Low");
+        popup.Menu?.Add(0, 102, 1, (_livePetSensitivity == 1 ? "✓ " : "") + "Sensitivity: Medium");
+        popup.Menu?.Add(0, 103, 2, (_livePetSensitivity == 2 ? "✓ " : "") + "Sensitivity: High");
+        popup.Menu?.Add(0, 104, 3, (_livePetSkeletonVisible ? "✓ " : "") + "Show hand skeleton");
+        popup.Menu?.Add(0, 105, 4, (_livePetHaptics ? "✓ " : "") + "Petting vibration");
+        popup.MenuItemClick += (_, e) =>
+        {
+            switch (e.Item?.ItemId)
+            {
+                case 101: _livePetSensitivity = 0; break;
+                case 102: _livePetSensitivity = 1; break;
+                case 103: _livePetSensitivity = 2; break;
+                case 104: _livePetSkeletonVisible = !_livePetSkeletonVisible; break;
+                case 105: _livePetHaptics = !_livePetHaptics; break;
+            }
+            HushLiveHandBridge.SetSensitivity(_livePetSensitivity);
+            HushLiveHandBridge.SetSkeletonVisible(_livePetSkeletonVisible);
+            SaveLivePetPrefs(); PulseLivePetHud();
+        };
+        PulseLivePetHud();
+        popup.Show();
+    }
+    private int NextPetReactionVariant(bool isStroke)
+    {
+        string animal = ((_species ?? "") + " " + (_animalName ?? "")).ToLowerInvariant();
+        // Rotating distinct root-motion patterns, selected for each animal's
+        // temperament. No assumption that unrigged GLBs have wings, ears or tails.
+        int[] choices = animal.Contains("bat") || animal.Contains("bird") ||
+                        animal.Contains("owl") || animal.Contains("phoenix") ||
+                        animal.Contains("butterfly") || animal.Contains("bee")
+            ? new[] { 4, 6, 1, 4, 5 }
+            : animal.Contains("cat") || animal.Contains("fox") || animal.Contains("dog")
+            ? new[] { 3, 1, 2, 6, 3 }
+            : animal.Contains("rabbit") || animal.Contains("mouse") || animal.Contains("squirrel")
+            ? new[] { 2, 1, 3, 6, 2 }
+            : animal.Contains("deer") || animal.Contains("turtle") ||
+              animal.Contains("tortoise") || animal.Contains("elephant")
+            ? new[] { 1, 5, 6, 3, 1 }
+            : new[] { 1, 3, 6, 2, 5, 4 };
+        int index = _petReactionCursor++;
+        if (index < 0) { _petReactionCursor = 1; index = 0; }
+        return choices[index % choices.Length];
+    }
+
     private (string bubble, string status) BuildPetResponse(bool isStroke)
     {
         string species = (_species ?? string.Empty).Trim().ToLowerInvariant();
@@ -474,15 +605,19 @@ public sealed class HushArCoreActivity : Activity
         System.Threading.Interlocked.Exchange(ref _reactionStartedAt, now);
         // HUSH_PET_REACTION_B99_V2_FRAMESYNC: no JNI calls on the touch/UI thread.
         // The already-working ARCore frame submission safely delivers this event.
-        System.Threading.Volatile.Write(ref _filamentPetStroke, isStroke ? 1 : 0);
+        int reactionStyle = NextPetReactionVariant(isStroke);
+        System.Threading.Volatile.Write(ref _petReactionVariant, reactionStyle);
+        // HUSH_31060c_PACKED_PET_EVENT: styles 1-6 in high bits, stroke in low bit.
+        System.Threading.Volatile.Write(ref _filamentPetStroke, (reactionStyle << 1) | (isStroke ? 1 : 0));
+        _petInteractionCount++;
         System.Threading.Interlocked.Increment(ref _filamentPetSequence);
 
         var response = BuildPetResponse(isStroke);
-        _surface?.PerformHapticFeedback(FeedbackConstants.VirtualKey);
+        if (_livePetHaptics) _surface?.PerformHapticFeedback(FeedbackConstants.VirtualKey);
         if (_petFeedback is not null)
         {
             _petFeedback.Animate().Cancel();
-            _petFeedback.Text = response.bubble;
+            _petFeedback.Text = response.bubble + "  💚" + _petInteractionCount;
             _petFeedback.Visibility = ViewStates.Visible;
             _petFeedback.Alpha = 1f;
             _petFeedback.Animate().Alpha(0f).SetStartDelay(520).SetDuration(620).Start();
@@ -860,6 +995,7 @@ public sealed class HushArCoreActivity : Activity
         private readonly float[] _filamentAnchorScratch = new float[6];
         private long _lastPlaneCheck;
         private long _lastLiveHandFrameMs;
+        private long _lastLivePetHudMs;
         private readonly HushGlbAnimal3D? _animal;
         private readonly float[] _view = new float[16], _projection = new float[16];
         private FloatBuffer? _quad, _sourceUv, _displayUv;
@@ -988,6 +1124,13 @@ public sealed class HushArCoreActivity : Activity
                             _width, _height);
                         if (handEvent != 0)
                             _host.RunOnUiThread(() => _host.PetAnimal(isStroke: handEvent == 2));
+                        // Reuse the existing 8Hz AR frame; no second camera or polling timer.
+                        if (System.Environment.TickCount64 - _lastLivePetHudMs >= 800)
+                        {
+                            _lastLivePetHudMs = System.Environment.TickCount64;
+                            int state = HushLiveHandBridge.GetTrackingStatus();
+                            _host.RunOnUiThread(() => _host.UpdateLivePetStatus(state));
+                        }
                     }
                 }
                 long arUpdateMs = System.Environment.TickCount64 - arUpdateStart;
@@ -1118,7 +1261,7 @@ public sealed class HushArCoreActivity : Activity
                                 .5f * _host._filamentTargetMetres * scale, _host._yawDegrees);
                             _animal.Draw(_view, _projection, pos, scale, petProgress,
                                 System.Environment.TickCount64 % 600000L / 1000f,
-                                shadowOnly: false, hideShadow: true,
+                                shadowOnly: false, hideShadow: true, petStyle: System.Threading.Volatile.Read(ref _host._petReactionVariant),
                                 yawDegrees: _host._yawDegrees, pitchDegrees: _host._pitchDegrees);
                             if (_animal.TryGetScreenBounds(_width, _height, out var bounds))
                                 _host.UpdatePetBounds(true, bounds.left, bounds.top, bounds.right, bounds.bottom);
