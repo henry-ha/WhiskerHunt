@@ -98,6 +98,159 @@ public sealed class HushArCoreActivity : Activity
     private readonly System.Random _petRandom = new();
     private static readonly long ReactionDurationMs = 1150;
 
+    // HUSH_31061_PALM_CARRY_HEART - screen-space assist for carrying a REAL ARCore-anchored animal.
+    // The initial anchor remains untouched until a new tracked plane accepts the drop.
+    private volatile bool _palmCarryEnabled = true;
+    private volatile int _palmCarryMode; // 0=idle, 1=following, 2=waiting for UI drop commit
+    private int _palmCarryStable;
+    private long _palmCarryLastTick, _palmCarryLastOpen;
+    private float _palmCarryX, _palmCarryY, _palmCarryDepth;
+    private readonly float[] _palmCarryOrigin = new float[3];
+    private readonly float[] _palmCarryOffset = new float[3];
+    private readonly float[] _palmCarryTarget = new float[3];
+    private readonly float[] _palmCarryPosition = new float[3];
+
+    private static bool TryPalmUnproject(float x, float y, float depth, float[] view,
+        float[] projection, int width, int height, float[] output)
+    {
+        if (width < 2 || height < 2 || depth < .25f || depth > 4f) return false;
+        float eyeZ = -depth;
+        float w = projection[11] * eyeZ + projection[15];
+        if (MathF.Abs(w) < .0001f) return false;
+        float ndcZ = (projection[10] * eyeZ + projection[14]) / w;
+        float[] vp = new float[16], inv = new float[16], point = new float[4], world = new float[4];
+        Android.Opengl.Matrix.MultiplyMM(vp, 0, projection, 0, view, 0);
+        if (!Android.Opengl.Matrix.InvertM(inv, 0, vp, 0)) return false;
+        point[0] = 2f * x / width - 1f;
+        point[1] = 1f - 2f * y / height;
+        point[2] = ndcZ; point[3] = 1f;
+        Android.Opengl.Matrix.MultiplyMV(world, 0, inv, 0, point, 0);
+        if (!float.IsFinite(world[3]) || MathF.Abs(world[3]) < .0001f) return false;
+        for (int i = 0; i < 3; i++)
+        {
+            output[i] = world[i] / world[3];
+            if (!float.IsFinite(output[i])) return false;
+        }
+        return true;
+    }
+
+    // Runs on the existing ARCore render thread; the 8 Hz ML pipeline is NOT duplicated.
+    private float[] UpdateHandCarry(Google.AR.Core.Frame frame, float[] view,
+        float[] projection, float[] grounded, int width, int height)
+    {
+        if (_palmCarryMode == 2) return (float[])_palmCarryPosition.Clone();
+        if (!_palmCarryEnabled || !_livePetEnabled || !_livePetAvailable ||
+            _walkingDestination is not null || _anchor is null || !_modelFrameConfirmed)
+        {
+            if (_palmCarryMode == 1) SetStatus("Carry cancelled; animal returned to its surface ✨");
+            _palmCarryMode = 0; _palmCarryStable = 0;
+            return grounded;
+        }
+        long now = System.Environment.TickCount64;
+        if (now - _palmCarryLastTick >= 105)
+        {
+            _palmCarryLastTick = now;
+            bool open = HushLiveHandBridge.TryReadOpenPalm(out float px, out float py);
+            if (open && px >= 0 && px <= width && py >= 0 && py <= height)
+            {
+                _palmCarryLastOpen = now;
+                _palmCarryX = px; _palmCarryY = py;
+                if (_palmCarryMode == 0)
+                {
+                    bool supported;
+                    lock (_frameLock)
+                    {
+                        float bw = _petRight - _petLeft, bh = _petBottom - _petTop;
+                        supported = _petBoundsValid && bw > Dp(25) && bh > Dp(25) &&
+                            px > _petLeft + .15f * bw && px < _petRight - .15f * bw &&
+                            py > _petTop + .55f * bh && py < _petBottom + .35f * bh;
+                    }
+                    _palmCarryStable = supported ? _palmCarryStable + 1 : 0;
+                    if (_palmCarryStable >= 5)
+                    {
+                        float zEye = view[2] * grounded[0] + view[6] * grounded[1] +
+                                     view[10] * grounded[2] + view[14];
+                        float depth = -zEye;
+                        float[] world = new float[3];
+                        if (depth > .3f && depth < 4f &&
+                            TryPalmUnproject(px, py, depth, view, projection, width, height, world))
+                        {
+                            _palmCarryDepth = depth;
+                            for (int i = 0; i < 3; i++)
+                            {
+                                _palmCarryOrigin[i] = grounded[i];
+                                _palmCarryOffset[i] = grounded[i] - world[i];
+                                _palmCarryPosition[i] = grounded[i];
+                                _palmCarryTarget[i] = grounded[i];
+                            }
+                            _palmCarryMode = 1;
+                            SetStatus("🐾 Carrying! Move your open palm; withdraw to place on a surface ✨");
+                        }
+                    }
+                }
+                if (_palmCarryMode == 1)
+                {
+                    float[] ray = new float[3];
+                    if (TryPalmUnproject(px, py, _palmCarryDepth, view, projection, width, height, ray))
+                    {
+                        float d2 = 0f;
+                        for (int i = 0; i < 3; i++)
+                        {
+                            ray[i] += _palmCarryOffset[i];
+                            d2 += (ray[i] - _palmCarryOrigin[i]) * (ray[i] - _palmCarryOrigin[i]);
+                        }
+                        // Protect against camera tracking jumps or a hand leaving the preview.
+                        if (d2 < 2.25f)
+                            for (int i = 0; i < 3; i++) _palmCarryTarget[i] = ray[i];
+                    }
+                }
+            }
+            else if (_palmCarryMode == 0) _palmCarryStable = 0;
+        }
+        if (_palmCarryMode != 1) return grounded;
+        if (now - _palmCarryLastOpen > 650)
+        {
+            // Release only onto an ARCore-detected plane. Never invent a floor anchor.
+            foreach (var hit in frame.HitTest(_palmCarryX, _palmCarryY))
+            {
+                if (hit.Trackable is Plane plane && plane.TrackingState == TrackingState.Tracking &&
+                    plane.IsPoseInPolygon(hit.HitPose))
+                {
+                    Anchor newAnchor = hit.CreateAnchor();
+                    _palmCarryMode = 2;
+                    RunOnUiThread(() =>
+                    {
+                        if (_anchor is null || !_palmCarryEnabled)
+                        {
+                            try { newAnchor.Detach(); newAnchor.Dispose(); } catch { }
+                            _palmCarryMode = 0;
+                            return;
+                        }
+                        var previous = _anchor;
+                        _anchor = newAnchor;
+                        _walkingDestination = null;
+                        _palmCarryStable = 0;
+                        _palmCarryMode = 0;
+                        try { previous.Detach(); previous.Dispose(); } catch { }
+                        SetStatus($"{_animalName} placed on the new surface ❤️");
+                    });
+                    return (float[])_palmCarryPosition.Clone();
+                }
+            }
+            _palmCarryMode = 0;
+            _palmCarryStable = 0;
+            SetStatus("No tracked surface beneath your hand; returned to the original spot ✨");
+            return grounded;
+        }
+        // Smooth each display frame, instead of jumping at MediaPipe's 8 Hz.
+        for (int i = 0; i < 3; i++)
+        {
+            float delta = (_palmCarryTarget[i] - _palmCarryPosition[i]) * .22f;
+            _palmCarryPosition[i] += Math.Clamp(delta, -.038f, .038f);
+        }
+        return (float[])_palmCarryPosition.Clone();
+    }
+
     private readonly object _frameLock = new();
 
     protected override void OnCreate(Bundle? savedInstanceState)
@@ -301,6 +454,11 @@ public sealed class HushArCoreActivity : Activity
         var petParams = new LayoutParams(-2, -2, GravityFlags.CenterHorizontal | GravityFlags.Bottom);
         petParams.BottomMargin = Dp(152);
         _root.AddView(_petFeedback, petParams);
+        // HUSH_31061_PALM_CARRY_HEART: lightweight red-heart pop; counter remains internal only.
+        _petFeedback.Background = new ColorDrawable(AndroidColor.Transparent);
+        _petFeedback.Text = "❤️";
+        _petFeedback.TextSize = 53f;
+        _petFeedback.SetPadding(0, 0, 0, 0);
 
         var bottom = new LinearLayout(this) { Orientation = Orientation.Horizontal };
         bottom.SetGravity(GravityFlags.Center);
@@ -449,6 +607,7 @@ public sealed class HushArCoreActivity : Activity
         _livePetEnabled = prefs.GetBoolean("live_enabled", true);
         _livePetSkeletonVisible = prefs.GetBoolean("show_skeleton", false);
         _livePetHaptics = prefs.GetBoolean("haptics", true);
+        _palmCarryEnabled = prefs.GetBoolean("hand_carry_enabled", true);
         _livePetSensitivity = Math.Clamp(prefs.GetInt("gesture_sensitivity", 1), 0, 2);
     }
     private void SaveLivePetPrefs()
@@ -458,6 +617,7 @@ public sealed class HushArCoreActivity : Activity
         edit.PutBoolean("live_enabled", _livePetEnabled);
         edit.PutBoolean("show_skeleton", _livePetSkeletonVisible);
         edit.PutBoolean("haptics", _livePetHaptics);
+        edit.PutBoolean("hand_carry_enabled", _palmCarryEnabled);
         edit.PutInt("gesture_sensitivity", _livePetSensitivity);
         edit.Apply();
     }
@@ -498,6 +658,7 @@ public sealed class HushArCoreActivity : Activity
         popup.Menu?.Add(0, 103, 2, (_livePetSensitivity == 2 ? "✓ " : "") + "Sensitivity: High");
         popup.Menu?.Add(0, 104, 3, (_livePetSkeletonVisible ? "✓ " : "") + "Show hand skeleton");
         popup.Menu?.Add(0, 105, 4, (_livePetHaptics ? "✓ " : "") + "Petting vibration");
+        popup.Menu?.Add(0, 106, 5, (_palmCarryEnabled ? "✓ " : "") + "Open-palm carry (experimental)");
         popup.MenuItemClick += (_, e) =>
         {
             switch (e.Item?.ItemId)
@@ -507,6 +668,7 @@ public sealed class HushArCoreActivity : Activity
                 case 103: _livePetSensitivity = 2; break;
                 case 104: _livePetSkeletonVisible = !_livePetSkeletonVisible; break;
                 case 105: _livePetHaptics = !_livePetHaptics; break;
+                case 106: _palmCarryEnabled = !_palmCarryEnabled; break;
             }
             HushLiveHandBridge.SetSensitivity(_livePetSensitivity);
             HushLiveHandBridge.SetSkeletonVisible(_livePetSkeletonVisible);
@@ -598,7 +760,7 @@ public sealed class HushArCoreActivity : Activity
 
     private void PetAnimal(bool isStroke)
     {
-        if (!_modelFrameConfirmed || _anchor is null) return;
+        if (!_modelFrameConfirmed || _anchor is null || _palmCarryMode != 0) return;
         long now = System.Environment.TickCount64;
         if (now - System.Threading.Interlocked.Read(ref _lastPetTick) < 480) return;
         System.Threading.Interlocked.Exchange(ref _lastPetTick, now);
@@ -616,11 +778,31 @@ public sealed class HushArCoreActivity : Activity
         if (_livePetHaptics) _surface?.PerformHapticFeedback(FeedbackConstants.VirtualKey);
         if (_petFeedback is not null)
         {
+            // ❤️ Instagram-like heart pop above the creature, no visible numerical counter.
             _petFeedback.Animate().Cancel();
-            _petFeedback.Text = response.bubble + "  💚" + _petInteractionCount;
+            _petFeedback.Text = "❤️";
+            float centreX = (_surface?.Width ?? Resources!.DisplayMetrics!.WidthPixels) * .5f;
+            float centreY = (_surface?.Height ?? Resources!.DisplayMetrics!.HeightPixels) * .5f;
+            lock (_frameLock)
+            {
+                if (_petBoundsValid)
+                {
+                    centreX = (_petLeft + _petRight) * .5f;
+                    centreY = (_petTop + _petBottom) * .5f;
+                }
+            }
+            int canvasW = Math.Max(Dp(100), _root?.Width ?? 0);
+            int canvasH = Math.Max(Dp(150), _root?.Height ?? 0);
+            var heartLayout = new LayoutParams(Dp(84), Dp(84), GravityFlags.Left | GravityFlags.Top);
+            heartLayout.LeftMargin = (int)Math.Clamp(centreX - Dp(42), 0, canvasW - Dp(84));
+            heartLayout.TopMargin = (int)Math.Clamp(centreY - Dp(42), Dp(100), Math.Max(Dp(100), canvasH - Dp(220)));
+            _petFeedback.LayoutParameters = heartLayout;
             _petFeedback.Visibility = ViewStates.Visible;
             _petFeedback.Alpha = 1f;
-            _petFeedback.Animate().Alpha(0f).SetStartDelay(520).SetDuration(620).Start();
+            _petFeedback.ScaleX = .52f; _petFeedback.ScaleY = .52f;
+            _petFeedback.TranslationY = 0f;
+            _petFeedback.Animate().ScaleX(1.35f).ScaleY(1.35f)
+                .TranslationY(-Dp(44)).Alpha(0f).SetStartDelay(90).SetDuration(700).Start();
         }
         SetStatus(response.status);
     }
@@ -1193,6 +1375,7 @@ public sealed class HushArCoreActivity : Activity
                     camera.GetViewMatrix(_view, 0);
                     camera.GetProjectionMatrix(_projection, 0, .1f, 80f);
                     var pos = _host.AnimalPosition(anchor);
+                    pos = _host.UpdateHandCarry(frame, _view, _projection, pos, _width, _height);
                     float scale = System.Threading.Volatile.Read(ref _host._animalScale);
                     if (_host._filamentRequested)
                     {
@@ -1250,14 +1433,14 @@ public sealed class HushArCoreActivity : Activity
                             // Filament is already drawing the PBR animal. Avoid
                             // running the legacy GLB shader/geometry path a
                             // second time. Draw only the cheap floor contact cue.
-                            _floorShadow?.Draw(_view, _projection, pos,
+                            if (_host._palmCarryMode == 0) _floorShadow?.Draw(_view, _projection, pos,
                                 .5f * _host._filamentTargetMetres * scale, _host._yawDegrees);
                             _host.UpdatePetBounds(true, _width * .22f, _height * .25f,
                                 _width * .78f, _height * .78f);
                         }
                         else if (_modelInitialised && _animal is not null)
                         {
-                            _floorShadow?.Draw(_view, _projection, pos,
+                            if (_host._palmCarryMode == 0) _floorShadow?.Draw(_view, _projection, pos,
                                 .5f * _host._filamentTargetMetres * scale, _host._yawDegrees);
                             _animal.Draw(_view, _projection, pos, scale, petProgress,
                                 System.Environment.TickCount64 % 600000L / 1000f,

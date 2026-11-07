@@ -9,8 +9,9 @@
     <Nullable>enable</Nullable>
     <ApplicationTitle>Hush Hunt</ApplicationTitle>
     <ApplicationId>uk.whiskerhunt.mobile</ApplicationId>
-    <ApplicationDisplayVersion>3.10.60</ApplicationDisplayVersion>
-    <ApplicationVersion>125</ApplicationVersion>
+    <!-- HUSH_31061_PALM_CARRY_HEART -->
+        <ApplicationDisplayVersion>3.10.61</ApplicationDisplayVersion>
+    <ApplicationVersion>126</ApplicationVersion>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <XamarinGoogleGuavaListenableFutureOptOut>true</XamarinGoogleGuavaListenableFutureOptOut>

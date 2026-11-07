@@ -148,6 +148,38 @@ public final class HushLiveHandTracker {
             item.overlay.postInvalidate();
         }
     }
+    // HUSH_31061_PALM_CARRY_HEART: reuse existing 21 landmarks; no second ML pipeline.
+    // Returns view-pixel palm centre packed as two 32-bit integers, or -1 on invalid sample.
+    // Open-hand geometry works on either palm facing; not a real-world depth measurement.
+    public static long getOpenPalmPacked() {
+        HushLiveHandTracker item = instance;
+        if (item == null || item.disposed || !item.enabled || !item.ready) return -1L;
+        Sample current = item.sample; // immutable snapshot published by inference worker
+        if (current == null || !current.hand || current.points == null ||
+            current.points.length != 42 ||
+            SystemClock.uptimeMillis() - current.t > 475L) return -1L;
+        float[] p = current.points;
+        float wx=p[0], wy=p[1];
+        int[] tips={8,12,16,20};
+        int[] joints={6,10,14,18};
+        int extended=0;
+        for (int i=0;i<4;i++) {
+            int a=tips[i]*2, b=joints[i]*2;
+            float tx=p[a]-wx, ty=p[a+1]-wy;
+            float jx=p[b]-wx, jy=p[b+1]-wy;
+            if (tx*tx+ty*ty > 1.27f*(jx*jx+jy*jy)) extended++;
+        }
+        if (extended<3) return -1L;
+        // Wrist-to-middle-knuckle midpoint: support point under the animal.
+        float x=(p[0]+p[18])*.5f;
+        float y=(p[1]+p[19])*.5f;
+        if (!Float.isFinite(x) || !Float.isFinite(y) || x<0f || y<0f || x>10000f || y>10000f)
+            return -1L;
+        long xi=Math.min(65534,Math.max(0,Math.round(x)))+1L;
+        long yi=Math.min(65534,Math.max(0,Math.round(y)))+1L;
+        return (xi<<32) | yi;
+    }
+
     public static int getTrackingStatus() {
         HushLiveHandTracker item = instance;
         return item == null ? 4 : item.handStatus;

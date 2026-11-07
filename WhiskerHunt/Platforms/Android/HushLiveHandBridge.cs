@@ -103,6 +103,26 @@ internal static class HushLiveHandBridge
         }
         catch (Exception e) { Warn(e); return 4; }
     }
+    // HUSH_31061_PALM_CARRY_HEART - one scalar JNI read, no local-array lifetime issues.
+    public static bool TryReadOpenPalm(out float x, out float y)
+    {
+        x = 0f; y = 0f;
+        if (!_installed) return false;
+        try
+        {
+            var klass = JNIEnv.FindClass(ClassName);
+            var method = JNIEnv.GetStaticMethodID(klass, "getOpenPalmPacked", "()J");
+            long packed = JNIEnv.CallStaticLongMethod(klass, method);
+            if (packed < 0) return false;
+            long xvalue = (packed >> 32) & 0xffffffffL;
+            long yvalue = packed & 0xffffffffL;
+            if (xvalue == 0 || yvalue == 0 || xvalue > 10001 || yvalue > 10001) return false;
+            x = xvalue - 1; y = yvalue - 1;
+            return true;
+        }
+        catch (Exception e) { Warn(e); return false; }
+    }
+
     public static void Dispose()
     {
         if (!_installed)return;

@@ -13,4 +13,6 @@
 .env.*
 .hush_*
 **/.DS_Store
+Patch/
+HushHunt_Source_Backups/
 # NOTE: imported wildlife .glb files under Resources/Raw/ar_models SHOULD be committed.
