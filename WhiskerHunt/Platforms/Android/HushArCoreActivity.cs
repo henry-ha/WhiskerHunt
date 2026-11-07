@@ -135,6 +135,71 @@ public sealed class HushArCoreActivity : Activity
     }
 
     // Runs on the existing ARCore render thread; the 8 Hz ML pipeline is NOT duplicated.
+    // HUSH_31062_CARRY_GUIDANCE - called by the existing ARCore render frame AFTER carry pose.
+    // Sample only tracked ARCore Plane hit results: no visual false positives.
+    // At most 24 plane tests per 650ms; UI updates at most ~10 Hz.
+    private void UpdateCarryGuidance(Google.AR.Core.Frame frame, int width, int height)
+    {
+        var guide = _carryGuide;
+        if (guide is null) return;
+        if (!_carryGuidanceEnabled || _palmCarryMode != 1 || !_palmCarryEnabled ||
+            !_livePetEnabled || !_resumed || width < 2 || height < 2)
+        {
+            if (_carryGuideWasVisible)
+            {
+                _carryGuideWasVisible = false;
+                RunOnUiThread(() => guide.Reset());
+            }
+            return;
+        }
+        long now = System.Environment.TickCount64;
+        if (now - _carryGuideLastPublished < 95) return;
+        _carryGuideLastPublished = now;
+        _carryGuideWasVisible = true;
+        // Use a cached immutable snapshot to avoid allocating many JNI hit objects every frame.
+        if (now - _carryGuideLastScan > 650)
+        {
+            _carryGuideLastScan = now;
+            var scan = new bool[HushCarryGuidanceOverlay.CellCount];
+            for (int row = 0; row < HushCarryGuidanceOverlay.Rows; row++)
+            for (int col = 0; col < HushCarryGuidanceOverlay.Columns; col++)
+            {
+                float xx = (col + .5f) / HushCarryGuidanceOverlay.Columns * width;
+                float yy = (.28f + (row + .5f) * .62f / HushCarryGuidanceOverlay.Rows) * height;
+                scan[row * HushCarryGuidanceOverlay.Columns + col] =
+                    HasGuidancePlaneAt(frame, xx, yy);
+            }
+            _carryPlaneCells = scan;
+        }
+        float px = Math.Clamp(_palmCarryX, 0f, width);
+        float py = Math.Clamp(_palmCarryY, 0f, height);
+        bool placeHere = HasGuidancePlaneAt(frame, px, py);
+        bool[] snapshot = _carryPlaneCells;
+        RunOnUiThread(() =>
+        {
+            if (_carryGuide == guide && _carryGuidanceEnabled && _palmCarryMode == 1)
+                guide.SetGuide(px, py, width, height, snapshot, placeHere);
+            else guide.Reset();
+        });
+    }
+
+    private static bool HasGuidancePlaneAt(Google.AR.Core.Frame frame, float x, float y)
+    {
+        try
+        {
+            foreach (var hit in frame.HitTest(x, y))
+                if (hit.Trackable is Plane plane &&
+                    plane.TrackingState == TrackingState.Tracking &&
+                    plane.IsPoseInPolygon(hit.HitPose))
+                    return true;
+        }
+        catch (Exception ex)
+        {
+            JLog.Warn("HushCarryGuide", "Plane preview unavailable: " + ex.Message);
+        }
+        return false;
+    }
+
     private float[] UpdateHandCarry(Google.AR.Core.Frame frame, float[] view,
         float[] projection, float[] grounded, int width, int height)
     {
@@ -184,7 +249,7 @@ public sealed class HushArCoreActivity : Activity
                                 _palmCarryTarget[i] = grounded[i];
                             }
                             _palmCarryMode = 1;
-                            SetStatus("🐾 Carrying! Move your open palm; withdraw to place on a surface ✨");
+                            SetStatus("🐾 Carrying ✨");
                         }
                     }
                 }
@@ -250,6 +315,14 @@ public sealed class HushArCoreActivity : Activity
         }
         return (float[])_palmCarryPosition.Clone();
     }
+
+    // HUSH_31062_CARRY_GUIDANCE - optional overlay only; no change to AR anchors/ML.
+    private HushCarryGuidanceOverlay? _carryGuide;
+    private volatile bool _carryGuidanceEnabled = true;
+    private bool _carryGuideWasVisible;
+    private long _carryGuideLastScan;
+    private long _carryGuideLastPublished;
+    private bool[] _carryPlaneCells = new bool[HushCarryGuidanceOverlay.CellCount];
 
     private readonly object _frameLock = new();
 
@@ -454,6 +527,9 @@ public sealed class HushArCoreActivity : Activity
         var petParams = new LayoutParams(-2, -2, GravityFlags.CenterHorizontal | GravityFlags.Bottom);
         petParams.BottomMargin = Dp(152);
         _root.AddView(_petFeedback, petParams);
+        // HUSH_31062_CARRY_GUIDANCE: non-clickable, transparent overlay above AR scene.
+        _carryGuide = new HushCarryGuidanceOverlay(this);
+        _root.AddView(_carryGuide, new LayoutParams(-1, -1));
         // HUSH_31061_PALM_CARRY_HEART: lightweight red-heart pop; counter remains internal only.
         _petFeedback.Background = new ColorDrawable(AndroidColor.Transparent);
         _petFeedback.Text = "❤️";
@@ -608,6 +684,7 @@ public sealed class HushArCoreActivity : Activity
         _livePetSkeletonVisible = prefs.GetBoolean("show_skeleton", false);
         _livePetHaptics = prefs.GetBoolean("haptics", true);
         _palmCarryEnabled = prefs.GetBoolean("hand_carry_enabled", true);
+        _carryGuidanceEnabled = prefs.GetBoolean("carry_guidance_enabled", true);
         _livePetSensitivity = Math.Clamp(prefs.GetInt("gesture_sensitivity", 1), 0, 2);
     }
     private void SaveLivePetPrefs()
@@ -618,6 +695,7 @@ public sealed class HushArCoreActivity : Activity
         edit.PutBoolean("show_skeleton", _livePetSkeletonVisible);
         edit.PutBoolean("haptics", _livePetHaptics);
         edit.PutBoolean("hand_carry_enabled", _palmCarryEnabled);
+        edit.PutBoolean("carry_guidance_enabled", _carryGuidanceEnabled);
         edit.PutInt("gesture_sensitivity", _livePetSensitivity);
         edit.Apply();
     }
@@ -659,6 +737,7 @@ public sealed class HushArCoreActivity : Activity
         popup.Menu?.Add(0, 104, 3, (_livePetSkeletonVisible ? "✓ " : "") + "Show hand skeleton");
         popup.Menu?.Add(0, 105, 4, (_livePetHaptics ? "✓ " : "") + "Petting vibration");
         popup.Menu?.Add(0, 106, 5, (_palmCarryEnabled ? "✓ " : "") + "Open-palm carry (experimental)");
+        popup.Menu?.Add(0, 107, 6, (_carryGuidanceEnabled ? "✓ " : "") + "Carry visual guides");
         popup.MenuItemClick += (_, e) =>
         {
             switch (e.Item?.ItemId)
@@ -669,6 +748,7 @@ public sealed class HushArCoreActivity : Activity
                 case 104: _livePetSkeletonVisible = !_livePetSkeletonVisible; break;
                 case 105: _livePetHaptics = !_livePetHaptics; break;
                 case 106: _palmCarryEnabled = !_palmCarryEnabled; break;
+                case 107: _carryGuidanceEnabled = !_carryGuidanceEnabled; if (!_carryGuidanceEnabled) _carryGuide?.Reset(); break;
             }
             HushLiveHandBridge.SetSensitivity(_livePetSensitivity);
             HushLiveHandBridge.SetSkeletonVisible(_livePetSkeletonVisible);
@@ -899,6 +979,7 @@ public sealed class HushArCoreActivity : Activity
     protected override void OnPause()
     {
         HushLiveHandBridge.SetEnabled(false);
+        _carryGuide?.Reset(); // HUSH_31062_CARRY_GUIDANCE
         _safariMusic?.OnArBackground();
         if (_resumed)
         {
@@ -1376,6 +1457,7 @@ public sealed class HushArCoreActivity : Activity
                     camera.GetProjectionMatrix(_projection, 0, .1f, 80f);
                     var pos = _host.AnimalPosition(anchor);
                     pos = _host.UpdateHandCarry(frame, _view, _projection, pos, _width, _height);
+                    _host.UpdateCarryGuidance(frame, _width, _height);
                     float scale = System.Threading.Volatile.Read(ref _host._animalScale);
                     if (_host._filamentRequested)
                     {
