@@ -81,6 +81,10 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
     // rendering a stale pose in a second TextureView while the background moves.
     private long frameGeneration;
     private long renderedGeneration;
+    // HUSH_31062E_FILAMENT_STALE_POSE_RECOVERY: latest valid AR pose timestamp (elapsed realtime).
+    private volatile long lastTrackedPoseAtMs;
+    private boolean staleAnimalFrameCleared;
+    private Scene clearOnlyScene;
     // v3.10.39: cap the second GPU render pass to ~30fps for dense GLBs.
     // ARCore camera and tracking continue at full speed on their GL thread.
     private long frameBudgetNanos = 33_000_000L;
@@ -317,6 +321,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             item.anchorSnapshot = anchor;
             item.animalScale = Math.max(.5f, Math.min(3f, scale));
             item.frameGeneration++;
+            item.lastTrackedPoseAtMs = android.os.SystemClock.uptimeMillis();
         }
         // Read the estimate while its ARCore Frame is still current.
         if (arFrame != null && (++item.lightReadFrameCounter % 20) == 0) {
@@ -351,6 +356,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             engine = Engine.create();
             renderer = engine.createRenderer();
             scene = engine.createScene();
+            clearOnlyScene = engine.createScene(); // intentionally has no animal entities
             cameraEntity = EntityManager.get().create();
             camera = engine.createCamera(cameraEntity);
             // Colour-fidelity correction (B99): the old f/4 at 1/80 s exposure
@@ -794,6 +800,21 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             Choreographer.getInstance().postFrameCallback(this);
         }
     }
+    // HUSH_31062E_FILAMENT_STALE_POSE_RECOVERY: when ARCore pauses, SurfaceView would otherwise keep its last
+    // rendered frame pasted over the moving camera. One transparent frame
+    // clears it, without destroying the swapchain or original scene.
+    private void clearStaleAnimalFrame(long nanos) {
+        if (staleAnimalFrameCleared || lastTrackedPoseAtMs == 0L ||
+            android.os.SystemClock.uptimeMillis() - lastTrackedPoseAtMs < 480L ||
+            renderer == null || view == null || clearOnlyScene == null || swapChain == null) return;
+        if (!renderer.beginFrame(swapChain, nanos)) return;
+        view.setScene(clearOnlyScene);
+        renderer.render(view); // transparent clear colour from existing Filament renderer
+        renderer.endFrame();
+        staleAnimalFrameCleared = true;
+        android.util.Log.i(TAG, "ARCore pose stale: transparent animal frame presented");
+    }
+
     @Override public void doFrame(long nanos) {
         frameScheduled = false;
         if (destroyed || !modelReady || swapChain == null) return;
@@ -805,6 +826,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             return;
         }
         try {
+            clearStaleAnimalFrame(nanos);
             float[] v, p, a, d, intensity;
             float scale;
             long generation;
@@ -880,6 +902,11 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             // Never claim model readiness just because bytes parsed. The overlay
             // becomes visible only after the first anchored frame was submitted.
             if (v != null && p != null && a != null && renderer.beginFrame(swapChain, nanos)) {
+                if (staleAnimalFrameCleared) {
+                    view.setScene(scene);
+                    staleAnimalFrameCleared = false;
+                    android.util.Log.i(TAG, "ARCore pose recovered: restored live animal scene");
+                }
                 renderer.render(view);
                 renderer.endFrame();
                 renderedGeneration = generation;
@@ -1038,6 +1065,7 @@ public final class HushFilamentOverlay implements SurfaceHolder.Callback,
             if (cameraEntity != 0) { engine.destroyCameraComponent(cameraEntity); EntityManager.get().destroy(cameraEntity); cameraEntity = 0; }
             if (swapChain != null) { engine.destroySwapChain(swapChain); swapChain = null; }
             if (view != null) { engine.destroyView(view); view = null; }
+            if (clearOnlyScene != null) { engine.destroyScene(clearOnlyScene); clearOnlyScene = null; }
             if (scene != null) { engine.destroyScene(scene); scene = null; }
             if (renderer != null) { engine.destroyRenderer(renderer); renderer = null; }
             engine.destroy(); engine = null;
